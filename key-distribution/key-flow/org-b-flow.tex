@@ -1,0 +1,55 @@
+\begin{sidewaysfigure}
+\begin{table}[H]
+\centering
+\begin{adjustbox}{width=\textwidth}
+\begin{tabular}{c c c c c c c c c c c c c}
+\text{\textsf{DS-A}} & & \text{\textsf{OpA}} & & \text{\textsf{WorkerA}} & & \text{\textsf{Cape}} & &
+\text{\textsf{WorkerB}} & & \text{\textsf{OpB}} & & \text{\textsf{DS-B}} \\
+
+&&$K_A \asn$ &&&&&&&& $\VK_B, \SK_B \asn$ \\
+&&\verb|crypto_auth_keygen| &&&&&&&& \verb|crypto_sign_keypair| \\
+&&           &&&&&&&& $h_B^{\OP} \asn \HASH(\VK_B)$ \\
+
+&$\xleftarrow{K_A}$ && $\xrightarrow{K_A}$ & &&&&& $\xleftarrow{\SK_B,
+\VK_B}$ & & $\xrightarrow{ h_B^\OP }$ &\\
+
+\tikzmark{a}{0} &&&&& \tikzmark{b}{0} & \link{b}{a}{$h_B^\OP$} &
+\tikzmark{a1}{0} & & & \tikzmark{b1}{0} \link{b1}{a1}{$h_B^\OP$}\\
+
+&&&&&&&&&&&& set $h_B^{DS} \asn h_B^{\OP}$ \\
+\tikzmark{a3}{0} &&&&&&&&&&& \tikzmark{b3}{0} \link{b3}{a3}{(optional): via QR code $h_B^{DS}$}
+ \\
+
+$h_B^{DS} \stackrel{?}{=} \HASH(\VK_B)$ \\
+abort o/wise \\
+& \\
+
+Set $h_B^\DSA \asn h_B^\OP$\\
+Set $\tau_{h_B^\DSA} \asn$ \\
+$\MAC(K_A, h_B^\OP)$ \\
+
+\tikzmark{a2}{0} &&&&&& \tikzmark{b2}{0} \link{a2}{b2}{$h_B^\DSA, \tau_{h_B^\DSA}$} \\
+
+% Worker side
+&&&&&&&& $\EK_B^i, \DK_B^i \asn$ \\
+&&&&&&&& \verb|crypto_box_keypair| \\
+
+&&&&&&&& $\sigma^i_B = \SIGN(\SK_B, \EK_B^i || \texttt{datetime})$ & \\
+&&&&& $\xleftarrow{\EK_B^i, \VK_B, \sigma^i_B, \texttt{datetime}}$ & &
+ $\xleftarrow{\EK_B^i, \VK_A, \sigma^i_B, \texttt{datetime}, \tau_{h_B^\DSA}}$ & & \\
+
+
+&&&& $\HASH(\VK_B) \stackrel{?}{=} h_B^\DSA$ \\
+&&&& $\VER(K_A, \tau_{h_B^\DSA}) \stackrel{?}{=} 1$ \\
+&&&& $\VER(\VK_B, \sigma^i_B) \stackrel{?}{=} 1$ \\
+&&&& Set $\EK_B^i$ as pk for $W_B^i$ if all checks pass \\
+&&&& Reject o/wise \\
+
+
+% & \xleftarrow{\hspace{1em}c\hspace{1em}} & \\
+\end{tabular}
+\end{adjustbox}
+\end{table}
+\caption{PK setup for Organization B}
+\end{sidewaysfigure}
+

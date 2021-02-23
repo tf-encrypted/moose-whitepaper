@@ -1,0 +1,32 @@
+% \tableofcontents
+\section{Simple libsodium description}
+
+The current infrastructure we have is for all parties to generate
+a pair of public-secret keys \verb|pk,sk| using libsodium
+\begin{verbatim}
+crypto_box_keypair(pk, sk)
+\end{verbatim}
+
+\noindent For simplicity let's assume we have two parties: Alice and Bob who
+both have called the \verb|crypto_box_keypair| to own a pair of public-secret keys.
+In order for Bob to send a message to Alice he encrypts a message with the following function:
+\begin{verbatim}
+crypto_box_easy(ciphertext, MESSAGE, MESSAGE_LEN, nonce,
+                    bob_publickey, alice_secretkey)
+\end{verbatim}
+
+In the \verb|crypto_box_easy| call there are few things that happening, according to \cite{bernstein2009cryptography}
+and by also looking at the code \cite{libsodium}.
+First, there is an internal call to  \verb|crypto_box_curve25519xsalsa20poly1305| which
+says that there is a combination of protocols such as:
+\begin{enumerate}
+  \item Curve25519 elliptic-curve-Diffie–Hellman key exchange to establish a shared secret.
+  \item After the shared secret $k$ is established than the message \verb|MESSAGE| is encrypted using
+  Salsa20 stream cipher keyed with $k$ and nonce \verb|nonce| to produce a ciphertext $c$
+  \item In order to keep integrity of the ciphertext then Poly1305 MAC scheme is computed over $c$.
+  The MAC scheme and the ciphertext are now concatenated and sent around as \verb|ciphertext| from the output
+  of \verb|crypto_box_easy|
+\end{enumerate}
+
+\input{infra}
+

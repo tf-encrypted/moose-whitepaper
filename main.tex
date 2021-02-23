@@ -1,0 +1,354 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[colorlinks,linkcolor=dblue,filecolor=black,citecolor=dblue,urlcolor=dblue]{hyperref}
+\usepackage{etex}
+\bibliographystyle{alpha}
+\usepackage[english]{babel}
+\usepackage{amsfonts,amssymb,amsmath,sectsty,url}
+\usepackage{mathrsfs}
+
+\usepackage{tikz}
+\usepackage{color}
+%\usepackage{mathtools}
+\usepackage[all]{xy}
+\usepackage{ctable}
+% \usetikzlibrary{calc}
+\usepackage{tabularx,multirow}
+\usepackage{graphicx}
+\usepackage{ifpdf}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{multicol,color}
+\usepackage{tablefootnote}
+\usepackage{pgfplots}
+
+\usepackage{stmaryrd}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{import}
+\usepackage{rotating}
+%\usepackage[color=oxygenorange]{todonotes}
+%\newcommand{\crec}[1]{\todo[inline]{\textbf{crec:} #1}\xspace}
+
+
+\usetikzlibrary{matrix,chains,positioning,decorations.pathreplacing,arrows,calc}
+
+\newcommand\tikzmark[2]{%
+\tikz[remember picture,baseline] \node[right, outer sep=0pt, inner sep=0pt] (#1){\phantom{#2}};%
+}
+
+\newcommand\link[3]{%
+\begin{tikzpicture}[remember picture, overlay, >=stealth, shift={(0,0)}]
+  \draw[->] (#1) -- node[auto,] {#3} (#2);
+\end{tikzpicture}%
+}
+
+
+
+
+% For tables
+\usepackage{adjustbox}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+
+% For better precision math computations and formatting in tables
+\usepackage{tikz,fp}
+\usetikzlibrary{fixedpointarithmetic}
+\pgfkeys{
+  /pgf/fixed point arithmetic,
+  /pgf/number format/precision=3,
+  /pgf/number format/fixed zerofill=true,
+  /pgf/number format/.cd,1000 sep={}
+}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+\newcommand\todo[1]{\textcolor{red}{#1}}
+
+\usepackage{listings}% http://ctan.org/pkg/listings
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
+
+\include{symbols}
+
+%
+\begin{document}
+%
+
+\title{Overview of honest majority 3PC}
+
+\maketitle
+
+% \tableofcontents
+\section{Introduction}
+
+
+In the last couple of years there was a boom in MPC for honest majority,
+especially in 3PC one. I think it all started with Araki et al.
+\cite{CCS:AFLNO16} which at the moment provides the best performance for
+semi-honest security in the preprocessing model. A year after they converted
+the protocol to active security which achieves $1$ billion AND triples per
+second \cite{SP:ABFLLN17} which had a cost of $7$ bits per AND gate. A couple
+of folks showed later how to take the Araki et al. \cite{CCS:AFLNO16}
+blueprint and extend it to multiple parties assuming there is honest majority
+\cite{SCN:KRSW18} using some known techniques by Maurer \cite{SCN:Maurer02}
+with the caveat that there can be an exponential blowup in terms of $n
+\choose t$ where $t<n/2$ is the threshold and $n$ the number of parties. In
+this way we had some intuition on why the $(3,1)$ case was so efficient.
+
+\section{Choosing MPC depending on circuit type} For the CPPIB/CTS use-case
+we think that $128$ bit field size is enough using a fixed point precision by
+$16$ bits while keeping the numbers magnitude to $40$ bits (thus making the
+integral part of size $24$ bits). We should keep in mind that although triple
+generation for large fields is usually faster than rings there are benefits
+when working with ring sharings - such as faster methods for secret
+truncation which in turn makes RELU's faster.
+
+For now we are only interested to solve the secret matrix-matrix
+multiplication. We might want to add some gaussian noise over the output to
+avoid one party getting the input matrix of the other party. For this large
+field operations should suffice, however we list the current state of the art
+protocols for obtaining MPC with different arithmetic structure. For
+readability purposes we abbreviate honest majority with HM:
+
+\begin{enumerate}
+  \item HM over large fields $\Fp$ \cite{CCS:LinNof17,C:CGHIKL18}. Although the
+  two constructions above are for the malicious setting these are constructing
+  assuming $\Frand, \Fmult$ hybrid model where $\Fmult$ needs to be a multiplication
+  protocol secure up to additive attacks. To get such an $\Fmult$ we can simply take
+  a semi-honest protocol for HM for doing multiplications such as \cite{CCS:AFLNO16}.
+  \item HM for binary circuits $\F_2$. Note that Araki et al. \cite{CCS:AFLNO16}
+  works for binary circuits as well for the semi-honest case.
+  To get malicious security Chida et al. \cite{C:CGHIKL18} present a protocol
+  for small field multiplications using cut-and-choose techniques The cut and
+  choose framework works by generating large batches of triples
+  optimistically and then open a fraction to detect whether some cheating
+  occurred.
+  \item HM over small fields (eg. $\F_{2^8}$ which is suitable for AES). To
+  get malicious security, depending on the extension field size, we can
+  either repeat the computation $\sec/|\F|$ times or generate triples using cut and choose
+  from \cite{C:CGHIKL18}.
+  \item HM over rings $\mathbb{Z}_{2^k}$. Abspoel et al. \cite{EPRINT:ADEN19}
+  are the first ones who introduce vector dot-products of secret shares at a cost of
+  communicating a constant number of ring elements independently of the vector sizes
+  for the ring case - however they avoid giving any hint on how to realise
+  reactive computations, this is solved later in \cite{cryptoeprint:2020:1330}.
+  \item HM by mixing circuits: \cite{CCS:MohRin18,cryptoeprint:2020:1330}.
+  Escudero et al. \cite{C:EGKRS20} work in the more generic setting but they
+  have
+  improvements for the honest majority as well. They improve the mixed framework
+  specifically for $\Z_{2^k}$ and $\F_2$ very recently in \cite{cryptoeprint:2020:1330}.
+
+\end{enumerate}
+
+Small note that almost everything can be built in the malicious setting using
+building blocks from the semi-honest protocols with the exception of binary triples
+$c = a \cdot b$ where $a,b \in \F_2$. For the binary triple case we need more
+complex techniques such as cut and choose.
+
+
+\subsection{Small note.}
+If most of the things here seem to you like a word salad of many unknown
+abbreviation I strongly recommend reading the first sections
+\cite{evans2017pragmatic} and more important Chapter 7 about honest majority MPC.
+
+\section{Reasons why we should choose Dalskov, Escudero and Keller
+\cite{cryptoeprint:2020:1330}}
+
+Main advantage is that performs natively on $\Z_{2^k}$ and $\F_p$.
+Pros:
+\begin{enumerate}
+  \item Truncations are much cheaper in a ring and they have developed some
+  cool techniques on making those even faster using some share conversions.
+  \item Computations are more suitable to classical processor instructions.
+  \item Passive security protocol is the same as Araki et al.
+  \item Code is already available in MP-SPDZ git.
+\end{enumerate}
+
+Cons:
+\begin{enumerate}
+  \item I haven't checked the security proofs yet...
+  \item Need to check how exactly the security parameter $s$ affects the
+  register size
+\end{enumerate}
+
+\section{Tools we need to implement}
+
+\subsection{Dot products}
+\subsection{}
+\subsection{AES based PRF}
+This is currently done in the Rust runtime we have.
+
+\subsection{$128$ bit field arithmetic}
+Currently we only implement 64-bit ring arithmetic ($\Z_{2^{64}}$)
+
+
+\section{How do compute dot-products using MPC}
+
+The goal is to compute $\sum_{k=1}^m \share{x_k} \cdot \share{y_k}$.
+
+\subsection{2-party semi-honest}
+\subsection{3-party semi-honest (HM)}
+There are different ways to achieve this, depending on the secret sharing
+type. Throughout this document we will stick with replicated secret sharing
+although this works for Shamir Secret sharing. Both replicated and Shamir
+work for the field and ring case, however for Shamir secret sharing it's a
+bit more complicated to do MPC over rings - it is doable but with some
+overhead \cite{EPRINT:CraRamXin19, TCC:ACDEY19}. To see how this works for
+replicated secret sharing each party $P_i$ holds a sharing of $x$ as $(x_i,
+x_{(i+1) \bmod 3})$ and a sharing of $y$ as $(y_i, y_{ (i+1) \bmod 3})$.
+Since players offsets start with $1$:
+
+\begin{itemize}
+    \item $P_1$ has $(x_1, x_2)$ and $(y_1, y_2)$.
+    \item $P_2$ has $(x_2, x_3)$ and $(y_2, y_3)$.
+    \item $P_3$ has $(x_3, x_1)$ and $(y_3, y_1)$.
+\end{itemize}
+
+\noindent
+To compute a sharing $\share{x \cdot y}$ using the shares of $x$ and $y$ parties do the following:
+
+\begin{itemize}
+    \item $P_1$ sets $(x \cdot y)_{1} \asn x_1 \cdot y_1 + x_1 \cdot y_2 + x_2 \cdot
+    y_1 + \alpha$.
+    \item $P_2$ sets $(x \cdot y)_2 \asn x_2 \cdot y_2 + x_2 \cdot y_3 + x_3
+    \cdot y_2 + \beta$.
+    \item $P_3$ sets $(x \cdot y)_3 \asn x_3 \cdot y_3 + x_3 \cdot y_1 + x_1 \cdot y_3 +
+    \gamma$.
+\end{itemize}
+
+\noindent In the next phase parties send around the shares
+\begin{itemize}
+    \item $P_1$ sends privately $(x \cdot y)_1$ to $P_2$.
+    \item $P_2$ sends privately $(x \cdot y)_2$ to $P_3$.
+    \item $P_3$ sends privately $(x \cdot y)_3$ to $P_1$.
+\end{itemize}
+
+\noindent In the final step parties set their shares of $x \cdot y$ in the following way:
+\begin{itemize}
+    \item $P_1$ sets $\share{x \cdot y}$ as $(x\cdot y)_3, (x \cdot y)_1$.
+    \item $P_2$ sets $\share{x \cdot y}$ as $(x\cdot y)_1, (x \cdot y)_2$.
+    \item $P_3$ sets $\share{x \cdot y}$ as $(x\cdot y)_2, (x \cdot y)_3$.
+\end{itemize}
+
+Although this was written with a $x$ and $y$ being a single ring element,
+i.e. $x,y \in \Z_{2^k}$ the same protocols works when $x, y \in \Z^m_{2^k}$
+and the ring multiplication operator `$\cdot$` is replaced with the dot
+product. In this manner $x \cdot y = \sum_{i=1}^m x_i y_i \in \Z_{2^k}$ while
+$x, y \in \Z^m_{2^k}$. This can be extended for arbitrary length tensors as long as
+$\alpha, \beta, \gamma$ have the correct dimensions to mask randomize $x \cdot y$.
+
+\subsection{3-party malicious (HM)}
+Note that the first progress
+for this problem was done for the field case by Chida et al. \cite{C:CGHIKL18}.
+For the ring case see \cite{EPRINT:ADEN19,cryptoeprint:2020:1330}.
+
+\subsection{Dishonest majority}
+
+Here parties fetch a triple for each $\share{x_k} \cdot \share{y_k}$ multiplication
+ending with a cost of $m$ preprocessed triples. This is valid for secret sharing (SPDZ-type
+\cite{EC:KelPasRot18,C:DPSZ12,C:CDESX18})
+but also for garbled circuits (\cite{AC:HazSchSor17,CCS:WanRanKat17b}) type protocols.
+
+\section{Truncation}
+
+Given $\share{a}$ compute $\share{a \bmod 2^m}$ where $m$ is a public constant.
+There are many ways to truncate a secret which can be roughly classified into 2:
+\begin{itemize}
+  \item probabilistic truncation - correct result with probability $p$.
+  \item deterministic truncation - always output the exact truncation.
+\end{itemize}
+
+\noindent
+The state of the art techniques in truncating a secret are using
+dabits/edabits as described by Escudero et al. in \cite{C:EGKRS20} and
+various share conversions. In \cite{C:EGKRS20} there are several techniques
+to achieve both probabilistic and deterministic truncation for field and ring
+case.
+
+If we want to avoid edabit generation required for generating random bounded integers
+by the truncation protocols in \cite{C:EGKRS20} then we can use the protocols from
+\cite{PoPETS:DalEscKel20}. We describe their probabilistic protocols for replicated secret
+sharing below in Fig~\ref{fig:truncpr-rep-ss}.
+
+\begin{Boxfig}{Truncation protocol for semi-honest
+RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPrSp}}$}
+On input
+$\mathsf{TruncPrSp}(\share{x}, m)$ from all parties where $x$ is a sharing
+over $\Z_{2^k}$: \\
+$P_3$ does the following:
+  \begin{enumerate}
+    \item Sample locally random bits $r_i$ for $i \in [0, k-1]$.
+    \item Generate additive shares ($2$-out-of-$2$) for $r = \sum_{i=0}^{k-1}r_i$,
+    $r_{k-1}$ and $\sum_{i=m}^{k-2} r_i \cdot 2^{i-m}$. Send the corresponding shares
+    to $P_1$ and $P_2$.
+    \item Generate random numbers $y_1, y_3 \in \Z_{2^k}$. Send $y_1$ to
+    $P_1$ and $y_3$ to $P_2$.
+    \item Set own share of the truncation result as $(y_3, y_1)$.
+ \end{enumerate}
+$P_1$ together with $P_2$ do the following:
+
+\begin{enumerate}
+   \item Convert $\share{x}$ into a $2$-out-of-$2$ sharing. This is
+   accomplished by $P_1$ setting its local share to $x_1 + x_2$ while $P_2$
+   setting its local share as $x_3$.
+   \item $P_1$ and $P_2$ then execute the protocol $\Proto{\mathsf{TruncPR}}$
+   using the $2$-out-of-$2$ sharings of $x$ and the shares provided by $P_3$.
+\end{enumerate}
+ Now parties convert the $2$-out-of-$2$ sharing output of
+ $\mathsf{TruncPR}$ to a $2$-out-of-$3$
+ sharing using the randomness provided by $P_3$.
+ \begin{enumerate}
+   \item Each $P_i$ for $i \in [1, 2]$ sets the output of $\mathsf{TruncPr}$
+   as $y'_i$ and $\hat{y}_i$ as the sharing received from $P_3$. Send $y'_i -
+   \hat{y}_i$ to $P_{3-i}$. The received values are denoted by $\tilde{y}_i$.
+   \item $P_1$ sets the output share as $(y_1, y'_1 - \hat{y}_1 + \tilde{y}_1)$
+   \item $P_2$ sets the output share as $(y'_2 - \hat{y}_2 + \widehat{y}_2, y_3)$.
+ \end{enumerate}
+\end{Boxfig}
+
+\begin{Boxfig}{Generic truncation protocol.}{fig:truncpr-generic}
+  {Protocol $\Proto{\mathsf{TruncPr}}(\share{x}, m)$}
+  Assume $x \in \Z_{2^k}$ has $\mathsf{MSB}(x) = 0$. If $x$ is negative than
+  we make it positive by adding $2^{k-1}$ to it and assume that $\mathsf{abs}(x) < 2^{k-1}$.
+  \\
+  On input $\mathsf{TruncPr}(\share{x}, m)$ from all parties:
+  \begin{enumerate}
+    \item Sample $k$ random bits $\share{r_i}$ and compute $r = \sum_{i=1}^k
+    r_i$. \item Open $c \asn \share{x} + \share{r}$, truncate $c$ publicly
+    and
+    assign it to $c' \asn (c/2^m) \bmod 2^{k-m-1}$.
+    \item Compute $\share{b} \asn \share{r_{k-1}} \oplus (c / 2^{k-1})$.
+    \item Output $c' - \sum_{i=m}^{k-2} \share{r_i} \cdot 2^{i-m} + \share{b}
+    \cdot 2^{k-m-1}$.
+  \end{enumerate}
+
+\end{Boxfig}
+
+
+Note that although the protocol in Fig~\ref{fig:truncpr-rep-ss} looks
+very efficient, the edabit variant from \cite{C:EGKRS20} requires
+about $\approx 35$ times less communication.
+
+\input{fixed-point-division}
+\input{comparisons}
+\import{key-distribution}{infra.tex}
+
+% ---- Bibliography ----
+%
+\bibliography{mybib,cryptobib/abbrev3,cryptobib/crypto}
+
+\end{document}
+
+
+

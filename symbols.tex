@@ -1,0 +1,338 @@
+% COMMANDS
+
+\renewcommand{\emptyset}{\varnothing}
+
+
+% Colors
+
+\definecolor{dblue}{rgb}{0.00, 0.50, 0.90}
+\definecolor{lblue}{rgb}{0.70, 0.80, 1.00}
+\definecolor{lpink}{rgb}{0.90, 0.70, 1.00}
+\definecolor{lgreen}{rgb}{0.80, 0.95, 0.75}
+\definecolor{lred}{rgb}{0.99, 0.50, 0.55}
+\definecolor{lyellow}{rgb}{1.00, 0.95, 0.75}
+\definecolor{llgrey}{rgb}{0.95, 0.95, 0.95}
+\definecolor{salmon}{rgb}{0.99, 0.90, 0.90}
+
+% UC security things
+
+\newcommand{\Abort}{\mathsf{Abort}}
+\newcommand{\Checkk}{\mathsf{Check}}
+\newcommand{\Commit}{\mathsf{Commit}}
+\newcommand{\Fcomm}{\mathcal F_\Commit}
+\newcommand{\Fail}{\mathsf{Fail}}
+\newcommand{\Keys}{\mathsf{Keys}}
+\newcommand{\MACCheck}{\mathsf{MACCheck}}
+\newcommand{\Open}{\mathsf{Open}}
+\newcommand{\OK}{\mathsf{OK}}
+\newcommand{\Pcomm}{\Pi_\Commit}
+\newcommand{\Scomm}{\mathcal S_\Commit}
+\newcommand{\Triple}{\mathsf{Triple}}
+\newcommand{\Val}{\mathsf{Val}}
+
+\newcommand{\VK}{\mathsf{vk}}
+\newcommand{\DSB}{\mathsf{DSB}}
+\newcommand{\DSA}{\mathsf{DSA}}
+\newcommand{\OP}{\mathsf{op}}
+\newcommand{\EK}{\mathsf{ek}}
+\newcommand{\DK}{\mathsf{dk}}
+\newcommand{\SK}{\mathsf{sk}}
+\newcommand{\HASH}{\mathsf{hash}}
+\newcommand{\SIGN}{\mathsf{Sign}}
+\newcommand{\VER}{\mathsf{Ver}}
+\newcommand{\TAG}{\mathsf{Tag}}
+
+% MPC things
+\newcommand{\Pa}{\mathcal{P}}
+\newcommand{\Engine}{\mathsf{Eng}}
+\newcommand{\Ext}{\mathsf{Ext}}
+\newcommand{\authshare}[1]{\llbracket {#1} \rrbracket} % a finite field
+\newcommand{\auth}[1]{\authshare{#1}} % a finite field
+
+% ZK things
+\newcommand{\prov}{\mathcal{P}}
+\newcommand{\ver}{\mathcal{V}}
+
+% CS things
+\newcommand{\Oh}{ \mathcal{O} }
+\newcommand{\QuasiOh}{ \widetilde{ \mathcal{O} } }
+
+\newcommand{\B}         {\mathrm{B}}
+\newcommand{\KB}        {\mathrm{KB}}
+\newcommand{\MB}        {\mathrm{MB}}
+\newcommand{\GB}        {\mathrm{GB}}
+
+\newcommand{\ms}        {\mathrm{ms}}
+\newcommand{\mus}       {\mathrm{{\mu}s}}
+
+
+
+% Sets, fields, rings, groups, etc...
+\newcommand{\C}{\mathbb{C}} % complex nr
+\newcommand{\Z}{\mathbb{Z}} % the integers
+\newcommand{\Q}{\mathbb{Q}} % the rationals
+\newcommand{\N}{\mathbb{N}} % the non-negative integers
+\newcommand{\F}{\mathbb{F}} % a finite field
+\newcommand{\Fp}{\mathbb{F}_p}
+\newcommand{\Fn}{\mathbb{F}^n_{2}}
+\newcommand{\Fq}{\mathbb{F}_q}
+\newcommand{\range}[1]{[1\dots {#1} ]} % a finite field
+
+\newcommand{\sample}{\stackrel{\small{\$}}{\leftarrow}}
+
+\newcommand{\M}{\mathcal{M}} % message space
+\newcommand{\T}{\mathcal{T}} % tag space
+\newcommand{\R}{\mathcal{R}} % randomness space
+
+\newcommand{\tensor}{\otimes}
+\newcommand{\unit}{\mathbf{u}}
+\newcommand{\transpose}[1]{#1^{\intercal}}
+\newcommand{\identitymatrix}{\mathbb{I}}
+
+
+
+% Probability and DP
+\newcommand{\Avg}{\textup{E}} % Average of random variables
+
+
+\newcommand{\D}{\mathcal{D}} % a distribution
+\newcommand{\U}{\mathcal{U}} % the uniform distribution
+
+\newcommand{\uniform}[1]            {\mathcal{U}(#1)}
+\newcommand{\binomial}[1]           {\mathcal{B}(#1)}
+\newcommand{\gaussian}[1]           {\mathcal{N}(#1)}
+\newcommand{\dgaussian}[1]     {\mathcal{DG}(#1)}
+\newcommand{\hwt}[1]     {\mathcal{HWT}(#1)}
+\newcommand{\zo}[1]     {\mathcal{ZO}(#1)}
+\newcommand{\laplacian}[1]          {\mathrm{Lap}(#1)}
+\newcommand{\distribution}          {\mathcal{D}}
+\newcommand{\leftovernoise}     {\mathcal{E}}
+
+\newcommand{\pr}[1]                 {\Pr \left[ #1 \right]}
+\newcommand{\floor}[1]                  {\lfloor#1\rfloor}
+\newcommand{\ceil}[1]                   {\left\lceil#1\right\rceil}
+
+
+
+% Labels
+
+\newcommand{\pk}{\mathsf{pk}}
+\newcommand{\sk}{\mathsf{sk}}
+\newcommand{\sfT}{\mathsf{T}}
+
+\newcommand{\Sim}{\mathcal{S}}
+\newcommand{\Simu}[1]{\mathcal{S}_{\mathsf{#1}}}
+
+
+
+% Operators
+
+\newcommand{\asn}{\gets} % to be read as ``computed as'' or ``taken according to the distribution...'' or ``taken uniformly from...''
+
+\newcommand{\ParamGen}{\mathsf{ParamGen}}
+\newcommand{\KeyGen}{\mathsf{KeyGen}}
+\newcommand{\Enc}{\mathsf{Enc}}
+\newcommand{\Dec}{\mathsf{Dec}}
+\newcommand{\Add}{\mathsf{Add}}
+\newcommand{\ek}{ek}
+\newcommand{\dk}{dk}
+\newcommand{\plaintext}{m}
+\newcommand{\ciphertext}{e}
+\newcommand{\plaintextspace}{\mathcal{P}}
+\newcommand{\ciphertextspace}{\mathcal{E}}
+\newcommand{\INDCPA}{\textrm{IND-CPA}}
+
+\newcommand{\Share}{\mathsf{Share}}
+\newcommand{\Shamir}{\mathsf{Shamir}}
+\newcommand{\RS}{\mathsf{RS}}
+\newcommand{\Rec}{\mathsf{Recon}}
+
+\newcommand{\share}[1]{\langle {#1} \rangle} % a finite field
+\newcommand{\secret}{m}
+
+\newcommand{\MAC}{\mathsf{MAC}}
+\newcommand{\Encode}{\mathsf{Encode}}
+
+\newcommand{\PRG}{\mathsf{PRG}}
+
+\newcommand{\Adv}{\mathsf{Adv}}
+\newcommand{\Gen}{\mathsf{Gen}}
+
+
+
+\newcommand{\ineff}{\mathsf{ineff}}
+\newcommand{\superpoly}{\mathsf{superpoly}}
+\newcommand{\poly}{\mathsf{poly}}
+\newcommand{\negl}{\mathsf{negl}}
+\newcommand{\const}{\mathsf{const}}
+\newcommand{\polylog}{\mathsf{polylog}}
+
+\newcommand{\normtwo}[1]{\|{#1}\|_2}
+\newcommand{\normI}[1]{\|{#1}\|_\infty}
+
+\newcommand{\Bclean}{B_\mathsf{clean}}
+\newcommand{\Bplain}{B_\mathsf{plain}}
+\newcommand{\Brand}{B_\mathsf{rand}}
+
+\newcommand{\secp}{\mathsf{sec}} % statistical security parameter
+\newcommand{\ssec}{\secp} % use this for stat sec param
+\newcommand{\csec}{k} % comp sec param
+
+\newcommand{\Func}{\mathcal{F}}
+\newcommand{\Funct}[1]{\Func_\mathsf{#1}}
+\newcommand{\Proto}[1]{\Pi_\mathsf{#1}}
+\newcommand{\nPi}{\mathrm{\Pi}}
+\newcommand{\nPhi}{\mathrm{\Phi}}
+\newcommand{\Bra}[1]{\llbracket #1 \rrbracket}
+\newcommand{\Fauth}{\Func_{\Bra{\cdot}}}
+\newcommand{\Pauth}{\Proto{\Bra{\cdot}}}
+\newcommand{\Sauth}{\Sim_{\Bra{\cdot}}}
+\newcommand{\PMACCheck}{\Proto{\MACCheck}}
+\newcommand{\Ftriple}{\Funct{\Triple}}
+\newcommand{\Ptriple}{\Proto{\Triple}}
+\newcommand{\Striple}{\Sim_{\Triple}}
+\newcommand{\Fmult}{\Funct{2Mult}}
+\newcommand{\Pmult}{\Proto{2Mult}}
+\newcommand{\Smult}{\Sim_\mathsf{2Mult}}
+\newcommand{\Ffmult}{\Funct{2FMult}}
+\newcommand{\Pfmult}{\Proto{2FMult}}
+\newcommand{\Sfmult}{\Sim_\mathsf{2FMult}}
+\newcommand{\Frand}{\Funct{Rand}}
+\newcommand{\Fpok}{\Funct{ZKPoK}^S}
+\newcommand{\Fgpok}{\Funct{gZKPoK}^S}
+\newcommand{\Pgpok}{\Proto{gZKPoK}^S}
+\newcommand{\Sgpok}{\Simu{gZKPoK}^S}
+\newcommand{\Gcpa}{\mathcal{G}_\mathsf{cpa+}}
+
+\newcommand{\vl}{\mathbf{l}}
+\newcommand{\vL}{\mathbf{L}}
+\newcommand{\vz}{\mathbf{z}}
+\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vm}{\mathbf{m}}
+\newcommand{\vM}{\mathbf{M}}
+\newcommand{\vy}{\mathbf{y}}
+\newcommand{\vu}{\mathbf{u}}
+\newcommand{\vk}{\mathbf{k}}
+\newcommand{\vq}{\mathbf{q}}
+\newcommand{\vt}{\mathbf{t}}
+\newcommand{\vs}{\mathbf{s}}
+\newcommand{\vr}{\mathbf{r}}
+\newcommand{\vv}{\mathbf{v}}
+\newcommand{\va}{\mathbf{a}}
+\newcommand{\vh}{\mathbf{h}}
+\newcommand{\vb}{\mathbf{b}}
+\newcommand{\vc}{\mathbf{c}}
+\newcommand{\vd}{\mathbf{d}}
+\newcommand{\vdp}{\mathbf{d^{'(i)}}}
+\newcommand{\ve}{\mathbf{e}}
+\newcommand{\vw}{\mathbf{w}}
+\newcommand{\vX}{\mathbf{X}}
+\newcommand{\vC}{\mathbf{C}}
+\newcommand{\vn}{\mathbf{n}}
+\newcommand{\vf}{\mathbf{f}}
+\newcommand{\vg}{\mathbf{g}}
+
+\newcommand{\Input}{\mathsf{Input}}
+% \newcommand{\Triple}{\mathsf{Triple}}
+\newcommand{\Lincomb}{\mathsf{LinComb}}
+\newcommand{\id}{\mathsf{id}}
+
+\newcommand{\vDelta}{\boldsymbol{\Delta}}
+
+\newcommand{\valpha}{\boldsymbol\alpha}
+\newcommand{\vbeta}{\boldsymbol\beta}
+\newcommand{\vchi}{\boldsymbol\chi}
+\newcommand{\vdelta}{\boldsymbol\delta}
+\newcommand{\vepsilon}{\boldsymbol\epsilon}
+\newcommand{\veta}{\boldsymbol\eta}
+\newcommand{\vgamma}{\boldsymbol\gamma}
+\newcommand{\vlambda}{\boldsymbol\lambda}
+\newcommand{\vmu}{\boldsymbol\mu}
+\newcommand{\vnu}{\boldsymbol\nu}
+\newcommand{\vphi}{\boldsymbol\phi}
+\newcommand{\vpsi}{\boldsymbol\psi}
+\newcommand{\vrho}{\boldsymbol\rho}
+\newcommand{\vsigma}{\boldsymbol\sigma}
+\newcommand{\vtau}{\boldsymbol\tau}
+\newcommand{\vtheta}{\boldsymbol\theta}
+\newcommand{\vxi}{\boldsymbol\xi}
+\newcommand{\vzeta}{\boldsymbol\zeta}
+
+\newcommand{\ui}{^{(i)}}
+\newcommand{\upi}{^{'(i)}}
+\newcommand{\uti}{^{(i){\intercal}}}
+
+\newcommand{\uj}{^{(j)}}
+\newcommand{\uij}{^{(ij)}}
+\newcommand{\uji}{^{(ji)}}
+
+\newcommand{\mask}[1]{\ifnum\ANON=0#1\fi}
+\newcommand{\anon}[1]{\ifnum\ANON=1#1\fi}
+\newcommand{\maskanon}[2]{\ifnum\ANON=1#1\else#2\fi}
+
+
+
+
+% Environments
+\newenvironment{boxfig}[2]{% {#1}{#2} = {Caption}{label}
+\begin{figure}
+  \newcommand{\FigCaption}{#1}
+  \newcommand{\FigLabel}{#2}
+  \vspace{-\medskipamount}
+  \begin{center}
+    \begin{small}
+      \begin{tabular}{@{}|@{~~}l@{~~}|@{}}
+        \hline
+        \rule[-1.5ex]{0pt}{1ex}
+        \begin{minipage}[b]{.96\linewidth}
+          \vspace{1ex}
+          \smallskip
+          }{%
+        \end{minipage}\\
+        \hline
+      \end{tabular}
+    \end{small}
+    \vspace{-1\bigskipamount}
+    \caption{\small \FigCaption}
+    \label{\FigLabel}
+%  \vspace{-0.3cm}
+  \end{center}
+\end{figure}
+}
+\newenvironment{Boxfig}[3]{% {Caption}{Label}{Title}
+  \begin{boxfig}{#1}{#2}
+    \begin{center}
+      \textbf{#3}
+    \end{center}
+  }{%
+    \end{boxfig}
+  }
+
+
+
+% LATEX
+
+% this crossreferences description items
+\makeatletter
+\let\orgdescriptionlabel\descriptionlabel
+\renewcommand*{\descriptionlabel}[1]{%
+  \let\orglabel\label
+  \let\label\@gobble
+  \phantomsection
+  \edef\@currentlabel{#1}%
+  %\edef\@currentlabelname{#1}%
+  \let\label\orglabel
+  \orgdescriptionlabel{#1}%
+}
+\makeatother
+
+
+
+
+% a temporary counter
+\newcounter{tempcount}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

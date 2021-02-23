@@ -1,0 +1,18 @@
+# Latex #
+#########
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.bbl
+*.bcf
+*.blg
+*.pdf
+*.acn
+*.idx
+*.glo
+*.ist

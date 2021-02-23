@@ -1,0 +1,40 @@
+
+\begin{sidewaysfigure}
+\begin{table}[H]
+\centering
+% \begin{adjustbox}{width=\textwidth}
+\begin{tabular}{c c c c c c}
+\text{\textsf{WorkerA}} & & \text{\textsf{Cape}} & &
+\text{\textsf{WorkerB}}\\
+$\EK_A^i, \DK_A^i, \EK_B^j$ & & & & $\EK_B^j, \DK_B^j, \EK_A^i$ \\
+&&&& $\mathsf{ct}_B^j \asn \verb|crypto_box_easy|(\verb|m|^j, \verb|nonce|,
+\EK_A^i, \DK_B^j)$ \\
+
+&$\xleftarrow{\hspace{1em} \mathsf{ct}_B^j\hspace{1em} }$ && $\xleftarrow{\hspace{1em} \mathsf{ct}_B^j \hspace{1em}}$ \\
+
+$\mathsf{ct}_A^i \asn \verb|crypto_box_easy|(\verb|m|^i, \verb|nonce|,
+\EK_A^j, \DK_B^i)$ &&&& \\
+
+&$\xrightarrow{\hspace{1em} \mathsf{ct}_A^i\hspace{1em} }$ && $\xrightarrow{\hspace{1em} \mathsf{ct}_A^i \hspace{1em}}$ \\
+&&&& $\verb|crypto_box_open_easy|(\&\verb|m|^i, \mathsf{ct}_A^i, \EK_A^i, \DK_B^j)$ & \\
+
+$\verb|crypto_box_open_easy|(\&\verb|m|^j, \mathsf{ct}_B^j, \EK_A^j, \DK_B^i)$ & \\
+
+% &&&&\tikzmark{a4}{0} &&&& \tikzmark{b4}{0} \link{b4}{a4}{$\mathsf{ct_A^i}$} & \\
+% &&&& $\verb|crypto_box_open_easy|(\verb|m|^j, \mathsf{ct}_A^i, \EK_B^j, \DK_A^i)$ & \\
+% \\
+
+% &&&& $\mathsf{ct_B^j} \asn$ \\
+% &&&& $\verb|crypto_box_easy|(\verb|m|^i, \verb|nonce|, \EK_A^j, \DK_B^j)$ & \\
+
+% &&&&\tikzmark{a4}{0} &&&& \tikzmark{b4}{0} \link{a4}{b4}{$\mathsf{ct_B^j}$} & \\
+% &&&&&&&& $\verb|crypto_box_open_easy|(\verb|m|^j, \mathsf{ct}_A^i, \EK_B^j, \DK_A^i)$ & \\
+
+
+% & \xleftarrow{\hspace{1em}c\hspace{1em}} & \\
+\end{tabular}
+% \end{adjustbox}
+\end{table}
+\caption{Communication flow between workers}
+\end{sidewaysfigure}
+
