@@ -1,16 +1,16 @@
-\section{Desired infrastructure}
+\section{Key setup infrastructure}
 
 We have three organizations into play: \verb|A|, \verb|B| and \verb|Cape|.
 Each org will own a set of workers to perform computations on encrypted data
-- think of workers as parties in an MPC protocol.
-
-On both sides of \verb|A| and \verb|B| there are two
-different types of parties, besides the workers, an operator and a data
-scientist denoted as \verb|OpA|, \verb|DS-A|, \verb|OpB|, \verb|DS-B|.
+- think of workers as parties in an MPC protocol. On both sides of \verb|A|
+and \verb|B| there are two different types of parties, besides the workers,
+an operator and a data scientist denoted as \verb|OpA|, \verb|DS-A|,
+\verb|OpB|, \verb|DS-B|.
 
 The operators and data scientists talk to each other across organizations through a
 communication service ran by \verb|Cape|.
-We describe the steps
+We now describe the key steps for workers to establish authenticated secret channels
+in order for the computations to be done securely:
 \begin{enumerate}
   \item \verb|OpA| generates a pair of keys $\VK_A, \SK_A$
   using libsodium \verb|crypto_sign_keypair|.
@@ -19,42 +19,47 @@ We describe the steps
   Finally, a hash of the public verification key $\VK_A$
   denoted as $h_A^\OP = \HASH(\VK_A)$
   is then sent to \verb|B-DS| by the operator through Cape.
+  \item Optionally, \verb|B-DS| can check via an authenticated channel (say \verb|mail.google.com|
+  or some QR code) that the hash $h_A^\OP$ received from Cape corresponds to the one sent by \verb|OpA|.
 
-  \item On the \verb|B| side the operator \verb|OpB| generates a symmetric key $K_B$.
+  \item On the \verb|B| side the operator \verb|OpB| generates a symmetric key $K_B$
+  using \verb|crypto_auth_keygen| in libsodium.
   Then $K_B$ is broadcasted to all parties on the \verb|B| side (workers +
-  DS). The DS-B fetches $\VK_A$ from Cape and sends $\TAG(\HASH(\VK_A)) \asn
-  \MAC(K_B, \HASH(\VK_A)))$ to all workers through Cape service. This MAC is
-  used by workers on the B side to check that the key setup messages between
-  workers across organizations are forwarded correctly by Cape.
+  DS). The DS-B fetches $h_A^\OP$ from Cape and sends $\tau_{h_A}^\DSB \asn \asn
+  \MAC(K_B, h_A^\OP)$ along with $h_A^\DSB \asn h_A^\OP$ to all workers on the B side
+  through Cape service. This MAC is used by workers on the B side to check
+  that the public key setup messages between workers across organizations are
+  forwarded correctly by Cape.
 
   \item On the \verb|A| side all workers $W_A^i$ generate $\EK_A^i, \DK_A^i$
   using \verb|crypto_box_keypair|.
 
   \item For the key-setup between workers, on the \verb|A| side each worker
-  sends $\EK_A^i, \VK_A, \sigma_i \asn \SIGN(\SK_A, \EK_A^i)$ to Cape which
-  then forwards this to every worker on the B-side. On the B-side the workers
-  receive the following: $M_\VK, \EK_A^i, \VK_A, \sigma^A_i$ They continue if
-  the following equations hold:
+  sends $\EK_A^i, \VK_A, \verb|datetime|, \sigma_i \asn \SIGN(\SK_A, \EK_A^i
+  || \verb|datetime|)$ to Cape which then forwards this to every worker on
+  the B-side. On the B-side the workers receive the following: $M_\VK,
+  \EK_A^i, \VK_A, \verb|datetime|, \sigma^A_i$.
+  They continue iff the following equations hold:
 
   \begin{enumerate}
-    \item $\VER(K_B, \TAG(\HASH(\VK_A))) = 1$. This ensures that the workers
-    received the correct $\HASH(\VK_A)$ sent by \verb|B-DS| through Cape. Set
-    $h_\mathsf{recv}$ to the message authenticated by $\TAG_(\HASH(\VK_A))$.
-
-    \item Checks if $\HASH(\VK_A) = h_\mathsf{recv}$. Abort otherwise.
+    \item Checks if $\HASH(\VK_A) = h_A^\DSB$.
+    \item $\VER(K_B, \tau_{h_A^\DSB} = 1$. This ensures that the workers
+    received the correct $\HASH(\VK_A)$ sent by \verb|B-DS| through Cape.
 
     \item Finally they check the signature $\VER(\VK_A, \sigma^i_A) = 1$.
     with the $\VK_A$ received from the worker through Cape.
-
     \item If all checks pass then keep $\EK_A^i$ as the public key for worker $W_A^i$.
+    Note that \verb|datetime| is used to prevent replay attacks, this way the workers
+    register the other PKs iff \verb|datetime| is within some specific time frame.
   \end{enumerate}
 
-  \item Repeat this for parties on the $B$ side.
+  \item Repeat this for parties on the $B$ side (see Figure~\ref{fig:b-flow}).
 
   \item Now that after all workers established the public key infrastructure
   using the description above they continue by calling \verb|crypto_box_easy|
   which launches the Curve25519 key exchange and communicate further using a
-  symmetric key as described in the first section. Note that communication
+  symmetric key as described in the first section. For more details on the libsodium API
+  the reader can check Figure~\ref{fig:worker-flow}. Note that communication
   between workers happens through an entity called \verb|Broker| who is
   simply forwarding messages between workers.
 
