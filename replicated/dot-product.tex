@@ -1,25 +1,24 @@
-\subsection{Secret dot-products using MPC}
+\subsubsection{Secret dot-products using MPC}
 
-The goal is to compute $\sum_{k=1}^m \share{x_k} \cdot \share{y_k}$.
+The goal is to compute $\sum_{k=1}^m \share{x_k} \cdot \share{y_k}$. Although
+the multiplication protocol above was written with $x$ and $y$ being a single
+ring element, i.e. $x,y \in \Z_{2^k}$ the same protocol works when $x, y \in
+\Z^m_{2^k}$ and the ring multiplication operator `$\cdot$` is replaced with
+the dot product operator. In this manner $x \cdot y = \sum_{i=1}^m x_i y_i \in
+\Z_{2^k}$ while $x, y \in \Z^m_{2^k}$. This can be extended for arbitrary
+length tensors as long as $\alpha, \beta, \gamma$ have the correct dimensions
+to mask randomize $x \cdot y$. For more details the reader can check the
+\verb|replicated_dot_product| definition in the runtime.
 
-\subsubsection{3-party semi-honest (HM)}
+% \subsubsection{3-party malicious (HM)}
+% Note that the first progress
+% for this problem was done for the field case by Chida et al. \cite{C:CGHIKL18}.
+% For the ring case see \cite{EPRINT:ADEN19,cryptoeprint:2020:1330}.
 
-Although this was written with $x$ and $y$ being a single ring element,
-i.e. $x,y \in \Z_{2^k}$ the same protocols works when $x, y \in \Z^m_{2^k}$
-and the ring multiplication operator `$\cdot$` is replaced with the dot
-product. In this manner $x \cdot y = \sum_{i=1}^m x_i y_i \in \Z_{2^k}$ while
-$x, y \in \Z^m_{2^k}$. This can be extended for arbitrary length tensors as long as
-$\alpha, \beta, \gamma$ have the correct dimensions to mask randomize $x \cdot y$.
+% \subsubsection{Dishonest majority}
 
-\subsubsection{3-party malicious (HM)}
-Note that the first progress
-for this problem was done for the field case by Chida et al. \cite{C:CGHIKL18}.
-For the ring case see \cite{EPRINT:ADEN19,cryptoeprint:2020:1330}.
-
-\subsubsection{Dishonest majority}
-
-Here parties fetch a triple for each $\share{x_k} \cdot \share{y_k}$ multiplication
-ending with a cost of $m$ preprocessed triples. This is valid for secret sharing (SPDZ-type
-\cite{EC:KelPasRot18,C:DPSZ12,C:CDESX18})
-but also for garbled circuits (\cite{AC:HazSchSor17,CCS:WanRanKat17b}) type protocols.
+% Here parties fetch a triple for each $\share{x_k} \cdot \share{y_k}$ multiplication
+% ending with a cost of $m$ preprocessed triples. This is valid for secret sharing (SPDZ-type
+% \cite{EC:KelPasRot18,C:DPSZ12,C:CDESX18})
+% but also for garbled circuits (\cite{AC:HazSchSor17,CCS:WanRanKat17b}) type protocols.
 
