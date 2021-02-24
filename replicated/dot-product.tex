@@ -3,47 +3,6 @@
 The goal is to compute $\sum_{k=1}^m \share{x_k} \cdot \share{y_k}$.
 
 \subsubsection{3-party semi-honest (HM)}
-There are different ways to achieve this, depending on the secret sharing
-type. Throughout this document we will stick with replicated secret sharing
-although this works for Shamir Secret sharing. Both replicated and Shamir
-work for the field and ring case, however for Shamir secret sharing it's a
-bit more complicated to do MPC over rings - it is doable but with some
-overhead \cite{EPRINT:CraRamXin19, TCC:ACDEY19}. To see how this works for
-replicated secret sharing each party $P_i$ holds a sharing of $x$ as $(x_i,
-x_{(i+1) \bmod 3})$ and a sharing of $y$ as $(y_i, y_{ (i+1) \bmod 3})$.
-Since players offsets start with $1$:
-
-\begin{itemize}
-    \item $P_1$ has $(x_1, x_2)$ and $(y_1, y_2)$.
-    \item $P_2$ has $(x_2, x_3)$ and $(y_2, y_3)$.
-    \item $P_3$ has $(x_3, x_1)$ and $(y_3, y_1)$.
-\end{itemize}
-
-\noindent
-To compute a sharing $\share{x \cdot y}$ using the shares of $x$ and $y$ parties do the following:
-
-\begin{itemize}
-    \item $P_1$ sets $(x \cdot y)_{1} \asn x_1 \cdot y_1 + x_1 \cdot y_2 + x_2 \cdot
-    y_1 + \alpha$.
-    \item $P_2$ sets $(x \cdot y)_2 \asn x_2 \cdot y_2 + x_2 \cdot y_3 + x_3
-    \cdot y_2 + \beta$.
-    \item $P_3$ sets $(x \cdot y)_3 \asn x_3 \cdot y_3 + x_3 \cdot y_1 + x_1 \cdot y_3 +
-    \gamma$.
-\end{itemize}
-
-\noindent In the next phase parties send around the shares
-\begin{itemize}
-    \item $P_1$ sends privately $(x \cdot y)_1$ to $P_2$.
-    \item $P_2$ sends privately $(x \cdot y)_2$ to $P_3$.
-    \item $P_3$ sends privately $(x \cdot y)_3$ to $P_1$.
-\end{itemize}
-
-\noindent In the final step parties set their shares of $x \cdot y$ in the following way:
-\begin{itemize}
-    \item $P_1$ sets $\share{x \cdot y}$ as $(x\cdot y)_3, (x \cdot y)_1$.
-    \item $P_2$ sets $\share{x \cdot y}$ as $(x\cdot y)_1, (x \cdot y)_2$.
-    \item $P_3$ sets $\share{x \cdot y}$ as $(x\cdot y)_2, (x \cdot y)_3$.
-\end{itemize}
 
 Although this was written with $x$ and $y$ being a single ring element,
 i.e. $x,y \in \Z_{2^k}$ the same protocols works when $x, y \in \Z^m_{2^k}$

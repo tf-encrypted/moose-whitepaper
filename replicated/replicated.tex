@@ -1,40 +1,57 @@
 \section{Replicated Placements}
 
+In this section we expect the reader to have some familiarity with some basic
+knowledge of how multiparty computation works, linear algebra and finite
+field arithmetic. We strongly recommend reading the first sections
+\cite{evans2017pragmatic} and more important Chapter 7 about honest majority
+MPC.
+
 In the last couple of years there was a boom in MPC for honest majority,
-especially in 3PC one. I think it all started with Araki et al.
+especially in 3PC one. This can be tracked down from the work of Araki et al.
 \cite{CCS:AFLNO16} which at the moment provides the best performance for
-semi-honest security in the preprocessing model. A year after they converted
-the protocol to active security which achieves $1$ billion AND triples per
-second \cite{SP:ABFLLN17} which had a cost of $7$ bits per AND gate. A couple
-of folks showed later how to take the Araki et al. \cite{CCS:AFLNO16}
-blueprint and extend it to multiple parties assuming there is honest majority
-\cite{SCN:KRSW18} using some known techniques by Maurer \cite{SCN:Maurer02}
-with the caveat that there can be an exponential blowup in terms of $n
-\choose t$ where $t<n/2$ is the threshold and $n$ the number of parties. In
-this way we had some intuition on why the $(3,1)$ case was so efficient.
+semi-honest security in the preprocessing model. One year after this was
+converted into a protocol with active security which achieves $1$ billion AND
+triples per second \cite{SP:ABFLLN17} which had a cost of $7$ bits per AND
+gate. Later it was shown by Keller et al. \cite{SCN:KRSW18} how to extend the
+work of Araki et al. \cite{CCS:AFLNO16} to multiple parties assuming there is
+honest majority using some well-known techniques by Maurer
+\cite{SCN:Maurer02}. The caveat of Keller et al. \cite{SCN:KRSW18} is that
+there can be an exponential blowup in terms of $n \choose t$ where $t<n/2$ is
+the corruption threshold and $n$ the number of parties.
 
 
 \subsection{Rationale}
-\section{Choosing MPC depending on circuit type} For the linear regression use-case
-we think that $128$ bit field size is enough using a fixed point precision by
-$16$ bits while keeping the numbers magnitude to $40$ bits (thus making the
-integral part of size $24$ bits). We should keep in mind that although triple
-generation for large fields is usually faster than rings there are benefits
-when working with ring sharings - such as faster methods for secret
-truncation which in turn makes RELU's faster.
 
-For now we are only interested to solve the secret matrix-matrix
-multiplication. We might want to add some gaussian noise over the output to
-avoid one party getting the input matrix of the other party. For this large
-field operations should suffice, however we list the current state of the art
-protocols for obtaining MPC with different arithmetic structure. For
-readability purposes we abbreviate honest majority with HM:
+For the linear regression use-case we believe that $128$ bit field size is
+enough using a fixed point precision by $16$ bits while keeping the numbers
+magnitude to $40$ bits (thus making the integral part of size $24$ bits). We
+should keep in mind that although triple generation for large fields is
+usually faster than rings there are benefits when working with ring sharings
+- such as faster methods for secret truncation which in turn makes RELU's
+faster.
+
+Concretely, for the LR use-case we need to support a limited number of
+operations on secret data but most important is a large secret matrix-matrix
+multiplication. On cleartext data these multiplications are dealt using
+floating point arithmetic, however when computing on encrypted data one must
+unroll complex circuits into finite field operations. For this we stick to
+fixed point computations described later in Section~\ref{subsec:fixed-point}.
+Note that the underlying arithmetic can be either field ($\Fp$) or ring based
+($\Z_{2^k}$). Finally, we might want to add some Gaussian noise over the
+output to avoid one party getting the input matrix of the other party.
+
+To get a better picture of the available protocols with their underlying
+arithmetic we list the current state of the art protocols for obtaining
+honest-majority MPC. For readability purposes we abbreviate honest majority
+with HM:
 
 \begin{enumerate}
-  \item HM over large fields $\Fp$ \cite{CCS:LinNof17,C:CGHIKL18}. Although the
-  two constructions above are for the malicious setting these are constructing
-  assuming $\Frand, \Fmult$ hybrid model where $\Fmult$ needs to be a multiplication
-  protocol secure up to additive attacks. To get such an $\Fmult$ we can simply take
+  \item HM over large fields $\Fp$ \cite{CCS:LinNof17,C:CGHIKL18}. Although
+  the two constructions listed above are specialized for the malicious
+  setting (at most 1 party arbitrarily deviating from the protocol) these are
+  built assuming $\Frand, \Fmult$ hybrid model where $\Fmult$ needs to be a
+  multiplication protocol secure up to additive attacks. To get such an
+  $\Fmult$ we can simply take
   a semi-honest protocol for HM for doing multiplications such as \cite{CCS:AFLNO16}.
   \item HM for binary circuits $\F_2$. Note that Araki et al. \cite{CCS:AFLNO16}
   works for binary circuits as well for the semi-honest case.
@@ -60,41 +77,37 @@ readability purposes we abbreviate honest majority with HM:
 
 \end{enumerate}
 
-Small note that almost everything can be built in the malicious setting using
-building blocks from the semi-honest protocols with the exception of binary triples
-$c = a \cdot b$ where $a,b \in \F_2$. For the binary triple case we need more
-complex techniques such as cut and choose.
+Note that almost every protocol can be built in the malicious setting using
+building blocks from the semi-honest protocols with the exception of binary
+triples $c = a \cdot b$ where $a,b \in \F_2$. For the binary triple case we
+need more complex techniques such as cut and choose. In our implementation we
+stick with Araki et al. protocol \cite{CCS:AFLNO16} while borrowing some
+improvements from \cite{cryptoeprint:2020:1330} such as probabilistic
+truncation. One additional feature of Araki et al. \cite{CCS:AFLNO16} is that
+it can be upgraded to malicious security by (roughly) just repeating all
+procedures twice and use a "zero check" described in Dalskov, Escudero and
+Keller \cite{cryptoeprint:2020:1330}.
+
+\noindent{\textbf{Notation}}. We denote $\inc{i}$ as $i \mapsto (i+1) \bmod 3 + 1$.
+Next, we denote $\share{x}$ as a value $x$ being secret shared
+across the parties. In the cases below each party has a `replicated share` of
+$x$, meaning $P_i$ has $(x_i, x_{ \inc{i+1} })$ where $\sum_{i=1}^3 = x
+\in \Z_{2^k}$.
+
+\subsection{Basic protocols}
+\noindent{\textbf{Addition}}. To add two secret shares $\share{x}$ and $\share{y}$
+each party locally adds their shares and computes $\share{x+y} =
+(x_i + y_i, x_{\inc{i}} + y_{\inc{i}})$ for all $i \in [3]$.
+
+\input{protocols/mul}
 
 
-\subsection{Small note.}
-If most of the things here seem to you like a word salad of many unknown
-abbreviation I strongly recommend reading the first sections
-\cite{evans2017pragmatic} and more important Chapter 7 about honest majority MPC.
 
-\section{Reasons why we should choose Dalskov, Escudero and Keller
-\cite{cryptoeprint:2020:1330}}
 
-Main advantage is that performs natively on $\Z_{2^k}$ and $\F_p$.
-Pros:
-\begin{enumerate}
-  \item Truncations are much cheaper in a ring and they have developed some
-  cool techniques on making those even faster using some share conversions.
-  \item Computations are more suitable to classical processor instructions.
-  \item Passive security protocol is the same as Araki et al.
-  \item Code is already available in MP-SPDZ git.
-\end{enumerate}
-
-Cons:
-\begin{enumerate}
-  \item I haven't checked the security proofs yet...
-  \item Need to check how exactly the security parameter $s$ affects the
-  register size
-\end{enumerate}
-
+\subsection{Advanced protocols}
 \input{dot-product}
 
-\section{Truncation}
-
+\subsubsection{Truncation}
 Given $\share{a}$ compute $\share{a \bmod 2^m}$ where $m$ is a public constant.
 There are many ways to truncate a secret which can be roughly classified into 2:
 \begin{itemize}

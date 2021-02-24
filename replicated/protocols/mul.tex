@@ -1,0 +1,33 @@
+\noindent{\textbf{Multiplication}}. There are different ways to achieve this,
+depending on the secret sharing type. To
+see how this works for replicated secret sharing each party $P_i$ holds a
+sharing of $x$ as $(x_i, x_{ \inc{i} })$ and a sharing of $y$ as $(y_i, y_{
+\inc{i} })$. To compute a sharing $\share{x \cdot y}$ using the shares of $x$
+and $y$ parties do the following:
+
+\begin{itemize}
+    \item $P_1$ sets $(x \cdot y)_{1} \asn x_1 \cdot y_1 + x_1 \cdot y_2 + x_2 \cdot
+    y_1 + \alpha$.
+    \item $P_2$ sets $(x \cdot y)_2 \asn x_2 \cdot y_2 + x_2 \cdot y_3 + x_3
+    \cdot y_2 + \beta$.
+    \item $P_3$ sets $(x \cdot y)_3 \asn x_3 \cdot y_3 + x_3 \cdot y_1 + x_1 \cdot y_3 +
+    \gamma$.
+\end{itemize}
+
+\noindent where $\alpha, \beta, \gamma$ are a pseudorandom secret sharing of
+zero, i.e $\alpha + \beta + \gamma = 0$. In the next phase parties send
+around the shares
+
+\begin{itemize}
+    \item $P_1$ sends privately $(x \cdot y)_1$ to $P_2$.
+    \item $P_2$ sends privately $(x \cdot y)_2$ to $P_3$.
+    \item $P_3$ sends privately $(x \cdot y)_3$ to $P_1$.
+\end{itemize}
+
+\noindent In the final step parties set their shares of $x \cdot y$ in the following way:
+\begin{itemize}
+    \item $P_1$ sets $\share{x \cdot y}$ as $(x\cdot y)_3, (x \cdot y)_1$.
+    \item $P_2$ sets $\share{x \cdot y}$ as $(x\cdot y)_1, (x \cdot y)_2$.
+    \item $P_3$ sets $\share{x \cdot y}$ as $(x\cdot y)_2, (x \cdot y)_3$.
+\end{itemize}
+
