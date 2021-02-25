@@ -1,6 +1,11 @@
 \subsection{Fixed point arithmetic}
 \label{subsec:fixed-point}
 
+We define $\verb|fixed|(k, f)$ as the set of rational numbers $\{x \in
+\mathbb{Q} : x = \bar{x} \cdot 2^{-f}, \bar{x} \in \Z_{\share{k}}\}$. Here $\bar{x}
+\in Z_{\share{k}}$ denotes that $x$ is at most a $k$ bit integer. A fixed point number
+is represented
+
 \noindent{\textbf{Encoding}.}
 \noindent{\textbf{Multiplication}.}
 
