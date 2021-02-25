@@ -1,0 +1,79 @@
+\subsubsection{Truncation}
+Given $\share{a}$ compute $\share{a \bmod 2^m}$ where $m$ is a public constant.
+There are many ways to truncate a secret which can be roughly classified into 2:
+\begin{itemize}
+  \item probabilistic truncation - correct result with probability $p$.
+  \item deterministic truncation - always output the exact truncation.
+\end{itemize}
+
+\noindent
+The state of the art techniques in truncating a secret are using
+dabits/edabits as described by Escudero et al. in \cite{C:EGKRS20} and
+various share conversions. In \cite{C:EGKRS20} there are several techniques
+to achieve both probabilistic and deterministic truncation for field and ring
+case.
+
+If we want to avoid edabit generation required for generating random bounded integers
+by the truncation protocols in \cite{C:EGKRS20} then we can use the protocols from
+\cite{PoPETS:DalEscKel20}. We describe their probabilistic protocols for replicated secret
+sharing below in Fig~\ref{fig:truncpr-rep-ss}.
+
+\begin{Boxfig}{Truncation protocol for semi-honest
+RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPrSp}}$}
+On input
+$\mathsf{TruncPrSp}(\share{x}, m)$ from all parties where $x$ is a sharing
+over $\Z_{2^k}$: \\
+$P_3$ does the following:
+  \begin{enumerate}
+    \item Sample locally random bits $r_i$ for $i \in [0, k-1]$.
+    \item Generate additive shares ($2$-out-of-$2$) for $r = \sum_{i=0}^{k-1}r_i$,
+    $r_{k-1}$ and $\sum_{i=m}^{k-2} r_i \cdot 2^{i-m}$. Send the corresponding shares
+    to $P_1$ and $P_2$.
+    \item Generate random numbers $y_1, y_3 \in \Z_{2^k}$. Send $y_1$ to
+    $P_1$ and $y_3$ to $P_2$.
+    \item Set own share of the truncation result as $(y_3, y_1)$.
+ \end{enumerate}
+$P_1$ together with $P_2$ do the following:
+
+\begin{enumerate}
+   \item Convert $\share{x}$ into a $2$-out-of-$2$ sharing. This is
+   accomplished by $P_1$ setting its local share to $x_1 + x_2$ while $P_2$
+   setting its local share as $x_3$.
+   \item $P_1$ and $P_2$ then execute the protocol $\Proto{\mathsf{TruncPR}}$
+   using the $2$-out-of-$2$ sharings of $x$ and the shares provided by $P_3$.
+\end{enumerate}
+ Now parties convert the $2$-out-of-$2$ sharing output of
+ $\mathsf{TruncPR}$ to a $2$-out-of-$3$
+ sharing using the randomness provided by $P_3$.
+ \begin{enumerate}
+   \item Each $P_i$ for $i \in [1, 2]$ sets the output of $\mathsf{TruncPr}$
+   as $y'_i$ and $\hat{y}_i$ as the sharing received from $P_3$. Send $y'_i -
+   \hat{y}_i$ to $P_{3-i}$. The received values are denoted by $\tilde{y}_i$.
+   \item $P_1$ sets the output share as $(y_1, y'_1 - \hat{y}_1 + \tilde{y}_1)$
+   \item $P_2$ sets the output share as $(y'_2 - \hat{y}_2 + \widehat{y}_2, y_3)$.
+ \end{enumerate}
+\end{Boxfig}
+
+\begin{Boxfig}{Generic truncation protocol.}{fig:truncpr-generic}
+  {Protocol $\Proto{\mathsf{TruncPr}}(\share{x}, m)$}
+  Assume $x \in \Z_{2^k}$ has $\mathsf{MSB}(x) = 0$. If $x$ is negative than
+  we make it positive by adding $2^{k-1}$ to it and assume that $\mathsf{abs}(x) < 2^{k-1}$.
+  \\
+  On input $\mathsf{TruncPr}(\share{x}, m)$ from all parties:
+  \begin{enumerate}
+    \item Sample $k$ random bits $\share{r_i}$ and compute $r = \sum_{i=1}^k
+    r_i$. \item Open $c \asn \share{x} + \share{r}$, truncate $c$ publicly
+    and
+    assign it to $c' \asn (c/2^m) \bmod 2^{k-m-1}$.
+    \item Compute $\share{b} \asn \share{r_{k-1}} \oplus (c / 2^{k-1})$.
+    \item Output $c' - \sum_{i=m}^{k-2} \share{r_i} \cdot 2^{i-m} + \share{b}
+    \cdot 2^{k-m-1}$.
+  \end{enumerate}
+
+\end{Boxfig}
+
+
+Note that although the protocol in Fig~\ref{fig:truncpr-rep-ss} looks
+very efficient, the edabit variant from \cite{C:EGKRS20} requires
+about $\approx 35$ times less communication.
+

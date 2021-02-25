@@ -1,4 +1,4 @@
-\section{Comparisons}
+\subsection{Comparisons}
 Given $\share{x}$ where $x \in \Z_{2^k}$ our goal is to compute a ring sharing of $\share{x} > 0$.
 This translates into how to compute a sharing of the most significant bit $\share{\mathsf{msb}(x)}$.
 Since we are in the 3PC semi-honest model there are few approaches to this:
@@ -26,7 +26,7 @@ Since we are in the 3PC semi-honest model there are few approaches to this:
    $\share{x}_2$ to $\share{x}_{2^k}$ by computing $c \asn
    \mathsf{Open}(\share{x}_2 \oplus \share{b}_2)$ and then locally XOR-ing in
    the arithmetic domain $\share{x}_{2^k} = c + \share{b}_{2^k} - 2 \cdot c \cdot
-   \share{b}_{2^k}$. Finally they convert the $(2,2)$ sharing of $\share{x}_{2^k}$ 
+   \share{b}_{2^k}$. Finally they convert the $(2,2)$ sharing of $\share{x}_{2^k}$
    to a $(2,3)$ sharing locally.
    \item The newest one is using edaBits \cite{C:EGKRS20}. The downside of
    this method is that we need to implement edaBit generation and a boolean
