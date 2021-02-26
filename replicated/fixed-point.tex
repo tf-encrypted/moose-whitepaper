@@ -27,6 +27,9 @@ be successful iff. the product $c \cdot x$ fits in $\Z_{2^k}$.
 
 \noindent{\textbf{Multiplication}.} Note that multiplication between two
 fixed point numbers $\share{x}, \share{y}$ where $x,y \in \verb|fixed(k, f)|$
+gets us $z = x \cdot y \cdot 2^{2f}$. Now one can simply implement a decoding function
+$\mathsf{Decode}$ which works over the set of $\verb|fixed|(k, 2\cdot f)|$
+To avoid $z$ overflow in $\Z_{2^k}$ we
 
 \input{truncation}
 
