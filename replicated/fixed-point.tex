@@ -56,5 +56,13 @@ can be done with local computations.
 TBD, SecureNN has some leakage, check MP-SPDZ - there was no description in
 ABY3 on fixed point division.
 
-\noindent{\textbf{Division by a public scalar}}.
+\noindent{\textbf{Division by a clear scalar}}.
+Consider the division $\share{x} / c$ where $c$ is known to all parties. We want to compute a
+fixed point encoding of $x/c$ which is $\share{\hat{x} / c \cdot 2^f}$. The naive way to do
+this is to compute $c' = \Encode(c, f) = c \cdot 2^f$ and then do
+$\mathsf{GoldschmidtDiv}(x \cdot 2^f, \mathsf{AppRec}(c'))$.
+
+See Catrina et al. where they talk about computing $\mathsf{AppRec}(c)$ (computing $1/c$). In this
+case $\mathsf{AppRec}$ can be computed in the clear so we can avoid this protocol if $c$ is public.
+
 \input{truncation}
