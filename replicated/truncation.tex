@@ -1,6 +1,8 @@
-\subsubsection{Truncation}
-Given $\share{a}$ compute $\share{a \bmod 2^m}$ where $m$ is a public constant.
-There are many ways to truncate a secret which can be roughly classified into 2:
+\subsection{Truncation}
+Given $\share{a}$ compute $\share{a \bmod 2^m}$ where $m$ is a public
+constant. This is also denoted as $\mathsf{trunc}(\share{a}, m)$.
+There are many ways to truncate a secret that can be roughly
+classified into two lines of thought:
 \begin{itemize}
   \item probabilistic truncation - correct result with probability $p$.
   \item deterministic truncation - always output the exact truncation.
@@ -11,12 +13,15 @@ The state of the art techniques in truncating a secret are using
 dabits/edabits as described by Escudero et al. in \cite{C:EGKRS20} and
 various share conversions. In \cite{C:EGKRS20} there are several techniques
 to achieve both probabilistic and deterministic truncation for field and ring
-case.
-
-If we want to avoid edabit generation required for generating random bounded integers
-by the truncation protocols in \cite{C:EGKRS20} then we can use the protocols from
+case. To avoid edabit generation required for generating random bounded integers
+by the truncation protocols in \cite{C:EGKRS20} we use the protocols from
 \cite{PoPETS:DalEscKel20}. We describe their probabilistic protocols for replicated secret
 sharing below in Fig~\ref{fig:truncpr-rep-ss}.
+Note that although the protocol in Fig~\ref{fig:truncpr-rep-ss} looks
+very efficient, the edabit variant from \cite{C:EGKRS20} requires
+about $\approx 35$ times less communication. \commentD{Need to re-check this, I think it's not that bad}
+
+
 
 \begin{Boxfig}{Truncation protocol for semi-honest
 RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPrSp}}$}
@@ -72,8 +77,4 @@ $P_1$ together with $P_2$ do the following:
 
 \end{Boxfig}
 
-
-Note that although the protocol in Fig~\ref{fig:truncpr-rep-ss} looks
-very efficient, the edabit variant from \cite{C:EGKRS20} requires
-about $\approx 35$ times less communication.
 
