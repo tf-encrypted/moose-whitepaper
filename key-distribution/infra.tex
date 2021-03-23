@@ -25,7 +25,7 @@ in order for the computations to be done securely:
   \item On the \verb|B| side the operator \verb|OpB| generates a symmetric key $K_B$
   using \verb|crypto_auth_keygen| in libsodium.
   Then $K_B$ is broadcasted to all parties on the \verb|B| side (workers +
-  DS). The DS-B fetches $h_A^\OP$ from Cape and sends $\tau_{h_A}^\DSB \asn \asn
+  DS). The DS-B fetches $h_A^\OP$ from Cape and sends $\tau_{h_A}^\DSB \asn
   \MAC(K_B, h_A^\OP)$ along with $h_A^\DSB \asn h_A^\OP$ to all workers on the B side
   through Cape service. This MAC is used by workers on the B side to check
   that the public key setup messages between workers across organizations are
@@ -43,7 +43,7 @@ in order for the computations to be done securely:
 
   \begin{enumerate}
     \item Checks if $\HASH(\VK_A) = h_A^\DSB$.
-    \item $\VER(K_B, \tau_{h_A^\DSB} = 1$. This ensures that the workers
+    \item $\VER(K_B, \tau_{h_A^\DSB}) = 1$. This ensures that the workers
     received the correct $\HASH(\VK_A)$ sent by \verb|B-DS| through Cape.
 
     \item Finally they check the signature $\VER(\VK_A, \sigma^i_A) = 1$.
