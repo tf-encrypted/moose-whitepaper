@@ -1,0 +1,7 @@
+\begin{Boxfig}{Sampling functionality}{fig:Sample}{Functionality
+$\Func_{\mathsf{Sample}}$}
+\textbf{Additive}: On input $(\mathsf{SampleAdd}, d, S, P_i)$ from party
+$P_i$ the functionality samples a random tensor $\vx \sample S^d$. It also
+generates two keys $k_1, k_2$ associated to $\vx$ such that when expanded using PRGs
+they sum up to $\vx$, i.e. $\PRG(k_1) + \PRG(k_2) = \vx$.
+\end{Boxfig}

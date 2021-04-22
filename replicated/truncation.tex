@@ -1,15 +1,12 @@
 \subsection{Truncation}
-Given $\share{a}$ compute $\share{a \bmod 2^m}$ where $m$ is a public
-constant. This is also denoted as $\mathsf{trunc}(\share{a}, m)$.
-There are many ways to truncate a secret that can be roughly
-classified into two lines of thought:
-\begin{itemize}
-  \item probabilistic truncation - correct result with probability $p$.
-  \item deterministic truncation - always output the exact truncation.
-\end{itemize}
+Given secret shared $\share{a}$ the goal is to compute $\share{a \bmod 2^m}$
+where $m$ is a public constant. This is also denoted as
+$\mathsf{trunc}(\share{a}, m)$. There are many ways to truncate a secret that
+can be roughly classified into two lines of thought: a) probabilistic
+truncation where there is a rounding error with probability $p$ and b) deterministic
+truncation where the output is always exact.
 
-\noindent
-The state of the art techniques in truncating a secret are using
+Current state of the art techniques in truncating a secret use
 dabits/edabits as described by Escudero et al. in \cite{C:EGKRS20} and
 various share conversions. In \cite{C:EGKRS20} there are several techniques
 to achieve both probabilistic and deterministic truncation for field and ring
@@ -26,27 +23,45 @@ about $\approx 35$ times less communication. \commentD{Need to re-check this, I 
 \begin{Boxfig}{Truncation protocol for semi-honest
 RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPrSp}}$}
 On input
-$\mathsf{TruncPrSp}(\share{x}, m)$ from all parties where $x$ is a sharing
-over $\Z_{2^k}$: \\
+$\mathsf{TruncPrSp}(\share{\vx}, m)$ from all parties where $\vx$ is a sharing
+of a tensor over $\Z_{2^k}^{\mathsf{s}}$: \\
 $P_3$ does the following:
   \begin{enumerate}
-    \item Sample locally random bits $r_i$ for $i \in [0, k-1]$.
-    \item Generate additive shares ($2$-out-of-$2$) for $r = \sum_{i=0}^{k-1}r_i$,
-    $r_{k-1}$ and $\sum_{i=m}^{k-2} r_i \cdot 2^{i-m}$. Send the corresponding shares
-    to $P_1$ and $P_2$.
-    \item Generate random numbers $y_1, y_3 \in \Z_{2^k}$. Send $y_1$ to
-    $P_1$ and $y_3$ to $P_2$.
-    \item Set own share of the truncation result as $(y_3, y_1)$.
+    \item Sample key $k_3 \sample \mathsf{SampleKey}()$.
+    \item For $i \in [k]$ call $\mathsf{seed}_{\mathbf{b}_i} \asn \mathsf{derive\_seed}(k_3, i)$
+    \item For $i \in [k]$ sample locally random bits $\mathbf{b}_i \in \Z_{2^k}^{\mathsf{s}}$.
+    This is done by calling
+    generate $\mathbf{b}_i \sample \mathsf{Sample}(\seed_{\mathbf{b}_i}, \mathsf{s}, [0,1])$.
+    \item Compute
+    $\mathbf{r}_{\mathsf{bot}} = \sum_{i=0}^{k-1}2^i \cdot \vb(i)$,
+    $\mathbf{r}_{\mathsf{msb}} \asn \vb(k-1)$ and
+    $\mathbf{r}_{\mathsf{top}} = \sum_{i=m}^{k-2} \vb(i) \cdot 2^{i-m}$. Send
+    the corresponding shares to $P_1$ and $P_2$.
+    \item For each of $\vr_{\mathsf{bot}}, \vr_{\mathsf{msb}} \vr_{\mathsf{top}}$
+    generate 2-out-of-2 additive shares by calling $\mathsf{GetAdditiveShare}()$
+    on each entry and get $
+    \vr\ui_{\mathsf{bot}}, \vr\ui_{\mathsf{msb}}, \vr\ui_{\mathsf{top}}$ for $i \in [0,1]$.
+
+    Send the corresponding $\vr\ui$ to party $P_i$.
+    \item Sample two seeds $\seed_i \asn \derives(k_3, k+i)$ for $i \in
+    [1,2]$. and send $\seed_i$ to $P_i$. Use these to generate random numbers
+    $y_1, y_2 \in \Z_{2^k}^{\mathsf{s}}$ by calling $y_i \asn \mathsf{Sample}(\seed_i,
+    \mathsf{s})$
+    \item Set own share of the truncation result as $(y_2, y_1)$.
  \end{enumerate}
 $P_1$ together with $P_2$ do the following:
 
 \begin{enumerate}
-   \item Convert $\share{x}$ into a $2$-out-of-$2$ sharing. This is
-   accomplished by $P_1$ setting its local share to $x_1 + x_2$ while $P_2$
-   setting its local share as $x_3$.
-   \item $P_1$ and $P_2$ then execute the protocol $\Proto{\mathsf{TruncPR}}$
-   using the $2$-out-of-$2$ sharings of $x$ and the shares provided by $P_3$.
+   \item Convert $\share{x}$ into a $2$-out-of-$2$ sharing.
+   \begin{enumerate}
+      \item On $P_1$ set $\vx'_1 \asn \vx_1 + \vx_2$.
+      \item On $P_2$ set $\vx'_2 \asn \vx_2$.
+   \end{enumerate}
+
+   \item $P_1$ and $P_2$ then execute the protocol $\Proto{\mathsf{TruncPR}}(\share{\vx'}, m)$
+   using the $2$-out-of-$2$ sharings of $\vx$ and the shares provided by $P_3$.
 \end{enumerate}
+
  Now parties convert the $2$-out-of-$2$ sharing output of
  $\mathsf{TruncPR}$ to a $2$-out-of-$3$
  sharing using the randomness provided by $P_3$.
@@ -60,21 +75,51 @@ $P_1$ together with $P_2$ do the following:
 \end{Boxfig}
 
 \begin{Boxfig}{Generic truncation protocol.}{fig:truncpr-generic}
-  {Protocol $\Proto{\mathsf{TruncPr}}(\share{x}, m)$}
-  Assume $x \in \Z_{2^k}$ has $\mathsf{MSB}(x) = 0$. If $x$ is negative than
-  we make it positive by adding $2^{k-1}$ to it and assume that $\mathsf{abs}(x) < 2^{k-1}$.
+  {Protocol $\Proto{\mathsf{TruncPr}}(\share{\vx}, m)$}
+  Note this is a two party protocol, meaning only $P_1$ and $P_2$ are involved.
+  Assume $\vx \in \Z_{2^k}^{\shape}$ has $\mathsf{MSB}(\vx) = 0$. If $\vx$ is negative then
+  we make it positive by adding $2^{k-1}$ to it and assume that $\mathsf{abs}(\vx) < 2^{k-1}$.
   \\
-  On input $\mathsf{TruncPr}(\share{x}, m)$ from all parties:
+  On $P_1$ and $P_2$:
   \begin{enumerate}
-    \item Sample $k$ random bits $\share{r_i}$ and compute $r = \sum_{i=1}^k
-    r_i$. \item Open $c \asn \share{x} + \share{r}$, truncate $c$ publicly
-    and
-    assign it to $c' \asn (c/2^m) \bmod 2^{k-m-1}$.
-    \item Compute $\share{b} \asn \share{r_{k-1}} \oplus (c / 2^{k-1})$.
-    \item Output $c' - \sum_{i=m}^{k-2} \share{r_i} \cdot 2^{i-m} + \share{b}
-    \cdot 2^{k-m-1}$.
+    \item Compute $\vc = \Open(\share{\vx} + \share{\vr_{\mathsf{bot}}})$.
+    \item $\vc' \asn (\vc/2^m) \bmod 2^{k-m-1}$. This can be done using one $\mathsf{ring\_shl}$
+    followed by one $\mathsf{ring\_shr}$ operation.
+    \item Compute $\share{\vb} \asn \share{\vr_{\mathsf{msb}}} \oplus (c / 2^{k-1})$. Note here that $\oplus$
+    in arithmetic circuits boils down to $a + b - 2a\cdot b$. Here one of the operands is public so
+    the result can be computed using only local operations.
+    \item Output $\vc' - \share{\vr_{\mathsf{top}}} + \share{\vb} \cdot 2^{k-m-1}$.
+ \end{enumerate}
+
+\end{Boxfig}
+
+
+\begin{Boxfig}{Local conversion to $(2,2)$ additive shares}{fig:get-additive}
+  {Protocol $\Proto{\mathsf{GetAdditive}}(\share{\vx}, P_3)$}
+  On $P_3$:
+  \begin{enumerate}
+    \item $k \asn \mathsf{SampleKey}()$.
+    \item $\seed \asn \derives(k, 0)$.
+    \item Set $\vx^0 = \mathsf{Sample}(\vx.\mathsf{s}, \seed)$ and $\vx^1 = \vx - \vx^0$.
+    \item Return $(\vx^0, \vx^1)$.
   \end{enumerate}
 
 \end{Boxfig}
+
+\begin{Boxfig}{Opening protocol}{fig:open}
+  {Protocol $\Proto{\Open}(\share{\vx})$}
+  On $P_1$:
+  \begin{enumerate}
+    \item Send $\vx_1$ to $P_2$. Wait for $\vx_2$ from $P_2$.
+    \item Output $\vx \asn \vx_1 + \vx_2$.
+  \end{enumerate}
+  On $P_2$:
+  \begin{enumerate}
+    \item Send $\vx_2$ to $P_1$. Wait for $\vx_1$ from $P_1$.
+    \item Output $\vx \asn \vx_1 + \vx_2$.
+  \end{enumerate}
+\end{Boxfig}
+
+
 
 

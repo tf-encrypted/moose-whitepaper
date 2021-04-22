@@ -1,1 +1,62 @@
 \section{Fixed point arithmetic}
+\label{app:fixed-point}
+
+\subsubsection{Encoding} To encode a number $x \in \mathbb{R}$ into its fixed
+point representation define $\mathsf{Encode}(x, f) = \floor{x \cdot 2^f}$.
+The rounding here is arbitrary, one can also use \verb|ceil| function as long
+as the same rounding method is used in the decoding.
+
+\subsubsection{Decoding} To decode a number from its fixed point representation
+$x \in \verb|fixed|(k, f)$ output $\mathsf{Decode}(x, f) = x \cdot 2^{-f} \in \mathbb{R}$.
+
+\subsubsection{Addition} To add two secret shared fixed point numbers
+$\share{x}, \share{y}$ where $x,y \in \verb|fixed(k, f)|$ output
+$\share{x}+\share{y}$. Note that $\mathsf{Decode}(x+y)$ will be successful
+iff $x+y$ does not overflow $\Z_{2^k}$.
+
+\subsubsection{Multiplication}
+
+To multiply two fixed point numbers $x, y \in \verb|fixed|(k, f)$ we can
+compute $z = x \cdot y \in \verb|fixed|(2 \cdot k, 2\cdot f)$. On the ring
+level the operation works as $\bar{z} = x \cdot y \cdot 2 ^ {2f}$, hence the
+correct decoding function becomes $\Decode(z, 2f) = x \cdot y$. Although
+multiplications are pretty fast this way we can see that the numbers grow by
+$2^f$ after each multiplication. To circumvent this we introduce the
+\verb|trunc| operation which takes $\bar{z} = x \cdot y \cdot 2^{2f}$ and outputs $\bar{z} / 2^{f}$
+which makes $\verb|trunc|(\bar{z}, f) \in \verb|fixed|(2 \cdot k, f)$.
+Next we describe how these operations are done using secret shared inputs.
+
+\noindent{\textbf{Multiplication between two secret inputs}.} Note that
+multiplication between two fixed point numbers $\share{x}, \share{y}$ where
+$x,y \in \verb|fixed(k, f)|$ gets us $z = x \cdot y \cdot 2^{2f}$. One can
+now simply output $\Decode(z, 2f)$ if this is the last multiplication.
+To avoid $z$ overflow in $\Z_{2^k}$ and allow
+subsequent computations on $z$ call $z \asn \mathsf{trunc}(2 \cdot k, f)(z)$.
+
+\noindent{\textbf{Multiplication by (clear) integer scalars}}.
+To multiply a public scalar
+$c$ with $\share{x}$ where $x \in \verb|fixed(k, f)|$ we output
+$c \cdot \share{x}$. In this way when we decode the product
+this becomes (over the ring)
+$\Decode(c \cdot x \cdot 2^f) = c \cdot x$. Again, this operation is going to
+be successful iff. the product $c \cdot x$ fits in $\Z_{2^k}$.
+
+\noindent{\textbf{Multiplication by (clear) floating scalars}}. To multiply a
+public floating point scalar $c$ with $\share{x}$ we compute $\hat{c} \asn
+\Encode(c, f)$ and then set the output $\share{c \cdot x} =
+\mathsf{trunc}(\hat{c} \cdot \share{x}, f)$. Note that $\hat{c} \cdot \share{x}$
+can be done with local computations.
+
+\subsubsection{Division}
+TBD, SecureNN has some leakage, check MP-SPDZ - there was no description in
+ABY3 on fixed point division.
+
+\noindent{\textbf{Division by a clear scalar}}.
+Consider the division $\share{x} / c$ where $c$ is known to all parties. We want to compute a
+fixed point encoding of $x/c$ which is $\share{\hat{x} / c \cdot 2^f}$. The naive way to do
+this is to compute $c' = \Encode(c, f) = c \cdot 2^f$ and then do
+$\mathsf{GoldschmidtDiv}(x \cdot 2^f, \mathsf{AppRec}(c'))$.
+
+See Catrina et al. where they talk about computing $\mathsf{AppRec}(c)$ (computing $1/c$). In this
+case $\mathsf{AppRec}$ can be computed in the clear so we can avoid this protocol if $c$ is public.
+
