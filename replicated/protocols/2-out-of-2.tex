@@ -6,16 +6,16 @@ Party $P_1$ holds $\vx^1$ and $P_2$ holds $\vx^2$ such that $\vx^1 + \vx^2 = \vx
 On $P_3$:
 \begin{enumerate}
   \item Sample key $k \sample \mathsf{SampleKey}()$.
-  \item Sample seeds $\seed(y_i) \sample \derives(k, i)$ for $i \in [1, 2]$. Send $\seed(y_i)$ to $P_i$.
-  \item Compute $\vy_1 \sample \RingSample(\seed(y_1), \vx.\shape, \Z_{2^k})$
-  and $\vy_3 \sample \RingSample(\seed(y_2), \vx.\shape, \Z_{2^k})$.
+  \item Sample seeds $\seed(i) \sample \derives(k, i)$ for $i \in [1, 2]$. Send $\seed(i)$ to $P_i$.
+  \item Compute $\vy_1 \sample \RingSample(\seed(1), \vx.\shape, \Z_{2^k})$
+  and $\vy_3 \sample \RingSample(\seed(2), \vx.\shape, \Z_{2^k})$.
   \item Set
   the output share as $(\vy_3, \vy_1)$.
 \end{enumerate}
 
 On $P_i$ for $i \in [1,2]$:
 \begin{enumerate}
-   \item Receive $\seed(y_i)$ from $P_3$ and compute $\vy_i = \RingSample(\seed(y_i), \vx.\shape, \Z_{2^k})$.
+   \item Receive $\seed(i)$ from $P_3$ and compute $\vy_i = \RingSample(\seed(i), \vx.\shape, \Z_{2^k})$.
    \item Run $\Proto{\Open}^{(2,2)}(\vx - \vy)$ between $P_1$ and $P_2$. Store $\vc$ as the output
    to the $\Open$ protocol.
 \end{enumerate}

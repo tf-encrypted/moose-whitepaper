@@ -1,20 +1,20 @@
 \section{Fixed point arithmetic}
 \label{app:fixed-point}
 
-\subsubsection{Encoding} To encode a number $x \in \mathbb{R}$ into its fixed
+\subsection{Encoding} To encode a number $x \in \mathbb{R}$ into its fixed
 point representation define $\mathsf{Encode}(x, f) = \floor{x \cdot 2^f}$.
 The rounding here is arbitrary, one can also use \verb|ceil| function as long
 as the same rounding method is used in the decoding.
 
-\subsubsection{Decoding} To decode a number from its fixed point representation
+\subsection{Decoding} To decode a number from its fixed point representation
 $x \in \verb|fixed|(k, f)$ output $\mathsf{Decode}(x, f) = x \cdot 2^{-f} \in \mathbb{R}$.
 
-\subsubsection{Addition} To add two secret shared fixed point numbers
+\subsection{Addition} To add two secret shared fixed point numbers
 $\share{x}, \share{y}$ where $x,y \in \verb|fixed(k, f)|$ output
 $\share{x}+\share{y}$. Note that $\mathsf{Decode}(x+y)$ will be successful
 iff $x+y$ does not overflow $\Z_{2^k}$.
 
-\subsubsection{Multiplication}
+\subsection{Multiplication}
 
 To multiply two fixed point numbers $x, y \in \verb|fixed|(k, f)$ we can
 compute $z = x \cdot y \in \verb|fixed|(2 \cdot k, 2\cdot f)$. On the ring

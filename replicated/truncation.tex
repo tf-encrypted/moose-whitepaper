@@ -28,10 +28,10 @@ of a tensor over $\Z_{2^k}^{\mathsf{s}}$: \\
 $P_3$ does the following:
   \begin{enumerate}
     \item Sample key $k_3 \sample \mathsf{SampleKey}()$.
-    \item For $i \in [k]$ call $\mathsf{seed}_{\mathbf{b}_i} \asn \mathsf{derive\_seed}(k_3, i)$
+    \item For $i \in [k]$ call $\seed(i) \asn \derives(k_3, i)$
     \item For $i \in [k]$ sample locally random bits $\mathbf{b}_i \in \Z_{2^k}^{\mathsf{s}}$.
     This is done by calling
-    generate $\mathbf{b}_i \sample \mathsf{Sample}(\seed_{\mathbf{b}_i}, \mathsf{s}, [0,1])$.
+    generate $\mathbf{b}_i \sample \mathsf{Sample}(\seed(i), \mathsf{s}, [0,1])$.
     \item Compute
     $\mathbf{r}_{\mathsf{bot}} = \sum_{i=0}^{k-1}2^i \cdot \vb(i)$,
     $\mathbf{r}_{\mathsf{msb}} \asn \vb(k-1)$ and
@@ -45,7 +45,7 @@ $P_3$ does the following:
 $P_1$ together with $P_2$ do the following:
 
 \begin{enumerate}
-   \item Convert $\share{x}$ into a $2$-out-of-$2$ sharing.
+   \item Convert $\share{\vx}$ into a $2$-out-of-$2$ sharing.
    \begin{enumerate}
       \item On $P_1$ set $\vx'_1 \asn \vx_1 + \vx_2$.
       \item On $P_2$ set $\vx'_2 \asn \vx_2$.
