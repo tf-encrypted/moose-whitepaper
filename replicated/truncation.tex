@@ -38,7 +38,7 @@ $P_3$ does the following:
     $\mathbf{r}_{\mathsf{top}} = \sum_{i=m}^{k-2} \vb(i) \cdot 2^{i-m}$. Send
     the corresponding shares to $P_1$ and $P_2$.
     \item For each of $\vr_{\mathsf{bot}}, \vr_{\mathsf{msb}} \vr_{\mathsf{top}}$
-    generate 2-out-of-2 additive shares by calling $\Proto{\mathsf{GetAdditiveShare}}(\cdot)$
+    generate 2-out-of-2 additive shares by calling $\Proto{\mathsf{AdditiveShare}}(\cdot)$
     on each entry and get $
     \vr\ui_{\mathsf{bot}}, \vr\ui_{\mathsf{msb}}, \vr\ui_{\mathsf{top}}$ for $i \in [0,1]$. Send the corresponding $\vr\ui$ to party $P_i$.
  \end{enumerate}
@@ -86,17 +86,6 @@ $P_1$ together with $P_2$ do the following:
 
 \end{Boxfig}
 
-
-\begin{Boxfig}{Local conversion to $(2,2)$ additive shares}{fig:get-additive}
-  {Protocol $\Proto{\mathsf{GetAdditive}}(\share{\vx}, P_3)$}
-  On $P_3$:
-  \begin{enumerate}
-    \item $k \asn \mathsf{SampleKey}()$.
-    \item $\seed \asn \derives(k, 0)$.
-    \item Set $\vx^0 = \mathsf{Sample}(\vx.\mathsf{s}, \seed)$ and $\vx^1 = \vx - \vx^0$.
-    \item Return $(\vx^0, \vx^1)$.
-  \end{enumerate}
-\end{Boxfig}
 
 \begin{Boxfig}{Local conversion to $(2,2)$ additive shares}{fig:get-additive}
   {Protocol $\Proto{\mathsf{AdditiveShare}}(\vx)$}
