@@ -38,16 +38,9 @@ $P_3$ does the following:
     $\mathbf{r}_{\mathsf{top}} = \sum_{i=m}^{k-2} \vb(i) \cdot 2^{i-m}$. Send
     the corresponding shares to $P_1$ and $P_2$.
     \item For each of $\vr_{\mathsf{bot}}, \vr_{\mathsf{msb}} \vr_{\mathsf{top}}$
-    generate 2-out-of-2 additive shares by calling $\mathsf{GetAdditiveShare}()$
+    generate 2-out-of-2 additive shares by calling $\Proto{\mathsf{GetAdditiveShare}}(\cdot)$
     on each entry and get $
-    \vr\ui_{\mathsf{bot}}, \vr\ui_{\mathsf{msb}}, \vr\ui_{\mathsf{top}}$ for $i \in [0,1]$.
-
-    Send the corresponding $\vr\ui$ to party $P_i$.
-    \item Sample two seeds $\seed_i \asn \derives(k_3, k+i)$ for $i \in
-    [1,2]$. and send $\seed_i$ to $P_i$. Use these to generate random numbers
-    $y_1, y_2 \in \Z_{2^k}^{\mathsf{s}}$ by calling $y_i \asn \mathsf{Sample}(\seed_i,
-    \mathsf{s})$
-    \item Set own share of the truncation result as $(y_2, y_1)$.
+    \vr\ui_{\mathsf{bot}}, \vr\ui_{\mathsf{msb}}, \vr\ui_{\mathsf{top}}$ for $i \in [0,1]$. Send the corresponding $\vr\ui$ to party $P_i$.
  \end{enumerate}
 $P_1$ together with $P_2$ do the following:
 
@@ -59,19 +52,19 @@ $P_1$ together with $P_2$ do the following:
    \end{enumerate}
 
    \item $P_1$ and $P_2$ then execute the protocol $\Proto{\mathsf{TruncPR}}(\share{\vx'}, m)$
-   using the $2$-out-of-$2$ sharings of $\vx$ and the shares provided by $P_3$.
+   using the $2$-out-of-$2$ sharing of $\vx$. Store the output as $\vy$.
 \end{enumerate}
 
- Now parties convert the $2$-out-of-$2$ sharing output of
- $\mathsf{TruncPR}$ to a $2$-out-of-$3$
- sharing using the randomness provided by $P_3$.
- \begin{enumerate}
-   \item Each $P_i$ for $i \in [1, 2]$ sets the output of $\mathsf{TruncPr}$
-   as $y'_i$ and $\hat{y}_i$ as the sharing received from $P_3$. Send $y'_i -
-   \hat{y}_i$ to $P_{3-i}$. The received values are denoted by $\tilde{y}_i$.
-   \item $P_1$ sets the output share as $(y_1, y'_1 - \hat{y}_1 + \tilde{y}_1)$
-   \item $P_2$ sets the output share as $(y'_2 - \hat{y}_2 + \widehat{y}_2, y_3)$.
- \end{enumerate}
+ Now parties convert the $2$-out-of-$2$ sharing $\vy$ to a $2$-out-of-$3$
+ sharing. All parties output $\Proto{(2,2)\rightarrow(2,3)}(\vy)$.
+
+%  \begin{enumerate}
+%    \item Each $P_i$ for $i \in [1, 2]$ sets the output of $\mathsf{TruncPr}$
+%    as $y'_i$ and $\hat{y}_i$ as the sharing received from $P_3$. Send $y'_i -
+%    \hat{y}_i$ to $P_{3-i}$. The received values are denoted by $\tilde{y}_i$.
+%    \item $P_1$ sets the output share as $(y_1, y'_1 - \hat{y}_1 + \tilde{y}_1)$
+%    \item $P_2$ sets the output share as $(y'_2 - \hat{y}_2 + \widehat{y}_2, y_3)$.
+%  \end{enumerate}
 \end{Boxfig}
 
 \begin{Boxfig}{Generic truncation protocol.}{fig:truncpr-generic}
@@ -85,7 +78,7 @@ $P_1$ together with $P_2$ do the following:
     \item Compute $\vc = \Open(\share{\vx} + \share{\vr_{\mathsf{bot}}})$.
     \item $\vc' \asn (\vc/2^m) \bmod 2^{k-m-1}$. This can be done using one $\mathsf{ring\_shl}$
     followed by one $\mathsf{ring\_shr}$ operation.
-    \item Compute $\share{\vb} \asn \share{\vr_{\mathsf{msb}}} \oplus (c / 2^{k-1})$. Note here that $\oplus$
+    \item Compute $\share{\vb} \asn \share{\vr_{\mathsf{msb}}} \oplus (\vc / 2^{k-1})$. Note here that $\oplus$
     in arithmetic circuits boils down to $a + b - 2a\cdot b$. Here one of the operands is public so
     the result can be computed using only local operations.
     \item Output $\vc' - \share{\vr_{\mathsf{top}}} + \share{\vb} \cdot 2^{k-m-1}$.
@@ -106,19 +99,49 @@ $P_1$ together with $P_2$ do the following:
 
 \end{Boxfig}
 
-\begin{Boxfig}{Opening protocol}{fig:open}
-  {Protocol $\Proto{\Open}(\share{\vx})$}
+\begin{Boxfig}{Opening protocol}{fig:open2-2}
+  {Protocol $\Proto{\Open}^{(2,2)}(\share{\vx})$}
   On $P_1$:
   \begin{enumerate}
-    \item Send $\vx_1$ to $P_2$. Wait for $\vx_2$ from $P_2$.
-    \item Output $\vx \asn \vx_1 + \vx_2$.
+    \item Send $\vx_1$ to $P_2$.
   \end{enumerate}
-  On $P_2$:
+   On $P_2$:
   \begin{enumerate}
-    \item Send $\vx_2$ to $P_1$. Wait for $\vx_1$ from $P_1$.
-    \item Output $\vx \asn \vx_1 + \vx_2$.
+    \item Send $\vx_2$ to $P_1$.
+  \end{enumerate}
+  On $P_1$
+  \begin{enumerate}
+    \item Receive $\vx_2$ from $P_2$. Output
+    $\vx \asn \vx_1 + \vx_2$.
+  \end{enumerate}
+  On $P_2$
+  \begin{enumerate}
+    \item Receive $\vx_1$ from $P_1$. Output $\vx \asn \vx_1 + \vx_2$.
   \end{enumerate}
 \end{Boxfig}
+
+
+% \begin{Boxfig}{Opening protocol}{fig:open2-3}
+%   {Protocol $\Proto{\mathsf{OpenTo}}^{(2,3)}(\share{\vx})$}
+%   On $P_i$:
+%   \begin{enumerate}
+%     \item Send $\vx_1$ to $P_2$.
+%   \end{enumerate}
+%    On $P_2$:
+%   \begin{enumerate}
+%     \item Send $\vx_2$ to $P_1$.
+%   \end{enumerate}
+%   On $P_1$
+%   \begin{enumerate}
+%     \item Receive $\vx_2$ from $P_2$. Output
+%     $\vx \asn \vx_1 + \vx_2$.
+%   \end{enumerate}
+%   On $P_2$
+%   \begin{enumerate}
+%     \item Receive $\vx_1$ from $P_1$. Output $\vx \asn \vx_1 + \vx_2$.
+%   \end{enumerate}
+% \end{Boxfig}
+
 
 
 
