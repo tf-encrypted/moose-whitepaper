@@ -96,7 +96,32 @@ $P_1$ together with $P_2$ do the following:
     \item Set $\vx^0 = \mathsf{Sample}(\vx.\mathsf{s}, \seed)$ and $\vx^1 = \vx - \vx^0$.
     \item Return $(\vx^0, \vx^1)$.
   \end{enumerate}
+\end{Boxfig}
 
+\begin{Boxfig}{Local conversion to $(2,2)$ additive shares}{fig:get-additive}
+  {Protocol $\Proto{\mathsf{AdditiveShare}}(\vx)$}
+  Roles: Dealer, $P_1$, $P_2$ where $\vx.\mathsf{placement}$ is Host(Dealer) \newline
+  With Host(Dealer):
+  \begin{enumerate}
+    \item $k \asn \mathsf{SampleKey}()$.
+    \item $\seed \asn \derives(k, 0)$.
+    \item $\vx^1 \asn \mathsf{Sample}(\vx.\mathsf{shape}, \seed)$.
+    \item $\vx^2 \asn \vx - \vx^1$.
+    \item Send $\vx^1$ to Plain($P_1$) and $\vx^2$ to Plain($P_2$).
+  \end{enumerate}
+  With Host($P_1$):
+  \begin{enumerate}
+      \item Receive $\vx^1$.
+  \end{enumerate}
+  With Host($P_2$):
+  \begin{enumerate}
+      \item Receive $\vx^2$.
+  \end{enumerate}
+  With Additive($P_1$, $P_2$):
+  \begin{enumerate}
+      \item Let $\vx = (\vx^1, \vx^2)$.
+      \item Return $\vx$.
+  \end{enumerate}
 \end{Boxfig}
 
 \begin{Boxfig}{Opening protocol}{fig:open2-2}
