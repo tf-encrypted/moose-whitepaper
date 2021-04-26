@@ -1,0 +1,18 @@
+
+\section{Introduction}
+
+This paper details the cryptographic techniques and protocols used by Cape Privacy's encrypted learning solution. 
+We expect the reader to have some familiarity with secure multi-party computation, linear algebra and finite field arithmetic; as a good starting point we recommend \cite{evans2017pragmatic}.
+
+This paper is currently scoped to the linear regression task outlined in section~\ref{??}. Future versions of the paper will expand upon this with additional protocols.
+
+
+\subsection{Linear Regression}
+
+\commentM{TODO: briefly describe the usecase and its high-level computation. }
+
+\commentM{TODO: insert eDSL snippet}
+
+For the linear regression use-case we believe that $128$ bit field size is
+enough using a fixed point precision by $16$ bits while keeping the numbers
+magnitude to $40$ bits (thus making the integral part of size $24$ bits).

@@ -1,9 +1,10 @@
-\noindent{\textbf{Multiplication}}. There are different ways to achieve this,
-depending on the secret sharing type. To
-see how this works for replicated secret sharing each party $P_i$ holds a
+\noindent{\textbf{Multiplication}}. 
+To see how this works for replicated secret sharing each party $P_i$ holds a
 sharing of $x$ as $(x_i, x_{ \inc{i} })$ and a sharing of $y$ as $(y_i, y_{
 \inc{i} })$. To compute a sharing $\share{x \cdot y}$ using the shares of $x$
 and $y$ parties do the following:
+
+\commentM{TODO: turn into proper protocol; describe how $\alpha + \beta + \gamma$ is computed}
 
 \begin{itemize}
     \item $P_1$ sets $(x \cdot y)_{1} \asn x_1 \cdot y_1 + x_1 \cdot y_2 + x_2 \cdot

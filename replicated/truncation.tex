@@ -21,7 +21,7 @@ about $\approx 35$ times less communication. \commentD{Need to re-check this, I 
 
 
 \begin{Boxfig}{Truncation protocol for semi-honest
-RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPrSp}}$}
+RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPr}}$}
 On input
 $\mathsf{TruncPrSp}(\share{\vx}, m)$ from all parties where $\vx$ is a sharing
 of a tensor over $\Z_{2^k}^{\mathsf{s}}$: \\
@@ -68,7 +68,7 @@ $P_1$ together with $P_2$ do the following:
 \end{Boxfig}
 
 \begin{Boxfig}{Generic truncation protocol.}{fig:truncpr-generic}
-  {Protocol $\Proto{\mathsf{TruncPr}}(\share{\vx}, m)$}
+  {Protocol $\Proto{\mathsf{2PCTruncPr}}(\share{\vx}, m)$}
   Note this is a two party protocol, meaning only $P_1$ and $P_2$ are involved.
   Assume $\vx \in \Z_{2^k}^{\shape}$ has $\mathsf{MSB}(\vx) = 0$. If $\vx$ is negative then
   we make it positive by adding $2^{k-1}$ to it and assume that $\mathsf{abs}(\vx) < 2^{k-1}$.

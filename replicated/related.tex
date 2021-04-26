@@ -1,0 +1,71 @@
+\subsection{Related Work}
+
+\commentM{revisit this section to make sure it makes sense for external use}
+
+In the last couple of years there was a boom in MPC for honest majority,
+especially in 3PC one. This can be tracked down from the work of Araki et al.
+\cite{CCS:AFLNO16} which at the moment provides the best performance for
+semi-honest security in the preprocessing model. One year after this was
+converted into a protocol with active security which achieves $1$ billion AND
+triples per second \cite{SP:ABFLLN17} which had a cost of $7$ bits per AND
+gate. Later it was shown by Keller et al. \cite{SCN:KRSW18} how to extend the
+work of Araki et al. \cite{CCS:AFLNO16} to multiple parties assuming there is
+honest majority using some well-known techniques by Maurer
+\cite{SCN:Maurer02}. The caveat of Keller et al. \cite{SCN:KRSW18} is that
+there can be an exponential blowup in terms of $n \choose t$ where $t<n/2$ is
+the corruption threshold and $n$ the number of parties.
+
+
+To get a better picture of the available protocols with their underlying
+arithmetic we list the current state of the art protocols for obtaining
+honest-majority MPC. For readability purposes we abbreviate honest majority
+with HM:
+
+\begin{enumerate}
+  \item HM over large fields $\Fp$ \cite{CCS:LinNof17,C:CGHIKL18}. Although
+  the two constructions listed above are specialized for the malicious
+  setting (at most 1 party arbitrarily deviating from the protocol) these are
+  built assuming $\Frand, \Fmult$ hybrid model where $\Fmult$ needs to be a
+  multiplication protocol secure up to additive attacks. To get such an
+  $\Fmult$ we can simply take
+  a semi-honest protocol for HM for doing multiplications such as \cite{CCS:AFLNO16}.
+  \item HM for binary circuits $\F_2$. Note that Araki et al. \cite{CCS:AFLNO16}
+  works for binary circuits as well for the semi-honest case.
+  To get malicious security Chida et al. \cite{C:CGHIKL18} present a protocol
+  for small field multiplications using cut-and-choose techniques The cut and
+  choose framework works by generating large batches of triples
+  optimistically and then open a fraction to detect whether some cheating
+  occurred.
+  \item HM over small fields (eg. $\F_{2^8}$ which is suitable for AES). To
+  get malicious security, depending on the extension field size, we can
+  either repeat the computation $\sec/|\F|$ times or generate triples using cut and choose
+  from \cite{C:CGHIKL18}.
+  \item HM over rings $\mathbb{Z}_{2^k}$. Abspoel et al. \cite{EPRINT:ADEN19}
+  are the first ones who introduce vector dot-products of secret shares at a cost of
+  communicating a constant number of ring elements independently of the vector sizes
+  for the ring case - however they avoid giving any hint on how to realise
+  reactive computations, this is solved later in \cite{cryptoeprint:2020:1330}.
+  \item HM by mixing circuits: \cite{CCS:MohRin18,cryptoeprint:2020:1330}.
+  Escudero et al. \cite{C:EGKRS20} work in the more generic setting but they
+  have
+  improvements for the honest majority as well. They improve the mixed framework
+  specifically for $\Z_{2^k}$ and $\F_2$ very recently in \cite{cryptoeprint:2020:1330}.
+
+\end{enumerate}
+
+Note that almost every protocol can be built in the malicious setting using
+building blocks from the semi-honest protocols with the exception of binary
+triples $c = a \cdot b$ where $a,b \in \F_2$. For the binary triple case we
+need more complex techniques such as cut and choose. In our implementation we
+stick with Araki et al. protocol \cite{CCS:AFLNO16} while borrowing some
+improvements from \cite{cryptoeprint:2020:1330} such as probabilistic
+truncation. One additional feature of Araki et al. \cite{CCS:AFLNO16} is that
+it can be upgraded to malicious security by (roughly) just repeating all
+procedures twice and use a "zero check" described in Dalskov, Escudero and
+Keller \cite{cryptoeprint:2020:1330}.
+
+We
+should keep in mind that although triple generation for large fields is
+usually faster than rings there are benefits when working with ring sharings
+- such as faster methods for secret truncation which in turn makes RELU's
+faster.

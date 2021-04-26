@@ -15,8 +15,8 @@
   With Additive($P_1, P_2$):
   \begin{enumerate}
       \item $\shareB{\vb}, \shareR{\vb} = \textsf{DaBit}(P_3)$.
-      \item Compute $c = \Proto{\mathsf{Open}}( \shareB{\vb} \oplus \shareB{\vx_A})$.
-      \item Let $\shareR{\vx_A} = c + \shareR{\vb} - 2 \cdot c \cdot \shareR{\vb}$
+      \item Compute $\vc = \Proto{\mathsf{Open}}( \shareB{\vb} \oplus \shareB{\vx_A})$.
+      \item Let $\shareR{\vx_A} = \vc + \shareR{\vb} - 2 \cdot \vc \cdot \shareR{\vb}$
   \end{enumerate}
   Parties convert the 2-out-of-2 sharing $\shareR{\vx_A}$ to a 2-out-of-3 sharing by calling
   $\Proto{ (2,2)\rightarrow (2,3)}(\shareR{\vx_A})$
