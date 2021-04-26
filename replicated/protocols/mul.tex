@@ -18,18 +18,17 @@ and $y$ parties do the following:
     \item $\vv_i^i \asn \vx_i^i \cdot \vy_i^i + \vx_i^i \cdot \vy_{i+1}^i + \vx_{i+1}^i \cdot \vy_i^i$
   \end{enumerate}
   ~\newline
-  $\alpha_1, \beta, \gamma \asn \mathsf{SampleZero}_{[P_1, P_2, P_3]}\big( \mathsf{Shape}(\vv_1^1), \mathsf{Shape}\mathsf(\vv_2^2), \mathsf{Shape}\mathsf(\vv_3^3) \big)$
-  
+  $\alpha_1, \alpha_2, \alpha_3 \asn \mathsf{SampleZero}_{[P_1, P_2, P_3]}\big( \mathsf{Shape}(\vv_1^1), \mathsf{Shape}\mathsf(\vv_2^2), \mathsf{Shape}\mathsf(\vv_3^3) \big)$
+  ~\newline
+
   With Host($P_i$) for $i \in [3]$:
   \begin{enumerate}
-    \item $\vv_i^i \asn \vx_i^i \cdot \vy_i^i + \vx_i^i \cdot \vy_{i+1}^i + \vx_{i+1}^i \cdot \vy_i^i$
+    \item $\vz_i^i \asn \vv_i^i + \alpha_i$
+    \item Send $\vz_i^i$ to $P_{i-1}$
+    \item Receive $\vz_{i+1}^i$ from $P_{i+1}$
   \end{enumerate}
   ~\newline
-  
-  ~\newline
   Let $\share{\vz} = \big((\vz_1^1, \vz_2^1), (\vz_2^2, \vz_3^2), (\vz_3^3, \vz_1^3) \big)$
-  
-  
 \end{Boxfig}
 
 \begin{itemize}
