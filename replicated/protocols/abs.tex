@@ -1,0 +1,13 @@
+\begin{Boxfig}{Absolute value computation from a replicated ring share.}{fig:abs-protocol}
+  {Protocol $\Proto{\mathsf{abs}}(\vx)$}
+  Roles: Replicated, $P_1$, $P_2, P_3$ where $\vx \in \Z_{2^k}^\shape$ and
+  $\vx.\mathsf{placement}$ is on Replicated($P_1, P_2, P_3$). \newline
+  With Replicated($P_1, P_2, P_3$):
+  \begin{enumerate}
+    \item Compute $\share{\vb} = \Proto{\mathsf{msb}}(\vx)$.
+    \item Let $\share{\vs} \asn 1 - 2 \cdot \share{\vb}$.
+    \item Output $\share{\vs} \cdot \share{\vb}$.
+  \end{enumerate}
+
+\end{Boxfig}
+

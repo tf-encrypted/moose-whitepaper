@@ -1,0 +1,25 @@
+\begin{Boxfig}{Binary to arithmetic share conversion computation}{fig:b2a-protocol}
+  {Protocol $\Proto{\mathsf{B2A}}(\vx)$}
+  Roles: Replicated, $P_1$, $P_2, P_3$ where $\vx \in \Z_{2}^\shape$ is an array of length $k$
+  of tensors and
+  $\vx.\mathsf{placement}$ is on ReplicatedBin($P_1, P_2, P_3$). \newline
+  With Host($P_1$):
+  \begin{enumerate}
+  \item Set $\vx_A^1 = \vx^1 \oplus \vx^2$.
+  \end{enumerate}
+  With Host($P_2$):
+  \begin{enumerate}
+      \item Set $\vx_A^2 = \vx^3$.
+  \end{enumerate}
+  Let $\shareB{\vx_A}$ on Additive($P_1, P_2$). \\
+  With Additive($P_1, P_2$):
+  \begin{enumerate}
+      \item $\shareB{\vb}, \shareR{\vb} = \textsf{DaBit}(P_3)$.
+      \item Compute $c = \Proto{\mathsf{Open}}( \shareB{\vb} \oplus \shareB{\vx_A})$.
+      \item Let $\shareR{\vx_A} = c + \shareR{\vb} - 2 \cdot c \cdot \shareR{\vb}$
+  \end{enumerate}
+  Parties convert the 2-out-of-2 sharing $\shareR{\vx_A}$ to a 2-out-of-3 sharing by calling
+  $\Proto{ (2,2)\rightarrow (2,3)}(\shareR{\vx_A})$
+
+\end{Boxfig}
+

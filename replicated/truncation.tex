@@ -89,22 +89,22 @@ $P_1$ together with $P_2$ do the following:
 
 \begin{Boxfig}{Local conversion to $(2,2)$ additive shares}{fig:get-additive}
   {Protocol $\Proto{\mathsf{AdditiveShare}}(\vx)$}
-  Roles: Dealer, $P_1$, $P_2$ where $\vx.\mathsf{placement}$ is Host(Dealer) \newline
-  With Host(Dealer):
+  Roles: D, $P_1$, $P_2$ where $\vx.\mathsf{placement}$ is Host(D) \newline
+  With Host(D):
   \begin{enumerate}
     \item $k \asn \mathsf{SampleKey}()$.
     \item $\seed \asn \derives(k, 0)$.
-    \item $\vx^1 \asn \mathsf{Sample}(\vx.\mathsf{shape}, \seed)$.
+    \item $\vx^1 \asn \mathsf{SampleUniform}(\vx.\mathsf{shape}, \seed)$.
     \item $\vx^2 \asn \vx - \vx^1$.
-    \item Send $\vx^1$ to Plain($P_1$) and $\vx^2$ to Plain($P_2$).
+    \item Send $\vx^i$ to $P_i$.
   \end{enumerate}
   With Host($P_1$):
   \begin{enumerate}
-      \item Receive $\vx^1$.
+      \item Receive $\vx^1$ from Dealer.
   \end{enumerate}
   With Host($P_2$):
   \begin{enumerate}
-      \item Receive $\vx^2$.
+      \item Receive $\vx^2$ from Dealer.
   \end{enumerate}
   Let $\vx = Additive(\vx^1, \vx^2)$.
 \end{Boxfig}

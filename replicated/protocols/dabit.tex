@@ -1,0 +1,32 @@
+\begin{Boxfig}{DaBit protocol generation}{fig:dabit-protocol}
+  {Protocol $\Proto{\mathsf{DaBit}}(\shape)$}
+  Roles: $P_1$, $P_2, P_3$ where $P_3$ acts as a dealer to distribute
+  an additive share of a bit of shape $\shape$ in the boolean and arithmetic domain. \newline
+  With Dealer($P_3$):
+  \begin{enumerate}
+    \item $k_3 \asn \SampleKey()$.
+    \item $\seed \asn \derives(k_3, 0)$.
+    \item $\vb \asn \RingSample(\seed, \shape, \{0, 1\})$.
+    \item $\seed(\textsf{bin}) \asn \derives(k_3, 1), \seed(\textsf{ring}) \asn \derives(k_3, 2)$.
+    \item Send $\seed(\textsf{bin})$ and $\seed(\textsf{ring})$ to $P_1$.
+
+  \end{enumerate}
+ With Host($P_1$):
+ \begin{enumerate}
+     \item Receive $\seed(\textsf{bin})$ and $\seed(\textsf{ring})$ from Dealer.
+     \item Locally compute $\vb^1_{2^k} \asn \RingSample(\seed(\textsf{ring}), \shape, \Z_{2^k})$.
+     \item Locally compute $\vb^1_{2} \asn \RingSample(\seed(\textsf{bin}), \shape, \{0, 1\})$.
+ \end{enumerate}
+With Dealer($P_3$):
+\begin{enumerate}
+    \item Sample $\vb^1_{2^k} \asn \RingSample(\seed(\textsf{ring}), \shape, \Z_{2^k})$. Set $\vb^2_{2^k} = \vb - \vb^1_{2^k}$.
+    \item Sample $\vb^1_{2} \asn \RingSample(\seed(\textsf{bin}), \shape, \{0, 1\})$. Set $\vb^2_{2} = \vb - \vb^1_{2}$. 
+    \item Send $\vb^2_{2^k}$ and $\vb^2_2$ to $P_2$.
+\end{enumerate}
+With Host($P_2$):
+\begin{enumerate}
+    \item Receive $\vb^2_{2^k}$ and $\vb^2_2$ from Dealer.
+\end{enumerate}
+Let $\shareR{\vb} = \textsf{Additive}(\vb^1_{2^k}, \vb^2_{2^k})$ and $\shareB{\vb} = \textsf{Additive}(\vb^1_2, \vb^2_2)$. Output $(\shareR{\vb}, \shareB{\vb})$.
+\end{Boxfig}
+
