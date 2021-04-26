@@ -6,6 +6,26 @@ and $y$ parties do the following:
 
 \commentM{TODO: turn into proper protocol; describe how $\alpha + \beta + \gamma$ is computed}
 
+
+\begin{Boxfig}{Replicated multiplication}{fig:replicated-mul}
+  {Protocol $\Proto{\mathsf{RepMul}_{[P_1, P_2, P_3]}}(\share{\vx}, \share{\vy})$}
+  
+  Let $\big((\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \big) = \share{\vx}$ \newline
+  Let $\big((\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \big) = \share{\vy}$ \newline
+  
+  With Host($P_i$) for $i \in [3]$:
+  \begin{enumerate}
+    \item $\vz_i^i \asn \vx_i^i \cdot \vy_i^i + \vx_i^i \cdot \vy_{i+1}^i + \vx_{i+1}^i \cdot \vy_i^i$
+  \end{enumerate}
+  ~\newline
+  $\alpha, \beta, \gamma \asn \mathsf{SampleZero}_{[P_1, P_2, P_3]}\big( \mathsf{Shape}(\vz_i^i), \mathsf{Shape}\mathsf(\vz_i^i), \mathsf{Shape}\mathsf(\vz_i^i) \big)$
+  
+  ~\newline
+  Let $\share{\vz} = \big((\vz_1^1, \vz_2^1), (\vz_2^2, \vz_3^2), (\vz_3^3, \vz_1^3) \big)$
+  
+  
+\end{Boxfig}
+
 \begin{itemize}
     \item $P_1$ sets $(x \cdot y)_{1} \asn x_1 \cdot y_1 + x_1 \cdot y_2 + x_2 \cdot
     y_1 + \alpha$.
