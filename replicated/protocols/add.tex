@@ -1,0 +1,14 @@
+\begin{Boxfig}{Replicated addition}{fig:replicated-add}
+  {Protocol $\Proto{\mathsf{RepAdd}_{[P_1, P_2, P_3]}}(\share{\vx}, \share{\vy})$}
+  
+  Let $\big((\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \big) = \share{\vx}$ \newline
+  Let $\big((\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \big) = \share{\vy}$ \newline
+  
+  With Host($P_i$) for $i \in [3]$:
+  \begin{enumerate}
+    \item $\vz_i^i \asn \vx_i^i + \vy_i^i$
+    \item $\vz_{i+1}^i \asn \vx_{i+1}^i + \vy_{i+1}^i$
+  \end{enumerate}
+  ~\newline
+  Return $\share{\vz} = \big((\vz_1^1, \vz_2^1), (\vz_2^2, \vz_3^2), (\vz_3^3, \vz_1^3) \big)$
+\end{Boxfig}

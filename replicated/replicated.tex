@@ -23,26 +23,7 @@ $$ to denote a replicated secret shared value consisting of shares $x_1 = x_1^1 
 %Note that $\share{x}$ hence also states that the $x_{i+1}$ held by $P_i$ matches the $x_{i+1}$ held by $P_{i+1}$. We furthermore use this to express statements about results of computing on secret shared values such as for instance $\share{\vz} = \share{\vx + \vy} = \share{\vx} + \share{\vy}$.
 
 \subsection{Basic protocols}
-
-\noindent{\textbf{Addition}}. To add two secret shares $\share{x}$ and $\share{y}$
-each party locally adds their shares and computes $\share{x+y} =
-(x_i + y_i, x_{\inc{i}} + y_{\inc{i}})$ for all $i \in [3]$.
-
-\begin{Boxfig}{Replicated addition}{fig:replicated-add}
-  {Protocol $\Proto{\mathsf{RepAdd}_{[P_1, P_2, P_3]}}(\share{\vx}, \share{\vy})$}
-  
-  Let $\big((\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \big) = \share{\vx}$ \newline
-  Let $\big((\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \big) = \share{\vy}$ \newline
-  
-  With Host($P_i$) for $i \in [3]$:
-  \begin{enumerate}
-    \item $\vz_i^i \asn \vx_i^i + \vy_i^i$
-    \item $\vz_{i+1}^i \asn \vx_{i+1}^i + \vy_{i+1}^i$
-  \end{enumerate}
-  ~\newline
-  Let $\share{\vz} = \big((\vz_1^1, \vz_2^1), (\vz_2^2, \vz_3^2), (\vz_3^3, \vz_1^3) \big)$
-\end{Boxfig}
-
+\input{protocols/add}
 \input{protocols/mul}
 \input{protocols/inputs}
 \input{dot-product}

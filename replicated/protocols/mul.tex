@@ -10,12 +10,12 @@ and $y$ parties do the following:
 \begin{Boxfig}{Replicated multiplication}{fig:replicated-mul}
   {Protocol $\Proto{\mathsf{RepMul}_{[P_1, P_2, P_3]}}(\share{\vx}, \share{\vy})$}
   
-  Let $\big((\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \big) = \share{\vx}$ \newline
-  Let $\big((\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \big) = \share{\vy}$ \newline
+  Let $\big((\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \big) = \share{\vx}$. \newline
+  Let $\big((\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \big) = \share{\vy}$. \newline
   
   With Host($P_i$) for $i \in [3]$:
   \begin{enumerate}
-    \item $\vv_i^i \asn \vx_i^i \cdot \vy_i^i + \vx_i^i \cdot \vy_{i+1}^i + \vx_{i+1}^i \cdot \vy_i^i$
+    \item $\vv_i^i \asn \vx_i^i \cdot \vy_i^i + \vx_i^i \cdot \vy_{i+1}^i + \vx_{i+1}^i \cdot \vy_i^i$.
   \end{enumerate}
   ~\newline
   $\alpha_1, \alpha_2, \alpha_3 \asn \mathsf{SampleZero}_{[P_1, P_2, P_3]}\big( \mathsf{Shape}(\vv_1^1), \mathsf{Shape}\mathsf(\vv_2^2), \mathsf{Shape}\mathsf(\vv_3^3) \big)$
@@ -23,37 +23,27 @@ and $y$ parties do the following:
 
   With Host($P_i$) for $i \in [3]$:
   \begin{enumerate}
-    \item $\vz_i^i \asn \vv_i^i + \alpha_i$
-    \item Send $\vz_i^i$ to $P_{i-1}$
-    \item Receive $\vz_{i+1}^i$ from $P_{i+1}$
+    \item $\vz_i^i \asn \vv_i^i + \alpha_i$.
+    \item Send $\vz_i^i$ to $P_{i-1}$.
+    \item Receive $\vz_{i+1}^i$ from $P_{i+1}$.
   \end{enumerate}
   ~\newline
-  Let $\share{\vz} = \big((\vz_1^1, \vz_2^1), (\vz_2^2, \vz_3^2), (\vz_3^3, \vz_1^3) \big)$
+  Return $\share{\vz} = \big((\vz_1^1, \vz_2^1), (\vz_2^2, \vz_3^2), (\vz_3^3, \vz_1^3) \big)$.
 \end{Boxfig}
 
-\begin{itemize}
-    \item $P_1$ sets $(x \cdot y)_{1} \asn x_1 \cdot y_1 + x_1 \cdot y_2 + x_2 \cdot
-    y_1 + \alpha$.
-    \item $P_2$ sets $(x \cdot y)_2 \asn x_2 \cdot y_2 + x_2 \cdot y_3 + x_3
-    \cdot y_2 + \beta$.
-    \item $P_3$ sets $(x \cdot y)_3 \asn x_3 \cdot y_3 + x_3 \cdot y_1 + x_1 \cdot y_3 +
-    \gamma$.
-\end{itemize}
 
-\noindent where $\alpha, \beta, \gamma$ are a pseudorandom secret sharing of
-zero, i.e $\alpha + \beta + \gamma = 0$. In the next phase parties send
-around the shares
-
-\begin{itemize}
-    \item $P_1$ sends privately $(x \cdot y)_1$ to $P_2$.
-    \item $P_2$ sends privately $(x \cdot y)_2$ to $P_3$.
-    \item $P_3$ sends privately $(x \cdot y)_3$ to $P_1$.
-\end{itemize}
-
-\noindent In the final step parties set their shares of $x \cdot y$ in the following way:
-\begin{itemize}
-    \item $P_1$ sets $\share{x \cdot y}$ as $(x\cdot y)_3, (x \cdot y)_1$.
-    \item $P_2$ sets $\share{x \cdot y}$ as $(x\cdot y)_1, (x \cdot y)_2$.
-    \item $P_3$ sets $\share{x \cdot y}$ as $(x\cdot y)_2, (x \cdot y)_3$.
-\end{itemize}
-
+\begin{Boxfig}{Sample Zero protocol.}{fig:replicated-sample-zero}
+  {Protocol $\Proto{\mathsf{SampleZero}_{[P_1, P_2, P_3]}}(\shape_0, \shape_1, \shape_2)$}
+  
+  Let $( (k_1^1, k_2^1), (k_2^2, k_2^3), (k_2^3, k_1^3) )$
+  a set of pre-shared PRF keys in the setup.
+ \newline
+  
+  With Host($P_i$) for $i \in [3]$:
+  \begin{enumerate}
+    \item Compute ${\seed}^i_j \asn \derives(k^i_j)$ for $j \in [i, i+1]$.
+    \item $\alpha^i \asn \RingSample(\seed^i_i, \shape_i, \Z_{2^k}) - \RingSample(\seed^i_{i+1}, \shape_i, \Z_{2^k})$.
+  \end{enumerate}
+  ~\newline
+  Return $\alpha = \big(\alpha^1, \alpha^2, \alpha^3 \big)$.
+\end{Boxfig}

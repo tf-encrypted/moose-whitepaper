@@ -114,18 +114,11 @@ $P_1$ together with $P_2$ do the following:
   On $P_1$:
   \begin{enumerate}
     \item Send $\vx_1$ to $P_2$.
+    \item Receive $\vx_2$ from $P_2$. Output $\vx \asn \vx_1 + \vx_2$.
   \end{enumerate}
    On $P_2$:
   \begin{enumerate}
     \item Send $\vx_2$ to $P_1$.
-  \end{enumerate}
-  On $P_1$
-  \begin{enumerate}
-    \item Receive $\vx_2$ from $P_2$. Output
-    $\vx \asn \vx_1 + \vx_2$.
-  \end{enumerate}
-  On $P_2$
-  \begin{enumerate}
     \item Receive $\vx_1$ from $P_1$. Output $\vx \asn \vx_1 + \vx_2$.
   \end{enumerate}
 \end{Boxfig}
