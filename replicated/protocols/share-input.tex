@@ -1,0 +1,29 @@
+\subsection{Sharing an input}
+
+
+\begin{Boxfig}{Replicated share}{fig:replicated-share}
+  {Protocol $\mathsf{RepShare}[P_1, P_2, P_3](R; P_i, \vx)$}
+  
+  \begin{enumerate}
+  \item Suppose each party $P_j$ has a shared seeds $(\seed_j^j, \seed_{j+1}^j)$.
+  \item Divide the set of parties into two sets: $I = \{P_i\}, O = \{P_1, P_2, P_3\} - \{P_i\}$.
+  \item On Host($P_{i-1}$):
+  \begin{enumerate}
+    \item $\vx_{i-1}^{i-1} = \mathsf{zero}(\shape(\vx))$.
+    \item Compute $\vx_i^{i-1} = \RingSample(R; \shape(\vx), \seed_i^{i-1})$.
+  \end{enumerate}
+  \item On Host($P_i$):
+  \begin{enumerate}
+    \item $\vx_i^i = \RingSample(R; \shape(\vx), \seed_{i}^i)$.
+    \item $\vx_{i+1}^i = \vx - \vx_i^i$.
+    \item Send $\vx_{i+1}^i$ to $P_{i+1}$.
+  \end{enumerate}
+  \item On Host($P_{i+1}$):
+  \begin{enumerate}
+    \item Receive $\vx_{i+1}^i$ from $P_i$. Set $\vx_{i+1}^{i+1} = \vx_{i+1}^i$.
+    \item $\vx_{i+2}^{i+1} = \mathsf{zero}(\shape(\vx))$.
+  \end{enumerate}
+   \item Return $\share{\vx}_R = \left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right)$.
+  \end{enumerate}
+\end{Boxfig}
+
