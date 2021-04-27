@@ -1,25 +1,29 @@
-\begin{Boxfig}{Binary to arithmetic share conversion computation}{fig:b2a-protocol}
-  {Protocol $\Proto{B2A[P_1, P_2, P_3]}(\share{\vx})$}
+\begin{Boxfig}{Binary to arithmetic share conversion computation.}{fig:b2a-protocol}
+  {$\mathsf{B2A}[P_1, P_2, P_3](\share{\vx}_2)$}
   Roles: Replicated, $P_1$, $P_2, P_3$ where $\vx \in \Z_{2}^\shape$ is an array of length $k$
   of tensors and
-  $\vx.\mathsf{placement}$ is on ReplicatedBin($P_1, P_2, P_3$). \newline
-  With Host($P_1$):
+  $\vx.\mathsf{placement}$ is on ReplicatedBin($P_1, P_2, P_3$).
+
   \begin{enumerate}
-  \item Set $\vx_A^1 = \vx^1 \oplus \vx^2$.
-  \end{enumerate}
-  With Host($P_2$):
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}_2$.
+  \item With Host($P_1$):
   \begin{enumerate}
-      \item Set $\vx_A^2 = \vx^3$.
+  \item Set $\vx_A^1 = \vx_1^1 \oplus \vx_2^1$.
   \end{enumerate}
-  Let $\shareB{\vx_A}$ on Additive($P_1, P_2$). \\
-  With Additive($P_1, P_2$):
+  \item With Host($P_2$):
+  \begin{enumerate}
+      \item Set $\vx_A^2 = \vx_3^2$.
+  \end{enumerate}
+  \item Let $\shareB{\vx_A}$ on Additive($P_1, P_2$).
+  \item With Additive($P_1, P_2$):
   \begin{enumerate}
       \item $\shareB{\vb}, \shareR{\vb} = \textsf{DaBit}(P_3)$.
-      \item Compute $\vc = \Proto{\mathsf{Open}}( \shareB{\vb} \oplus \shareB{\vx_A})$.
+      \item Compute $\vc = \Open( \shareB{\vb} \oplus \shareB{\vx_A})$.
       \item Let $\shareR{\vx_A} = \vc + \shareR{\vb} - 2 \cdot \vc \cdot \shareR{\vb}$
   \end{enumerate}
-  Parties convert the additive sharing $\shareR{\vx_A}$ to a $(2,3)$ replicated sharing by calling
-  $\Proto{AdditiveToRep[P_1,P_2,P_3]}(\shareR{\vx_A})$
+  \item Parties convert $\shareR{\vx_A}$ to a $(2,3)$ replicated sharing by calling
+  $\textsf{AdditiveToRep}[P_1,P_2,P_3](\shareR{\vx_A})$.
+\end{enumerate}
 
 \end{Boxfig}
 
