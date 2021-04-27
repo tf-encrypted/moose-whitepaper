@@ -21,7 +21,7 @@ about $\approx 35$ times less communication. \commentD{Need to re-check this, I 
 
 
 \begin{Boxfig}{Ring truncation protocol for semi-honest
-RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPr}{[P_1, P_2, P_3]}}(\share{\vx}, m)$}
+RSS.}{fig:truncpr-rep-ss}{$\mathsf{TruncPr}{[P_1, P_2, P_3]}(\share{\vx}, m)$}
 \begin{enumerate}
   \item With Host($P_3$):
   \begin{enumerate}
@@ -49,9 +49,9 @@ RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPr}{[P_1, P_2, P_3]}}(\s
 
 \item With Additive($P_1, P_2$):
 \begin{enumerate}
-   \item Run the $\Proto{2PCTruncPr[P_1, P_2]}(\share{\vx'}, m)$ protocol to get $\share{\vy}$.
+   \item Run $\textsf{2PCTruncPr}[P_1, P_2](\share{\vx'}, m)$ protocol to get $\share{\vy}$.
   \item Convert the $2$-out-of-$2$ sharing $\vy$ to a $2$-out-of-$3$
- sharing. Parties output $\Proto{AdditiveToRep[P_1, P_2, P_3]}(\share{\vy})$.
+ sharing. Parties output $\textsf{AdditiveToRep}[P_1, P_2, P_3](\share{\vy})$.
 \end{enumerate}
 \end{enumerate}
 
@@ -65,11 +65,11 @@ RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPr}{[P_1, P_2, P_3]}}(\s
 \end{Boxfig}
 
 \begin{Boxfig}{Generic truncation protocol.}{fig:truncpr-generic}
-  {Protocol $\Proto{2PCTruncPr[P_1, P_2]}(\share{\vx}, m)$}
+  {$\mathsf{2PCTruncPr}[P_1, P_2](\share{\vx}, m)$}
   Assume $\vx \in \Z_{2^k}^{\shape}$ has $\mathsf{MSB}(\vx) = 0$. If $\vx$ is negative then
   we make it positive by adding $2^{k-1}$ to it and assume that $\mathsf{abs}(\vx) < 2^{k-1}$.
-  \\
-  With Additive($P_1,P_2$):
+  \begin{enumerate}
+  \item With Additive($P_1,P_2$):
   \begin{enumerate}
     \item Compute $\vc = \Open(\share{\vx} + \share{\vr_{\mathsf{bot}}})$.
     \item $\vc' \asn (\vc/2^m) \bmod 2^{k-m-1}$. This can be done using one $\mathsf{ring\_shl}$
@@ -79,43 +79,49 @@ RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPr}{[P_1, P_2, P_3]}}(\s
     the result can be computed using only local operations.
     \item Output $\vc' - \share{\vr_{\mathsf{top}}} + \share{\vb} \cdot 2^{k-m-1}$.
  \end{enumerate}
+\end{enumerate}
 
 \end{Boxfig}
 
 
-\begin{Boxfig}{Local conversion to $(2,2)$ additive shares}{fig:get-additive}
-  {Protocol $\Proto{AdditiveShare[D, P_1, P_2]}(R; \vx)$}
-  Roles: D, $P_1$, $P_2$ where $\vx.\mathsf{placement}$ is Host(D) \newline
-  With Host(D):
+\begin{Boxfig}{Local conversion to $(2,2)$ additive shares.
+  }{fig:get-additive}
+  {$\mathsf{AdditiveShare}[D, P_1, P_2](R; \vx)$}
+  \begin{enumerate}
+    \item Roles: D, $P_1$, $P_2$ where $\vx.\mathsf{placement}$ is Host(D).
+    \item With Host(D):
   \begin{enumerate}
     \item $\seed \asn \derives(\dkey_D, \GenNonce)$.
     \item $\vx^1 \asn \RingSample(R; \mathsf{Shape}(\vx), \seed)$.
     \item $\vx^2 \asn \vx - \vx^1$.
     \item Send $\vx^i$ to $P_i$.
   \end{enumerate}
-  With Host($P_1$):
+  \item With Host($P_1$):
   \begin{enumerate}
       \item Receive $\vx^1$ from Dealer.
   \end{enumerate}
-  With Host($P_2$):
+  \item With Host($P_2$):
   \begin{enumerate}
       \item Receive $\vx^2$ from Dealer.
   \end{enumerate}
-  Let $\vx = \text{Additive}(\vx^1, \vx^2)$.
+  \item Let $\vx = \text{Additive}(\vx^1, \vx^2)$.
+\end{enumerate}
 \end{Boxfig}
 
 \begin{Boxfig}{Opening protocol}{fig:open2-2}
-  {Protocol $\Proto{\Open{[P_1, P_2]}}(\share{\vx})$}
-  With Host($P_1$):
+  {$\Open[P_1, P_2](\share{\vx})$}
+  \begin{enumerate}
+    \item With Host($P_1$):
   \begin{enumerate}
     \item Send $\vx_1$ to $P_2$.
     \item Receive $\vx_2$ from $P_2$. Output $\vx \asn \vx_1 + \vx_2$.
   \end{enumerate}
-  With Host($P_2$):
+  \item With Host($P_2$):
   \begin{enumerate}
     \item Send $\vx_2$ to $P_1$.
     \item Receive $\vx_1$ from $P_1$. Output $\vx \asn \vx_1 + \vx_2$.
   \end{enumerate}
+\end{enumerate}
 \end{Boxfig}
 
 
