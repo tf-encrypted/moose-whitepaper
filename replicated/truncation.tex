@@ -22,7 +22,8 @@ about $\approx 35$ times less communication. \commentD{Need to re-check this, I 
 
 \begin{Boxfig}{Ring truncation protocol for semi-honest
 RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPr}{[P_1, P_2, P_3]}}(\share{\vx}, m)$}
-With Host($P_3$):
+\begin{enumerate}
+  \item With Host($P_3$):
   \begin{enumerate}
     \item For $i \in [k]$ call $\seed(i) \asn \derives(\dkey_3, \GenNonce)$.
     \item For $i \in [k]$ sample random bits $\mathbf{b}_i \sample \mathsf{Sample}(\seed(i), \mathsf{Shape}(\vx), [0,1])$.
@@ -35,24 +36,23 @@ With Host($P_3$):
     on each entry and get $
     \vr\ui_{\mathsf{bot}}, \vr\ui_{\mathsf{msb}}, \vr\ui_{\mathsf{top}}$ for $i \in [0,1]$.
  \end{enumerate}
-\item Convert $\share{\vx}$ into a $2$-out-of-$2$ sharing.
-
-With Host($P_1$):
+\item With Host($P_1$):
 \begin{enumerate}
   \item Set $\vx'_1 \asn \vx_1 + \vx_2$.
 \end{enumerate}
 
-With Host($P_2$):
+\item With Host($P_2$):
 \begin{enumerate}
     \item Set $\vx'_2 \asn \vx_2$.
 \end{enumerate}
-Let $\share{\vx'} = \text{Additive}(\vx'_1, \vx'_2)$.
+\item Let $\share{\vx'} = \text{Additive}(\vx'_1, \vx'_2)$.
 
-With Additive($P_1, P_2$):
+\item With Additive($P_1, P_2$):
 \begin{enumerate}
    \item Run the $\Proto{2PCTruncPr[P_1, P_2]}(\share{\vx'}, m)$ protocol to get $\share{\vy}$.
   \item Convert the $2$-out-of-$2$ sharing $\vy$ to a $2$-out-of-$3$
  sharing. Parties output $\Proto{AdditiveToRep[P_1, P_2, P_3]}(\share{\vy})$.
+\end{enumerate}
 \end{enumerate}
 
 %  \begin{enumerate}
