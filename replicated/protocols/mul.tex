@@ -45,9 +45,9 @@ and $y$ parties do the following:
   \begin{enumerate}
     \item ${\seed}^i_i \asn \mathsf{PRF}(k^i_i, \sid \| i)$.
     \item ${\seed}^i_{i+1} \asn \mathsf{PRF}(k^i_{i+1}, \sid \| i + 1)$.
-    \item $\alpha_i \asn \RingSample(R; \seed^i_i, \shape_i) - \RingSample(R; \seed^i_{i+1}, \shape_i)$.
+    \item $\valpha_i \asn \RingSample(R; \seed^i_i, \shape_i) - \RingSample(R; \seed^i_{i+1}, \shape_i)$.
   \end{enumerate}
   
-  \item Return $\alpha = \left( \alpha_1, \alpha_2, \alpha_3 \right)$.
+  \item Return $\valpha = \left( \valpha_1, \valpha_2, \valpha_3 \right)$.
   \end{enumerate}
 \end{Boxfig}
