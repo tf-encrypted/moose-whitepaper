@@ -1,4 +1,5 @@
-\noindent{\textbf{Multiplication}}. 
+\subsection{Multiplication}
+
 To see how this works for replicated secret sharing each party $P_i$ holds a
 sharing of $x$ as $(x_i, x_{ \inc{i} })$ and a sharing of $y$ as $(y_i, y_{
 \inc{i} })$. To compute a sharing $\share{x \cdot y}$ using the shares of $x$
@@ -9,42 +10,44 @@ and $y$ parties do the following:
 
 
 \begin{Boxfig}{Replicated multiplication}{fig:replicated-mul}
-  {Protocol $\Proto{\mathsf{RepMul}_{[P_1, P_2, P_3]}}(\share{\vx}, \share{\vy})$}
+  {Protocol $\mathsf{RepMul}_{[P_1, P_2, P_3]}\left( R; \prfkeys, \share{\vx}_R, \share{\vy}_R \right)$}
+  \begin{enumerate}
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}_R$.
+  \item Let $\left( (\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \right) = \share{\vy}_R$.
   
-  Let $\big((\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \big) = \share{\vx}$. \newline
-  Let $\big((\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \big) = \share{\vy}$. \newline
-  
-  With Host($P_i$) for $i \in [3]$:
+  \item With $P_i$ for $i \in [3]$:
   \begin{enumerate}
     \item $\vv_i^i \asn \vx_i^i \cdot \vy_i^i + \vx_i^i \cdot \vy_{i+1}^i + \vx_{i+1}^i \cdot \vy_i^i$.
+    \item $\shape_i \asn \mathsf{Shape}(\vv_i^i)$.
   \end{enumerate}
-  ~\newline
-  $\alpha_1, \alpha_2, \alpha_3 \asn \mathsf{SampleZero}_{[P_1, P_2, P_3]}\big( \mathsf{Shape}(\vv_1^1), \mathsf{Shape}\mathsf(\vv_2^2), \mathsf{Shape}\mathsf(\vv_3^3) \big)$
-  ~\newline
 
-  With Host($P_i$) for $i \in [3]$:
+  \item $\valpha_1, \valpha_2, \valpha_3 \asn \mathsf{SampleZero}_{[P_1, P_2, P_3]}\big( R; \prfkeys, \shape_1, \shape_2, \shape_3 \big)$
+
+  \item With $P_i$ for $i \in [3]$:
   \begin{enumerate}
     \item $\vz_i^i \asn \vv_i^i + \alpha_i$.
     \item Send $\vz_i^i$ to $P_{i-1}$.
     \item Receive $\vz_{i+1}^i$ from $P_{i+1}$.
   \end{enumerate}
-  ~\newline
-  Return $\share{\vz} = \big((\vz_1^1, \vz_2^1), (\vz_2^2, \vz_3^2), (\vz_3^3, \vz_1^3) \big)$.
+
+  \item Return $\share{\vz}_R = \left( (\vz_1^1, \vz_2^1), (\vz_2^2, \vz_3^2), (\vz_3^3, \vz_1^3) \right)$.
+  \end{enumerate}
 \end{Boxfig}
 
 
 \begin{Boxfig}{Sample Zero protocol.}{fig:replicated-sample-zero}
-  {Protocol $\Proto{\mathsf{SampleZero}_{[P_1, P_2, P_3]}}(\shape_0, \shape_1, \shape_2)$}
+  {Protocol $\mathsf{SampleZero}_{[P_1, P_2, P_3]}(R; \sid, \prfkeys, \shape_1, \shape_2, \shape_3)$}
   
-  Let $( (k_1^1, k_2^1), (k_2^2, k_2^3), (k_2^3, k_1^3) )$
-  a set of pre-shared PRF keys in the setup.
- \newline
-  
-  With Host($P_i$) for $i \in [3]$:
   \begin{enumerate}
-    \item Compute ${\seed}^i_j \asn \derives(k^i_j)$ for $j \in [i, i+1]$.
-    \item $\alpha^i \asn \RingSample(\seed^i_i, \shape_i, \Z_{2^k}) - \RingSample(\seed^i_{i+1}, \shape_i, \Z_{2^k})$.
+  \item Let $\left( (k_1^1, k_2^1), (k_2^2, k_3^2), (k_2^3, k_1^3) \right) = \prfkeys$ be PRF keys generated during setup.
+  
+  \item With $P_i$ for $i \in [3]$:
+  \begin{enumerate}
+    \item ${\seed}^i_i \asn \mathsf{PRF}(k^i_i, \sid \| i)$.
+    \item ${\seed}^i_{i+1} \asn \mathsf{PRF}(k^i_{i+1}, \sid \| i + 1)$.
+    \item $\alpha_i \asn \RingSample(R; \seed^i_i, \shape_i) - \RingSample(R; \seed^i_{i+1}, \shape_i)$.
   \end{enumerate}
-  ~\newline
-  Return $\alpha = \big(\alpha^1, \alpha^2, \alpha^3 \big)$.
+  
+  \item Return $\alpha = \left( \alpha_1, \alpha_2, \alpha_3 \right)$.
+  \end{enumerate}
 \end{Boxfig}

@@ -20,7 +20,7 @@ about $\approx 35$ times less communication. \commentD{Need to re-check this, I 
 
 
 
-\begin{Boxfig}{Truncation protocol for semi-honest
+\begin{Boxfig}{Ring truncation protocol for semi-honest
 RSS.}{fig:truncpr-rep-ss}{Protocol $\Proto{\mathsf{TruncPr}{[P_1, P_2, P_3]}}(\share{\vx}, m)$}
 With Host($P_3$):
   \begin{enumerate}
@@ -84,12 +84,12 @@ With Additive($P_1, P_2$):
 
 
 \begin{Boxfig}{Local conversion to $(2,2)$ additive shares}{fig:get-additive}
-  {Protocol $\Proto{AdditiveShare[D, P_1, P_2]}(\vx)$}
+  {Protocol $\Proto{AdditiveShare[D, P_1, P_2]}(R; \vx)$}
   Roles: D, $P_1$, $P_2$ where $\vx.\mathsf{placement}$ is Host(D) \newline
   With Host(D):
   \begin{enumerate}
     \item $\seed \asn \derives(\dkey_D, \GenNonce)$.
-    \item $\vx^1 \asn \mathsf{SampleUniform}(\mathsf{Shape}(\vx), \seed)$.
+    \item $\vx^1 \asn \RingSample(R; \mathsf{Shape}(\vx), \seed)$.
     \item $\vx^2 \asn \vx - \vx^1$.
     \item Send $\vx^i$ to $P_i$.
   \end{enumerate}
