@@ -1,13 +1,12 @@
 \begin{Boxfig}{DaBit protocol generation}{fig:dabit-protocol}
-  {Protocol $\Proto{\mathsf{DaBit}}(\shape)$}
+  {Protocol $\Proto{DaBit[D, P_1, P_2]}(\shape)$}
   Roles: $P_1$, $P_2, P_3$ where $P_3$ acts as a dealer to distribute
   an additive share of a bit of shape $\shape$ in the boolean and arithmetic domain. \newline
   With Dealer($P_3$):
   \begin{enumerate}
-    \item $k_3 \asn \SampleKey()$.
-    \item $\seed \asn \derives(k_3, 0)$.
+    \item $\seed \asn \derives(\dkey_D, \GenNonce)$.
     \item $\vb \asn \RingSample(\seed, \shape, \{0, 1\})$.
-    \item $\seed(\textsf{bin}) \asn \derives(k_3, 1), \seed(\textsf{ring}) \asn \derives(k_3, 2)$.
+    \item $\seed(\textsf{bin}) \asn \derives(\dkey_D, \GenNonce), \seed(\textsf{ring}) \asn \derives(\dkey_D, \GenNonce)$.
     \item Send $\seed(\textsf{bin})$ and $\seed(\textsf{ring})$ to $P_1$.
 
   \end{enumerate}

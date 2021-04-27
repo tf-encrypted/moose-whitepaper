@@ -1,5 +1,5 @@
 \begin{Boxfig}{Binary to arithmetic share conversion computation}{fig:b2a-protocol}
-  {Protocol $\Proto{\mathsf{B2A}}(\vx)$}
+  {Protocol $\Proto{B2A[P_1, P_2, P_3]}(\share{\vx})$}
   Roles: Replicated, $P_1$, $P_2, P_3$ where $\vx \in \Z_{2}^\shape$ is an array of length $k$
   of tensors and
   $\vx.\mathsf{placement}$ is on ReplicatedBin($P_1, P_2, P_3$). \newline
@@ -18,8 +18,8 @@
       \item Compute $\vc = \Proto{\mathsf{Open}}( \shareB{\vb} \oplus \shareB{\vx_A})$.
       \item Let $\shareR{\vx_A} = \vc + \shareR{\vb} - 2 \cdot \vc \cdot \shareR{\vb}$
   \end{enumerate}
-  Parties convert the 2-out-of-2 sharing $\shareR{\vx_A}$ to a 2-out-of-3 sharing by calling
-  $\Proto{ (2,2)\rightarrow (2,3)}(\shareR{\vx_A})$
+  Parties convert the additive sharing $\shareR{\vx_A}$ to a $(2,3)$ replicated sharing by calling
+  $\Proto{AdditiveToRep[P_1,P_2,P_3]}(\shareR{\vx_A})$
 
 \end{Boxfig}
 
