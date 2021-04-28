@@ -1,0 +1,19 @@
+\begin{Boxfig}{Replicated opening protocol to a specific party $P_i$.}{fig:replicated-open}
+  {$\Open[P_1, P_2, P_3](R; P_i, \share{\vx}_R)$}
+  
+  \begin{enumerate}
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}_R$.
+  \item On Host($P_{i-1}$):
+  \begin{enumerate}
+    \item Send $\vx_{i-1}^{i-1}$ to $P_{i-1}$.
+  \end{enumerate}
+  \item On Host($P_i$):
+  \begin{enumerate}
+   \item Receive $\vx_{i-1}^{i-1}$ from $P_{i-1}$.
+   \item Store $\vx = \vx_{i-1}^{i-1} + \vx_i^i + \vx_i^{i+1}$.
+  \end{enumerate}
+  \item Return $\mathsf{Unit}$.
+\end{enumerate}
+\end{Boxfig}
+
+
