@@ -5,7 +5,7 @@
 
 To sample efficiently a large batch of random bits we use an AES based PRG.
 To produce $n \cdot 128$ random bits the main idea is to select a random
-$128$ bit key $k$ and call $\mathsf{AES}_k(0), \dots, \mathsf{AES}_k(n-1)$.
+$128$ bit key $k$ and call $\mathsf{AES}_k(0), \cdots, \mathsf{AES}_k(n-1)$.
 Since AES works on $128$ bit blocks the integer counters $0, \cdots, (n-1)$
 are encoded using Little Endian format.  In case one wants to retrieve a
 number of $\ell$ random bits which is non-divisible by $128$ then the last
