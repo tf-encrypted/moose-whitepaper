@@ -1,8 +1,6 @@
-\subsection{Comparison between a secret and a public value}
-One of the most important primitives in secure computation is comparison.
-In our use-case we need it in order to compute the MAPE (mean absolute percentage error) metric which boils down to compute
-the absolute value of a secret $\share{|\vx|}$. Since our primitives work with ring arithmetic
-one of its most efficient evaluation of the absolute value is $\share{|\vx|} = \share{\vx} \cdot \share{\vx > 0}$.
+\subsection{Comparison}
+
+%In order to compute the MAPE (mean absolute percentage error) metric which boils down to compute the absolute value of a secret $\share{|\vx|}$. Since our primitives work with ring arithmetic one of its most efficient evaluation of the absolute value is $\share{|\vx|} = \share{\vx} \cdot \share{\vx > 0}$.
 
 The problem of computing secure comparisons translates directly into computing a sharing of the most significant bit $\share{\mathsf{msb}(\vx)}$.
 In the 3PC semi-honest model there are few approaches to this:
