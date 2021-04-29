@@ -19,7 +19,7 @@ back to a replicated sharing using Figure~\ref{fig:two-to-three}. Correctness an
 
 
 \begin{Boxfig}{Ring truncation protocol for semi-honest
-RSS.}{fig:truncpr-rep-ss}{$\mathsf{TruncPr}_{[P_1, P_2, P_3]} \left(\prfkeys, \share{\vx}, m \right)$}
+RSS.}{fig:truncpr-rep-ss}{$\mathsf{TruncPr}_{[P_1, P_2, P_3]} \left(\Z_{2^k}; \prfkeys, \share{\vx}, m \right)$}
 \begin{enumerate}
   \item Let $\left( (k_1^1, k_2^1), (k_2^2, k_3^2), (k_3^3, k_1^3) \right) = \prfkeys$.
   
@@ -28,7 +28,7 @@ RSS.}{fig:truncpr-rep-ss}{$\mathsf{TruncPr}_{[P_1, P_2, P_3]} \left(\prfkeys, \s
   \item On $P_3$:
   \begin{enumerate}
     \item $\shape \asn \mathsf{Shape}(\vx^3_3)$.
-    \item $k \asn \mathsf{GenPrfKey}()$.
+    \item $\mathsf{key} \asn \mathsf{GenPrfKey}()$.
     \item $\seed_\ell \asn \derives(\ell; k)$ for $\ell \in [n]$.
     \item $\mathbf{b}_\ell \asn \mathsf{SampleBits}(\shape, \seed_\ell)$ for $\ell \in [n]$.
     \item $\mathbf{r}_{\mathsf{msb}} \asn \vb_{k-1}$
@@ -71,12 +71,12 @@ RSS.}{fig:truncpr-rep-ss}{$\mathsf{TruncPr}_{[P_1, P_2, P_3]} \left(\prfkeys, \s
   
   \item On $P_i$ for $i \in [2]$:
     \begin{enumerate}
-    \item $\vc^i' \asn (\vc^i / 2^m) \bmod 2^{k-m-1}$. This can be done using one $\mathsf{ring\_shl}$ followed by one $\mathsf{ring\_shr}$ operation.
+    \item $\vc_t^{i} \asn (\vc^i / 2^m) \bmod 2^{k-m-1}$. This can be done using one $\mathsf{ring\_shl}$ followed by one $\mathsf{ring\_shr}$ operation.
     \end{enumerate}
     
   \item $\share{\vb} \asn \share{\vr_{\mathsf{msb}}} \oplus (\vc / 2^{k-1})$. Note here that $\oplus$ in arithmetic circuits boils down to $a + b - 2a\cdot b$. Here one of the operands is public so the result can be computed using only local operations.
     
-  \item Return $\share{\vy} \asn \vc' - \share{\vr_{\mathsf{top}}} + \share{\vb} \cdot 2^{k-m-1}$.
+  \item Return $\share{\vy} \asn \vc_t - \share{\vr_{\mathsf{top}}} + \share{\vb} \cdot 2^{k-m-1}$.
 \end{enumerate}
 
 \end{Boxfig}
