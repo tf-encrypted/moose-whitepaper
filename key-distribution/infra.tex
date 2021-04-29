@@ -1,26 +1,29 @@
-\section{Key setup infrastructure}
+\subsection{Key Setup Infrastructure}
 
-We have three organizations into play: \verb|A|, \verb|B| and \verb|Cape|.
-Each org will own a set of workers to perform computations on encrypted data
-- think of workers as parties in an MPC protocol. On both sides of \verb|A|
-and \verb|B| there are two different types of parties, besides the workers,
-an operator and a data scientist denoted as \verb|OpA|, \verb|DS-A|,
-\verb|OpB|, \verb|DS-B|.
+For our linear regression usecase there are three organizations: \verb|A|,
+\verb|B| and \verb|Cape|.  Each organization owns a set of workers to perform
+computations on encrypted data.  In this contexts workers are the parties
+running the MPC protocol.  On both sides of \verb|A| and \verb|B| there are
+two different types of parties (besides the workers): an operator and a data
+scientist denoted as \verb|OpA|, \verb|DS-A|, \verb|OpB|, \verb|DS-B|.
 
 The operators and data scientists talk to each other across organizations through a
 communication service ran by \verb|Cape|.
-We now describe the key steps for workers to establish authenticated secret channels
-in order for the computations to be done securely:
+We now describe the key steps for workers to establish authenticated secret
+channels in order for the replicated computations to be done securely:
 \begin{enumerate}
   \item \verb|OpA| generates a pair of keys $\VK_A, \SK_A$
   using libsodium \verb|crypto_sign_keypair|.
   \item The secret key $\SK_A$ is broadcasted internally to the workers
-  inside the org to be able to sign their ephemeral keys across sessions.
-  Finally, a hash of the public verification key $\VK_A$
-  denoted as $h_A^\OP = \HASH(\VK_A)$
-  is then sent to \verb|B-DS| by the operator through Cape.
-  \item Optionally, \verb|B-DS| can check via an authenticated channel (say \verb|mail.google.com|
-  or some QR code) that the hash $h_A^\OP$ received from Cape corresponds to the one sent by \verb|OpA|.
+  inside organization \verb|A|.  This is done for the workers inside \verb|A|
+  to sign their ephemeral keys across sessions using $\SK_A$.  Finally, a
+  hash of the public verification key $\VK_A$ denoted as $h_A^\OP =
+  \HASH(\VK_A)$ is then sent to \verb|B-DS| by the operator \verb|OpA|
+  through Cape.
+  
+  \item Optionally, \verb|B-DS| can check via an authenticated channel (say
+  \verb|mail.google.com| or some QR code using Signal app) that the hash $h_A^\OP$ received
+  from Cape corresponds to the one sent by \verb|OpA|.
 
   \item On the \verb|B| side the operator \verb|OpB| generates a symmetric key $K_B$
   using \verb|crypto_auth_keygen| in libsodium.
@@ -68,6 +71,5 @@ in order for the computations to be done securely:
 
 \subsection{Communication layer between workers}
 
-\input{key-distribution/protocol-flow}
 
 
