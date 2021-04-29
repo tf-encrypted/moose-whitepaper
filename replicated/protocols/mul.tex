@@ -1,13 +1,9 @@
 \subsection{Multiplication}
 
-To see how this works for replicated secret sharing each party $P_i$ holds a
-sharing of $x$ as $(x_i, x_{ \inc{i} })$ and a sharing of $y$ as $(y_i, y_{
-\inc{i} })$. To compute a sharing $\share{x \cdot y}$ using the shares of $x$
-and $y$ parties do the following:
+Protocol $\mathsf{RepMul}$ in Figure~\ref{fig:replicated-mul} is used to compute the product of two replicated tensors $\share{\vz} = \share{\vx \cdot \vy}$. It follows the multiplication protocol of~\cite{CCS:AFLNO16} with some small computational optimizations in the underlying $\mathsf{ZeroShare}$ protocol in Figure~\ref{fig:replicated-sample-zero}, and inherent their correctness and security proofs.
+%The main benefit of our $\mathsf{SampleZero}$ is that there are less $\RingSample$ calls per ring element than in Araki et al. which lends to a greater benefit when using AES with AVX instructions as described in Section~\ref{sec:aes}.
 
-\commentM{TODO: turn into proper protocol; describe how $\alpha + \beta + \gamma$ is computed}
-\commentD{Done}
-
+As for the $\mathsf{ZeroShare}$ protocol, note that the $\mathsf{DeriveSeed}$ operation is parameterized by an explicit $\mathsf{seed\_key}$ attribute (assigned $i$ and $i+1$, respectively) allowing $P_i$ and $P_{i+1}$ to generate the same seeds non-interactively, i.e. $\seed^1_1 = \seed^3_1 \not = \seed^1_2 = \seed^2_2 \not = \seed^2_3 = \seed^3_3$. The operation is implemented as $\mathsf{PRF}(k, \sid \| \mathsf{seed\_key})$, which in turn is implemented using the keyed hash function from~\cite{libsodium} (BLAKE2b) with an output truncated to 128 bits; this ensures that all seeds are unique across sessions. Finally, the $\mathsf{SampleUniform}$ operation is implemented by running AES as a PNG using the seed as the key and encrypting plaintexts $0, 1, ...$ in ECB mode.
 
 \begin{Boxfig}{Replicated multiplication}{fig:replicated-mul}
   {Protocol $\mathsf{RepMul}_{[P_1, P_2, P_3]}\left( R; \prfkeys, \share{\vx}_R, \share{\vy}_R \right)$}
@@ -15,17 +11,17 @@ and $y$ parties do the following:
   \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}_R$.
   \item Let $\left( (\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \right) = \share{\vy}_R$.
   
-  \item With $P_i$ for $i \in [3]$:
+  \item On $P_i$ for $i \in [3]$:
   \begin{enumerate}
     \item $\vv_i^i \asn \vx_i^i \cdot \vy_i^i + \vx_i^i \cdot \vy_{i+1}^i + \vx_{i+1}^i \cdot \vy_i^i$.
     \item $\shape_i \asn \mathsf{Shape}(\vv_i^i)$.
   \end{enumerate}
 
-  \item $\valpha_1, \valpha_2, \valpha_3 \asn \mathsf{SampleZero}_{[P_1, P_2, P_3]}\big( R; \prfkeys, \shape_1, \shape_2, \shape_3 \big)$
+  \item $\valpha_1, \valpha_2, \valpha_3 \asn \mathsf{ZeroShare}_{[P_1, P_2, P_3]}\big( R; \prfkeys, \shape_1, \shape_2, \shape_3 \big)$
 
-  \item With $P_i$ for $i \in [3]$:
+  \item On $P_i$ for $i \in [3]$:
   \begin{enumerate}
-    \item $\vz_i^i \asn \vv_i^i + \alpha_i$.
+    \item $\vz_i^i \asn \vv_i^i + \valpha_i$.
     \item Send $\vz_i^i$ to $P_{i-1}$.
     \item Receive $\vz_{i+1}^i$ from $P_{i+1}$.
   \end{enumerate}
@@ -36,18 +32,16 @@ and $y$ parties do the following:
 
 
 \begin{Boxfig}{Sample Zero protocol.}{fig:replicated-sample-zero}
-  {Protocol $\mathsf{SampleZero}_{[P_1, P_2, P_3]}(R; \sid, \prfkeys, \shape_1, \shape_2, \shape_3)$}
+  {Protocol $\mathsf{ZeroShare}_{[P_1, P_2, P_3]}(R; \prfkeys, \shape_1, \shape_2, \shape_3)$}
   
   \begin{enumerate}
   \item Let $\left( (k_1^1, k_2^1), (k_2^2, k_3^2), (k_2^3, k_1^3) \right) = \prfkeys$ be PRF keys generated during setup.
   
-  \item Let 
-  
-  \item With $P_i$ for $i \in [3]$:
+  \item On $P_i$ for $i \in [3]$:
   \begin{enumerate}
-    \item ${\seed}^i_i \asn \mathsf{GenSeed}(k^i_i, \sid \| i)$.
-    \item ${\seed}^i_{i+1} \asn \mathsf{GenSeed}(k^i_{i+1}, \sid \| i + 1)$.
-    \item $\valpha_i \asn \RingSample(R; \seed^i_i, \shape_i) - \RingSample(R; \seed^i_{i+1}, \shape_i)$.
+    \item ${\seed}^i_i \asn \mathsf{DeriveSeed}(i; k^i_i)$.
+    \item ${\seed}^i_{i+1} \asn \mathsf{DeriveSeed}(i + 1; k^i_{i+1})$.
+    \item $\valpha_i \asn \mathsf{SampleUniform}(R; \seed^i_i, \shape_i) - \mathsf{SampleUniform}(R; \seed^i_{i+1}, \shape_i)$.
   \end{enumerate}
   
   \item Return $\valpha = \left( \valpha_1, \valpha_2, \valpha_3 \right)$.

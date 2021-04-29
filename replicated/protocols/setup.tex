@@ -1,0 +1,19 @@
+\subsection{Setup and Randomness}
+
+Some of the replicated protocols rely on per-session PRF keys produced during an initial setup phase as described by the $\mathsf{Setup}$ protocol in Figure~\ref{fig:replicated-setup}. Note that keys are distributed the same way as replicated shares so that $P_i$ ends up knowing both $k_i$ and $k_{i+1}$. Generation of individual keys by $\mathsf{GenPrfKey}$ is implemented by sampling 128 random bits using~\cite{libsodium}.
+
+\begin{Boxfig}{Replicated setup.}{fig:replicated-setup}
+  {Protocol $\mathsf{Setup}_{[P_1, P_2, P_3]}$}
+  
+  \begin{enumerate}
+  \item On $P_i$ for $i \in [3]$:
+  \begin{enumerate}
+    \item $k^{i}_{i} \asn \mathsf{GenPrfKey}()$.
+    \item Send $k^{i}_{i}$ to $P_{i-1}$.
+    \item Receive $k^{i}_{i+1}$ from $P_{i+1}$.
+  \end{enumerate}
+  
+  \item Return $\prfkeys = \left( (k^1_1, k^1_2), (k^2_2, k^2_3), (k^3_3, k^3_1) \right)$.
+  \end{enumerate}
+\end{Boxfig}
+

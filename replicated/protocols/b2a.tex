@@ -6,18 +6,18 @@
 
   \begin{enumerate}
   \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}_2$.
-  \item With Host($P_1$):
+  \item On $P_1$:
   \begin{enumerate}
   \item Set $\vx_A^1 = \vx_1^1 \oplus \vx_2^1$.
   \end{enumerate}
-  \item With Host($P_2$):
+  \item On $P_2$:
   \begin{enumerate}
       \item Set $\vx_A^2 = \vx_3^2$.
   \end{enumerate}
-  \item Let $\shareB{\vx_A}$ on Additive($P_1, P_2$).
-  \item With Additive($P_1, P_2$):
+  \item Let $\shareB{\vx_A} = (\vx_A^1, \vx_A^2)$ be a $2$ out of $2$ sharing on ($P_1, P_2$).
+  \item On ($P_1, P_2$):
   \begin{enumerate}
-      \item $\shareB{\vb}, \shareR{\vb} = \textsf{DaBit}(P_3)$.
+      \item $\shareB{\vb}, \shareR{\vb} = \textsf{DaBit}[D=P_3, P_1, P_2](\shape)$.
       \item Compute $\vc = \Open( \shareB{\vb} \oplus \shareB{\vx_A})$.
       \item Let $\shareR{\vx_A} = \vc + \shareR{\vb} - 2 \cdot \vc \cdot \shareR{\vb}$
   \end{enumerate}

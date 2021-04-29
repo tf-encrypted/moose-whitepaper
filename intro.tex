@@ -9,6 +9,59 @@ This paper is currently scoped to the linear regression task outlined in section
 
 \subsection{Linear Regression}
 
+% \definecolor{codegreen}{rgb}{0,0.6,0}
+% \definecolor{codegray}{rgb}{0.5,0.5,0.5}
+% \definecolor{codepurple}{rgb}{0.58,0,0.82}
+% \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% \lstdefinestyle{mystyle}{
+%     backgroundcolor=\color{backcolour},
+%     commentstyle=\color{codegreen},
+%     keywordstyle=\color{magenta},
+%     numberstyle=\tiny\color{codegray},
+%     stringstyle=\color{codepurple},
+%     basicstyle=\ttfamily\footnotesize,
+%     breakatwhitespace=false,
+%     breaklines=true,
+%     captionpos=b,
+%     keepspaces=true,
+%     numbers=left,
+%     numbersep=5pt,
+%     showspaces=false,
+%     tabsize=2
+% }
+
+% \lstset{style=mystyle}
+
+% \begin{lstlisting}[language=Python]
+% @edsl.computation
+% def lin_reg():
+
+%     with x_owner:
+%         X = edsl.load("X")
+%         bias = edsl.ones(edsl.slice(edsl.shape(X), begin=0, end=1))
+%         reshaped_bias = edsl.expand_dims(bias, 1)
+%         X_b = edsl.concatenate([reshaped_bias, X], axis=1)
+%         A = edsl.inverse(edsl.dot(edsl.transpose(X_b), X_b))
+%         B = edsl.dot(A, edsl.transpose(X_b))
+
+%     with y_owner:
+%         y_true = edsl.load("y")
+%         totals_ss = ss_tot(y_true)
+
+%     with replicated:
+%         w = edsl.dot(B, y_true)
+%         y_pred = edsl.dot(X_b, w)
+%         mse_result = mse(y_pred, y_true)
+%         residuals_ss = ss_res(y_pred, y_true)
+
+%     with x_owner:
+%         rsquared_result = r_squared(residuals_ss, totals_ss)
+%         w = edsl.identity(w)
+%         mse = edsl.identity(mse)
+%         residuals_ss = edsl.identity(residuals_ss)
+% \end{lstlisting}
+
 \commentM{TODO: briefly describe the usecase and its high-level computation. }
 
 \commentM{TODO: insert eDSL snippet}
@@ -16,3 +69,5 @@ This paper is currently scoped to the linear regression task outlined in section
 For the linear regression use-case we believe that $128$ bit field size is
 enough using a fixed point precision by $16$ bits while keeping the numbers
 magnitude to $40$ bits (thus making the integral part of size $24$ bits).
+
+\input{replicated/fixed-point}

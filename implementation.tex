@@ -1,7 +1,18 @@
 \section{Implementation}
 
-\subsection{AES based PRF}
-This is currently done in the Rust runtime we have.
+\subsection{AES based PRG}
+\label{sec:aes}
+
+To sample efficiently a large batch of random bits we use an AES based PRG. 
+The main idea is to select a random key $k$ and call $\mathsf{AES}_k(0), \dots, \mathsf{AES}_k(n)$
+
+This is implemented in \textsf{rust/src/prng.rs} and 
+In order to sample efficiently a large batch of ring elements we instantiate
+the $\RingSample$ command with an AES based PRG. This method of generating
+randomness is used in many MPC libraries such as MP-SPDZ, SCALE-MAMBA or Swanky \cite{url-swanky}.
+Security proofs for using fixed key AES in various MPC protocols were given in \cite{xiao-paper}.
+In our $\RingSample$ after a random key $k$ is generated using the sodiuomxide entropy pool
+% then  $\mathsf{AES}_{k}(generate a large chunk of random bits }$
 
 \subsection{$128$ bit field arithmetic}
 Currently we only implement 64-bit ring arithmetic ($\Z_{2^{64}}$)

@@ -1,15 +1,15 @@
 \subsection{Fixed point arithmetic}
 \label{subsec:fixed-point}
 
-\commentM{TODO move this up, perhaps till just after the overview}
+% \commentM{TODO move this up, perhaps till just after the overview}
 
 We define $\verb|fixed|(k, f)$ as the set of rational numbers $\{x \in \Q : x
 = \bar{x} \cdot 2^{-f}, \bar{x} \in \Z_{\share{k}}\}$. Here $\bar{x} \in
 Z_{\share{k}}$ denotes that $\bar{x}$ is at most a $k$ bit integer. A fixed
 point number is represented in memory as $x \cdot 2^{f} = \bar{x} \in
-\Z_{\share{k}}$. There are a few generic protocols to encode, decode or add
-and multiply two fixed point numbers but we focus here on truncation while
-the interested reader can check more details in
-Appendix~\ref{app:fixed-point}.
+\Z_{\share{k}}$. All operations done on fixed point numbers boil down to ring
+arithmetic which is described below. The lowering from fixed point operations
+to ring arithmetic is described in more detail in Appendix~\ref{app:fixed-point}
+along with the truncation protocol in Section~\ref{subsec:truncation}.
 
-\input{truncation}
+

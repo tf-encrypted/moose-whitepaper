@@ -1,19 +1,34 @@
 \begin{Boxfig}{Replicated opening protocol to a specific party $P_i$.}{fig:replicated-open}
-  {$\Open[P_1, P_2, P_3](R; P_i, \share{\vx}_R)$}
+  {$\Open_{[P_1, P_2, P_3]} \left( \share{\vx} \right)$}
+  
+  Let $P_i$ be the player to which $\vx$ is to be revealed.
   
   \begin{enumerate}
-  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}_R$.
-  \item On Host($P_{i-1}$):
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}$.
+  \item On $P_{i-1}$:
   \begin{enumerate}
     \item Send $\vx_{i-1}^{i-1}$ to $P_{i-1}$.
   \end{enumerate}
-  \item On Host($P_i$):
+  \item On $P_i$:
   \begin{enumerate}
    \item Receive $\vx_{i-1}^{i-1}$ from $P_{i-1}$.
-   \item Store $\vx = \vx_{i-1}^{i-1} + \vx_i^i + \vx_i^{i+1}$.
+   \item $\vx \asn \vx_{i-1}^{i-1} + \vx_i^i + \vx_i^{i+1}$.
   \end{enumerate}
-  \item Return $\mathsf{Unit}$.
+  \item Return $\vx$.
 \end{enumerate}
 \end{Boxfig}
 
 
+\begin{Boxfig}{Additive opening protocol}{fig:additive-open}
+  {$\Open_{[P_1, P_2]} \left( \share{\vx} \right)$}
+  \begin{enumerate}
+  \item Let $(\vx_1, \vx_2) = \share{\vx}$.
+  \item On $P_i$ for $i \in [2]$:
+  \begin{enumerate}
+    \item Send $\vx_i$ to $P_{i+1}$.
+    \item Receive $\vx_{i+1}$ from $P_{i+1}$.
+    \item $\vx^i \asn \vx_1 + \vx_2$.
+  \end{enumerate}
+  \item Return $(\vx^1, \vx^2)$.
+\end{enumerate}
+\end{Boxfig}

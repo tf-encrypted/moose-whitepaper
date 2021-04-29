@@ -1,3 +1,11 @@
-\subsection{Revealing replicated secrets}
+\subsection{Revealing secrets}
+
+We sometimes use interchangeably the terms \textit{open} and \textit{reveal} a secret.
+They refer to the same thing which is taking a secret shared input $\share{\vx}$ and make $\vx$ known to
+a single party (Figure~\ref{fig:replicated-open}) or to all parties (Figure~\ref{fig:additive-open}).
+Note that Figure~\ref{fig:replicated-open} corresponds to a replicated opening whereas Figure~\ref{fig:additive-open} to an two out of two additive sharing scheme which is used in some more
+advanced protocols below for truncation or share conversion. Correctness is guaranteed as long as
+the secret was correctly shared. This is also secure as we only send the required
+shares to the set of parties that want the secret revealed.
 
 \input{protocols/share-reveal}

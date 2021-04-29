@@ -1,14 +1,18 @@
 \subsection{Addition}
 
+To compute the addition of two replicated tensors $\share{\vz} = \share{\vx + \vy}$
+the parties simply add their local shares of $\share{\vx}$ and $\share{\vy}$
+as described in protocol~$\mathsf{RepAdd}$ in Figure~\ref{fig:replicated-add}.
+Correctness and security follow from~\cite{CCS:ABFLNO16}.
 
-\begin{Boxfig}{Replicated addition}{fig:replicated-add}
-  {Protocol $\mathsf{RepAdd}_{[P_1, P_2, P_3]}\left(R; \share{\vx}, \share{\vy}\right)$}
+\begin{Boxfig}{Replicated addition.}{fig:replicated-add}
+  {Protocol $\mathsf{RepAdd}_{[P_1, P_2, P_3]}\left(R; \share{\vx}_R, \share{\vy}_R \right)$}
   
   \begin{enumerate}
   \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}_R$.
   \item Let $\left( (\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \right) = \share{\vy}_R$.
   
-  \item With $P_i$ for $i \in [3]$:
+  \item On $P_i$ for $i \in [3]$:
   \begin{enumerate}
     \item $\vz_i^i \asn \vx_i^i + \vy_i^i$
     \item $\vz_{i+1}^i \asn \vx_{i+1}^i + \vy_{i+1}^i$

@@ -1,59 +1,58 @@
-\subsection{Comparisons}
-Given $\share{x}$ where $x \in \Z_{2^k}$ our goal is to compute a ring sharing of $\share{x > 0}$.
-This translates into how to compute a sharing of the most significant bit $\share{\mathsf{msb}(x)}$.
-Since we are in the 3PC semi-honest model there are few approaches to this:
-\begin{enumerate}
+\subsection{Comparison between a secret and a public value}
+One of the most important primitives in secure computation is comparison.
+In our use-case we need it in order to compute the MAPE (mean absolute percentage error) metric which boils down to compute
+the absolute value of a secret $\share{|\vx|}$. Since our primitives work with ring arithmetic
+one of its most efficient evaluation of the absolute value is $\share{|\vx|} = \share{\vx} \cdot \share{\vx > 0}$.
 
-   \item SecureNN: there's some extra preprocessing which needs to be done
-   although the round complexity seems to be a bit lower than ABY3 - need to
-   check this though. The downside is that it uses arithmetic modulo weird
-   fields. IMO we should stick with ABY3 because it either operates on rings
-   or boolean type (so a bit more standard than SecureNN).
-   \item ABY3:
-   There's an implementation of this in MP-SPDZ as well, using
-   the \textit{split} option when compiling a program. The main idea is for
+The problem of computing secure comparisons translates directly into computing a sharing of the most significant bit $\share{\mathsf{msb}(\vx)}$.
+In the 3PC semi-honest model there are few approaches to this:
+\begin{enumerate}
+   \item ABY3 \cite{CCS:MohRin18} The main idea is for
    each party to locally bit-decompose their shares over $\Z_{2^k}$ and then
    reconstruct the secret modulo $\Z_{2^k}$ using shares from $\Z^k_2$ and a
-   binary adder. Once we get a sharing of the MSB then in order to use it in
-   other operations we need to convert the sharing back to one in $\Z_{2^k}$.
-   In ABY3 this was done using a three-party OT protocol. In MP-SPDZ this was
-   achieved using a daBit.
-  \item The newest one is using edaBits \cite{C:EGKRS20}. The downside of
-   this method is that we need to implement edaBit generation and a boolean
-   circuit doing binary addition. The upside of this is that for 3PC
-   semi-honest the edaBit generation doesn't seem to be that hard ie
-   we can avoid the cut and choose since everyone will execute the protocol
-   semi-honestly.
+   binary adder. Once a boolean sharing of the MSB is computed using the binary adder
+   this is converted to a ring sharing in $\Z_{2^k}$.
+   In ABY3 this was done using a three-party OT protocol. In MP-SPDZ \cite{CCS:Keller20} 
+   the boolean to ring sharing conversion was achieved using a daBit.
+   \item SecureNN \cite{PoPETS:WagGupCha19} 
+   similar to ABY3 with the downside that it uses arithmetic modulo
+   some small fields but avoids ring-to-boolean conversion.
+  \item Comparisons using edaBits \cite{C:EGKRS20}. The 3PC case has roughly the same cost as ABY3.
 \end{enumerate}
 
-\noindent In Moose we use ABY3 protocol with a Kogge-Stone binary adder with
-some minor optimizations for tensor operations. We avoid the three party OT
-done by ABY3 by using a slightly more efficient share conversion described
-below.
+In Moose we use the MSB subtraction protocol from ABY3 with a Kogge-Stone binary adder and
+some minor optimizations for tensor operations. 
+We avoid the special three-party OT that ABY3 had along with edabits preprocessing by introducing
+our custom protocol \textsf{B2A} for binary to ring share conversion in Figure~\ref{fig:b2a-protocol}.
+The MSB protocol can be found in Figure~\ref{fig:msb-protocol}.
+\input{protocols/msb}
 
 \subsubsection{Improved ABY3 boolean to ring sharing protocol}
-When using tensors we can perform the share conversion $\share{\cdot}_2
-\mapsto \share{\cdot}_{\Z_{2^k}}$ much easier by making use that all parties
-follow the protocol specifications.
-Acting as a trusted third party, $P_3$ generates a
-daBit $(\share{b}_2, \share{b}_{2^k})$ locally and then shares it to $P_1$ and $P_2$.
+When the inputs are tensors we can perform the share conversion $\share{\cdot}_2
+\mapsto \share{\cdot}_{\Z_{2^k}}$ ($\mathsf{B2A}$ function)
+more efficient by making use that all parties
+follow the protocol specifications. The starting point is using a similar idea
+from daBit/edaBit \cite{INDOCRYPT:RotWoo19,C:EGKRS20}
+line of work with the twist that $P_3$ generates the preprocessing
+material. We fully describe this share conversion protocol in Figure~\ref{fig:b2a-protocol}.
+
+Acting as a trusted third party, $P_3$ generates a random
+daBit $(\share{b}_2, \share{b}_{2^k})$ locally and then shares it to $P_1$ and $P_2$. 
 Since the shared tuple contains tensors which sum up to the bit $b$ then $P_3$ can
-send to $P_2$ only two seeds $s_2, s_{2^k}$ which are going to be later expanded
-locally by $P_2$. Now $P_3$ sends to $P_1$ the difference $b_2 \oplus
-\mathsf{Expand}(s_2, b_2.\mathsf{shape})$ and $b_{2^k} -
-\mathsf{Expand}(s_{2^k}, b_{2^k}.\mathsf{shape})$.
+send to $P_1$ only two seeds $\seed(\mathsf{bin}), \seed(\mathsf{ring})$
+which are going to be later expanded
+locally by $P_1$. Next $P_3$ sends to $P_2$ the difference the original
+bit $b_2$ and the expansion of its associated seed using  $\RingSample(\seed(\mathsf{bin}))$, similar for $b_{2^k}$ 
+the difference $b_{2^k} - \RingSample(\seed(\mathsf{ring}))$.
 
 Now $P_1$ and $P_2$ run a two-party protocol to convert $\share{x}_2$ to
 $\share{x}_{2^k}$ by computing $c \asn \mathsf{Open}(\share{x}_2 \oplus
 \share{b}_2)$ and then locally XOR-ing in the arithmetic domain
 $\share{x}_{2^k} = c + \share{b}_{2^k} - 2 \cdot c \cdot \share{b}_{2^k}$.
 Finally they convert the $(2,2)$ sharing of $\share{x}_{2^k}$ to a $(2,3)$
-sharing using $\Proto{(2,2) \rightarrow (2,3)}$ from
-Figure~\ref{fig:two-to-three}.
+sharing using $\mathsf{AdditiveToRep}$ from Figure~\ref{fig:two-to-three}.
 
-\input{protocols/2-out-of-2.tex}
-\input{protocols/msb}
-\input{protocols/abs}
 \input{protocols/b2a}
 \input{protocols/dabit}
-\commentD{Add randomness}
+\input{protocols/2-out-of-2.tex}
+\input{protocols/abs}

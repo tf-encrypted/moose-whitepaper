@@ -3,11 +3,11 @@
   Roles: Replicated, $P_1$, $P_2, P_3$ where $\vx \in \Z_{2^k}^\shape$ and
   $\vx.\mathsf{placement}$ is on Replicated($P_1, P_2, P_3$).
   \begin{enumerate}
-  \item With Host($P_1$):
+  \item On $P_1$:
   \begin{enumerate}
     \item $\va \asn \textsf{BitDec}(\vx^1 + \vx^2)$. Here, $\va$ is a vector of $k$ boolean tensors $\Z_{2^k}^\shape$.
   \end{enumerate}
-  \item With Host($P_2$)
+  \item On $P_2$
   \begin{enumerate}
     \item $\vb \asn \textsf{BitDec}(\vx^3)$ where $\vb$ is a vector of $k$ boolean tensors $\Z_{2^k}^\shape$.
   \end{enumerate}
