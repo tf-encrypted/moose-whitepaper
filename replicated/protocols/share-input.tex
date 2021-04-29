@@ -1,6 +1,6 @@
 
 \begin{Boxfig}{Replicated sharing protocol.}{fig:replicated-share}
-  {Protocol $\mathsf{RepShare}_{[P_1, P_2, P_3]}(R; \prfkeys, \vx)$}
+  {Protocol $\mathsf{ReplicatedShare}_{[P_1, P_2, P_3]}(R; \prfkeys, \vx)$}
   
   Let $P_i$ be the player holding $\vx$.
   
@@ -9,28 +9,28 @@
   
   \item On $P_i$:
   \begin{enumerate}
-    \item $\shape \asn \mathsf{Shape}(\vx)$.
+    \item $\shape^i \asn \mathsf{Shape}(\vx)$.
     \item ${\seed}^i \asn \mathsf{DeriveSeed}(0; k^i_i)$.
-    \item $\vx_i^i \asn \RingSample(R; \shape, \seed^i)$.
+    \item $\vx_i^i \asn \RingSample(R; \shape^i, \seed^i)$.
     \item $\vx_{i+1}^i \asn \vx - \vx_i^i$.
-    \item Send $\shape$ to $P_{i-1}$ and $P_{i+1}$.
+    \item Send $\shape^i$ to $P_{i-1}$ and $P_{i+1}$.
     \item Send $\vx_{i+1}^i$ to $P_{i+1}$.
   \end{enumerate}
   
   \item On $P_{i-1}$:
   \begin{enumerate}
-    \item Receive $\shape$ from $P_i$.
+    \item Receive $\shape^{i-1}$ from $P_i$.
     \item ${\seed}^{i-1} \asn \mathsf{DeriveSeed}(0; k^{i-1}_i)$.
-    \item $\vx_{i-1}^{i-1} \asn \mathsf{Zeros}(R; \shape)$.
-    \item $\vx_i^{i-1} \asn \RingSample(R; \shape, \seed^{i-1})$.
+    \item $\vx_{i-1}^{i-1} \asn \mathsf{Zeros}(R; \shape^{i-1})$.
+    \item $\vx_i^{i-1} \asn \RingSample(R; \shape^{i-1}, \seed^{i-1})$.
   \end{enumerate}
   
   \item On $P_{i+1}$:
   \begin{enumerate}
-    \item Receive $\shape$ from $P_i$.
+    \item Receive $\shape^{i+1}$ from $P_i$.
     \item Receive $\vx_{i+1}^i$ from $P_i$.
     \item $\vx_{i+1}^{i+1} \asn \vx_{i+1}^i$.
-    \item $\vx_{i+2}^{i+1} \asn \mathsf{Zeros}(R; \shape)$.
+    \item $\vx_{i+2}^{i+1} \asn \mathsf{Zeros}(R; \shape^{i+1})$.
   \end{enumerate}
   
   \item Return $\share{\vx}_R = \left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right)$.

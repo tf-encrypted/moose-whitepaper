@@ -3,7 +3,7 @@
 Protocol $\mathsf{RepMul}$ in Figure~\ref{fig:replicated-mul} is used to compute the product of two replicated tensors $\share{\vz} = \share{\vx \cdot \vy}$. It follows the multiplication protocol of~\cite{CCS:AFLNO16} with some small computational optimizations in the underlying $\mathsf{ZeroShare}$ protocol in Figure~\ref{fig:replicated-sample-zero}, and inherent their correctness and security proofs.
 %The main benefit of our $\mathsf{SampleZero}$ is that there are less $\RingSample$ calls per ring element than in Araki et al. which lends to a greater benefit when using AES with AVX instructions as described in Section~\ref{sec:aes}.
 
-As for the $\mathsf{ZeroShare}$ protocol, note that the $\mathsf{DeriveSeed}$ operation is parameterized by an explicit $\mathsf{seed\_key}$ attribute (assigned $i$ and $i+1$, respectively) allowing $P_i$ and $P_{i+1}$ to generate the same seeds non-interactively, i.e. $\seed^1_1 = \seed^3_1 \not = \seed^1_2 = \seed^2_2 \not = \seed^2_3 = \seed^3_3$. The operation is implemented as $\mathsf{PRF}(k, \sid \| \mathsf{seed\_key})$, which in turn is implemented using the keyed hash function from~\cite{libsodium} (BLAKE2b) with an output truncated to 128 bits; this ensures that all seeds are unique across sessions. Finally, the $\mathsf{SampleUniform}$ operation is implemented by running AES as a PNG using the seed as the key and encrypting plaintexts $0, 1, ...$ in ECB mode.
+As for the $\mathsf{ZeroShare}$ protocol, note that the $\mathsf{DeriveSeed}$ operation is parameterized by an explicit $\mathsf{sync\_key}$ attribute (assigned $i$ and $i+1$, respectively) allowing $P_i$ and $P_{i+1}$ to generate the same seeds non-interactively, i.e. $\seed^1_1 = \seed^3_1 \not = \seed^1_2 = \seed^2_2 \not = \seed^2_3 = \seed^3_3$. The operation is implemented as $\mathsf{PRF}(k, \sid \| \mathsf{sync\_key})$, which in turn is implemented using the keyed hash function from~\cite{libsodium} (BLAKE2b) with an output truncated to 128 bits; this ensures that all seeds are unique across sessions. Finally, the $\mathsf{SampleUniform}$ operation is implemented by running AES as a PNG using the seed as the key and encrypting plaintexts $0, 1, ...$ in ECB mode.
 
 \begin{Boxfig}{Replicated multiplication}{fig:replicated-mul}
   {Protocol $\mathsf{RepMul}_{[P_1, P_2, P_3]}\left( R; \prfkeys, \share{\vx}_R, \share{\vy}_R \right)$}
@@ -31,7 +31,7 @@ As for the $\mathsf{ZeroShare}$ protocol, note that the $\mathsf{DeriveSeed}$ op
 \end{Boxfig}
 
 
-\begin{Boxfig}{Sample Zero protocol.}{fig:replicated-sample-zero}
+\begin{Boxfig}{Zero share protocol.}{fig:replicated-sample-zero}
   {Protocol $\mathsf{ZeroShare}_{[P_1, P_2, P_3]}(R; \prfkeys, \shape_1, \shape_2, \shape_3)$}
   
   \begin{enumerate}

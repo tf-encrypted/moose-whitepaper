@@ -11,8 +11,8 @@
   \end{enumerate}
   \item On $P_i$:
   \begin{enumerate}
-   \item Receive $\vx_{i-1}^{i-1}$ from $P_{i-1}$.
-   \item $\vx \asn \vx_{i-1}^{i-1} + \vx_i^i + \vx_i^{i+1}$.
+   \item Receive $\vx_{i-1}^{i}$ from $P_{i-1}$.
+   \item $\vx \asn \vx_{i-1}^{i} + \vx_i^i + \vx_{i+1}^{i}$.
   \end{enumerate}
   \item Return $\vx$.
 \end{enumerate}
@@ -29,6 +29,6 @@
     \item Receive $\vx_{i+1}$ from $P_{i+1}$.
     \item $\vx^i \asn \vx_1 + \vx_2$.
   \end{enumerate}
-  \item Return $(\vx^1, \vx^2)$.
+  \item Return $\vx^1$ and $\vx^2$.
 \end{enumerate}
 \end{Boxfig}
