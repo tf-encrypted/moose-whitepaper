@@ -8,7 +8,12 @@ Note that this paper is currently scoped to the linear regression task outlined 
 
 \subsection{Linear Regression}
 
-We here focus on performing linear regression between a data provider and a model owner (or data subscriber). From a cryptographic perspective, this boils down to performing a matrix dot product on secret shared data to train the weights of the model. In addition, we also compute several metrics on secret shared data to measure the impact of the regression. Concretely, we support mean squared error (MSE), residual sum of squares (RSS), and mean absolute percentage error (MAPE).
+We here focus on performing linear regression between a data provider inputting $y_{\mathit{true}}$ and a data subscriber inputting $x$. By appropriately processing the data in plaintext on the data subscriber side before it is secret shared, we can derive a $x'$ so that the operations needed to subsequently be performed on secret shared data boils down to a single matrix dot product:
+\begin{align*}
+w = x' \cdot y_{\mathit{true}}
+\end{align*}
+
+In addition to this, we also need operations for computing several metrics on the secret shared data to measure the impact of the regression which means. Concretely, we present cryptographic protocols to support mean squared error (MSE) and residual sum of squares (RSS).
 
 $$
 w = x' \cdot y_{\mathit{true}}
