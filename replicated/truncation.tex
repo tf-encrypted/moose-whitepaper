@@ -52,8 +52,7 @@ The protocol is described protocol in Fig~\ref{fig:truncpr-rep-ss}. At a high-le
 \begin{Boxfig}{Two-party truncation protocol.}{fig:truncpr-generic}
   {$\mathsf{2PCTruncPr}_{[P_1, P_2]} \left( \share{\vx}, m, \share{\vr}, \share{\vr_{\mathsf{msb}}}, \share{\vr_{\mathsf{top}}} \right)$}
   
-  Assume $\vx \in \Z_{2^k}^{\shape}$ has $\mathsf{MSB}(\vx) = 0$. If $\vx$ is negative then
-  we make it positive by adding $2^{k-1}$ to it and assume that $\mathsf{abs}(\vx) < 2^{k-1}$. \commentM{Dragos could you add a few more details here?}
+  Assume $\vx \in \Z_{2^k}^{\shape}$ has $\mathsf{MSB}(\vx) = 0$. 
   \begin{enumerate}
   
   \item $\share{\vc} \asn \share{\vx} + \share{\vr}$.
