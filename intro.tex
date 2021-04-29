@@ -10,20 +10,19 @@ Note that this paper is currently scoped to the linear regression task outlined 
 
 We here focus on performing linear regression between a data provider and a model owner (or data subscriber). From a cryptographic perspective, this boils down to performing a matrix dot product on secret shared data to train the weights of the model. In addition, we also compute several metrics on secret shared data to measure the impact of the regression. Concretely, we support mean squared error (MSE), residual sum of squares (RSS), and mean absolute percentage error (MAPE).
 
-Regression $LinReg(X, Y)$:
 $$
-w = dot(X, Y)
-$$
-
-Prediction $Pred(X, w)$:
-$$
-Y_pred = dot(X, w)
+w = x' \cdot y_{\mathit{true}}
 $$
 
-Metric $MSE(Y, X, w)$:
 $$
-mse = \sum
+y_{\mathit{pred}} = x \cdot w
 $$
+
+\begin{align*}
+\mathit{MSE}(y_{\mathit{pred}}, y_{\mathit{true}}) = \sum \frac{ (y_{\mathit{pred}} - y_{\mathit{true}})^2 }{n}
+\\
+\mathit{RSS}(y_{\mathit{pred}}, y_{\mathit{true}}) = \sum \left( (y_{\mathit{pred}} - y_{\mathit{true}})^2 \right)
+\end{align*}
 
 In order to compute the MAPE (mean absolute percentage error) metric which boils down to compute
 the absolute value of a secret $\share{|\vx|}$.
