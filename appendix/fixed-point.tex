@@ -12,7 +12,7 @@ $x \in \verb|fixed|(k, f)$ output $\mathsf{Decode}(x, f) = x \cdot 2^{-f} \in \m
 \subsection{Addition} To add two secret shared fixed point numbers
 $\share{x}, \share{y}$ where $x,y \in \verb|fixed(k, f)|$ output
 $\share{x}+\share{y}$. Note that $\mathsf{Decode}(x+y)$ will be successful
-iff $x+y$ does not overflow $\Z_{2^k}$.
+iff $(x+y)\cdot 2^f$ does not overflow $\Z_{2^k}$.
 
 \subsection{Multiplication}
 
@@ -22,11 +22,12 @@ level the operation works as $\bar{z} = x \cdot y \cdot 2 ^ {2f}$, hence the
 correct decoding function becomes $\Decode(z, 2f) = x \cdot y$. Although
 multiplications are pretty fast this way we can see that the numbers grow by
 $2^f$ after each multiplication. To circumvent this we introduce the
-\verb|trunc| operation which takes $\bar{z} = x \cdot y \cdot 2^{2f}$ and outputs $\bar{z} / 2^{f}$
+\verb|Trunc| operation which takes $\bar{z} = x \cdot y \cdot 2^{2f}$ and outputs $\bar{z} / 2^{f}$
 which makes $\verb|trunc|(\bar{z}, f) \in \verb|fixed|(2 \cdot k, f)$.
+In the main body the \verb|trunc| operation is replaced by the probabilistic truncation $\mathsf{TruncPR}$ function.
 Next we describe how these operations are done using secret shared inputs.
 
-\noindent{\textbf{Multiplication between two secret inputs}.} Note that
+\noindent{\textbf{Fixed point multiplication between two secrets}.} Note that
 multiplication between two fixed point numbers $\share{x}, \share{y}$ where
 $x,y \in \verb|fixed(k, f)|$ gets us $z = x \cdot y \cdot 2^{2f}$. One can
 now simply output $\Decode(z, 2f)$ if this is the last multiplication.
@@ -47,16 +48,16 @@ public floating point scalar $c$ with $\share{x}$ we compute $\hat{c} \asn
 \mathsf{trunc}(\hat{c} \cdot \share{x}, f)$. Note that $\hat{c} \cdot \share{x}$
 can be done with local computations.
 
-\subsubsection{Division}
-TBD, SecureNN has some leakage, check MP-SPDZ - there was no description in
-ABY3 on fixed point division.
+% \subsubsection{Division}
+% TBD, SecureNN has some leakage, check MP-SPDZ - there was no description in
+% ABY3 on fixed point division.
 
-\noindent{\textbf{Division by a clear scalar}}.
+\subsection{Division by a public scalar}
+
 Consider the division $\share{x} / c$ where $c$ is known to all parties. We want to compute a
-fixed point encoding of $x/c$ which is $\share{\hat{x} / c \cdot 2^f}$. The naive way to do
-this is to compute $c' = \Encode(c, f) = c \cdot 2^f$ and then do
-$\mathsf{GoldschmidtDiv}(x \cdot 2^f, \mathsf{AppRec}(c'))$.
+fixed point encoding of $x/c$ which is $\share{\hat{x} / c \cdot 2^f}$. Although
+there are
 
-See Catrina et al. where they talk about computing $\mathsf{AppRec}(c)$ (computing $1/c$). In this
-case $\mathsf{AppRec}$ can be computed in the clear so we can avoid this protocol if $c$ is public.
+% See Catrina et al. where they talk about computing $\mathsf{AppRec}(c)$ (computing $1/c$). In this
+% case $\mathsf{AppRec}$ can be computed in the clear so we can avoid this protocol if $c$ is public.
 

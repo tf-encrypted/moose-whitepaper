@@ -1,0 +1,76 @@
+
+\subsection{Linear regression}
+\label{sec:linreg}
+
+We focus on performing linear regression between two distinct data owners, one providing the explanatory variable(s) $X$ and another providing some response (or target) variable $y$. The solution to a classical linear regression problem is to find the minimizer of the mean squared error, $$ w^* = \min_{w}\frac{1}{n}\sum_{n} (X \cdot w - y)^2 $$. Using the method of maximum likelihood estimation, we can reformulate this into $$w^* = $$
+Due to the nature of the task, the data subscriber can locally derive a $x'$ from $x$ so that the operations needed to be performed on secret shared data boils down to a single matrix dot product:
+\begin{align*}
+w = x' \cdot y_{\mathit{true}}
+\end{align*}
+
+In addition to this, we also need operations for computing metrics on secret shared data to measure the impact of the regression. Concretely, we present cryptographic protocols to support mean squared error (MSE) and residual sum of squares (RSS):
+
+\begin{align*}
+y_{\mathit{pred}} &= x \cdot w
+\\
+\mathit{MSE}(y_{\mathit{pred}}, y_{\mathit{true}}) &= \sum \frac{ (y_{\mathit{pred}} - y_{\mathit{true}})^2 }{n}
+\\
+\mathit{RSS}(y_{\mathit{pred}}, y_{\mathit{true}}) &= \sum \left( (y_{\mathit{pred}} - y_{\mathit{true}})^2 \right)
+\end{align*}
+
+%In order to compute the MAPE (mean absolute percentage error) metric which boils down to compute the absolute value of a secret $\share{|\vx|}$.
+
+% \definecolor{codegreen}{rgb}{0,0.6,0}
+% \definecolor{codegray}{rgb}{0.5,0.5,0.5}
+% \definecolor{codepurple}{rgb}{0.58,0,0.82}
+% \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% \lstdefinestyle{mystyle}{
+%     backgroundcolor=\color{backcolour},
+%     commentstyle=\color{codegreen},
+%     keywordstyle=\color{magenta},
+%     numberstyle=\tiny\color{codegray},
+%     stringstyle=\color{codepurple},
+%     basicstyle=\ttfamily\footnotesize,
+%     breakatwhitespace=false,
+%     breaklines=true,
+%     captionpos=b,
+%     keepspaces=true,
+%     numbers=left,
+%     numbersep=5pt,
+%     showspaces=false,
+%     tabsize=2
+% }
+
+% \lstset{style=mystyle}
+
+% \begin{lstlisting}[language=Python]
+% @edsl.computation
+% def lin_reg():
+
+%     with x_owner:
+%         X = edsl.load("X")
+%         bias = edsl.ones(edsl.slice(edsl.shape(X), begin=0, end=1))
+%         reshaped_bias = edsl.expand_dims(bias, 1)
+%         X_b = edsl.concatenate([reshaped_bias, X], axis=1)
+%         A = edsl.inverse(edsl.dot(edsl.transpose(X_b), X_b))
+%         B = edsl.dot(A, edsl.transpose(X_b))
+
+%     with y_owner:
+%         y_true = edsl.load("y")
+%         totals_ss = ss_tot(y_true)
+
+%     with replicated:
+%         w = edsl.dot(B, y_true)
+%         y_pred = edsl.dot(X_b, w)
+%         mse_result = mse(y_pred, y_true)
+%         residuals_ss = ss_res(y_pred, y_true)
+
+%     with x_owner:
+%         rsquared_result = r_squared(residuals_ss, totals_ss)
+%         w = edsl.identity(w)
+%         mse = edsl.identity(mse)
+%         residuals_ss = edsl.identity(residuals_ss)
+% \end{lstlisting}
+
+Finally, all of these operations must be implemented for fixed-point numbers as described in Section~\ref{subsec:fixed-point}.

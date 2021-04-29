@@ -5,7 +5,7 @@ In this section we describe our protocols for performing encrypted computations 
 \input{related}
 
 \subsection{Notation}
-The protocols perform computations in rings $\ring$ of form $\mathbb{Z}_{2^{k}}$; concretely, $\mathbb{Z}_{2^{64}}$ and $\mathbb{Z}_{2^{128}}$. As outlined below, this allows us to emulate fixedpoint arithmetic as needed for the linear regression use case. We currently only present protocols for the operations needed to support linear regressions and associated metrics (see e.g. Section~\ref{??}).
+The protocols perform computations in rings $\ring$ of form $\mathbb{Z}_{2^{k}}$; concretely, $\mathbb{Z}_{2^{64}}$ and $\mathbb{Z}_{2^{128}}$. As outlined below, this allows us to emulate fixed-point arithmetic as needed for the linear regression use case. We currently only present protocols for the operations needed to support linear regressions and associated metrics (see Section~\ref{sec:linreg}).
 
 Throughout this section we use 
 $$
@@ -18,11 +18,7 @@ to denote a replicated value consisting of shares $\vx_1 = \vx_1^1 = \vx_1^3$, $
 \input{protocols/add}
 \input{protocols/mul}
 \input{dot-product}
-\clearpage
 \input{protocols/inputs}
 \input{protocols/outputs}
-\clearpage
 \input{truncation}
-\clearpage
 %\input{comparisons}
-%\clearpage
