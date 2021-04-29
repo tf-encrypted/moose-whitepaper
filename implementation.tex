@@ -3,23 +3,23 @@
 \subsection{AES based PRG}
 \label{sec:aes}
 
-To sample efficiently a large batch of random bits we use an AES based PRG. 
-To produce $n \cdot 128$ random bits the main idea is to select a random $128$ bit
-key $k$ and call $\mathsf{AES}_k(0), \dots, \mathsf{AES}_k(n-1)$. Since AES works
-on $128$ bit blocks the integer counters $0, \cdots, (n-1)$ are encoded using Little Endian format.
-In case one wants to retrieve a number of $\ell$ random bits which is non-divisible by $128$ then
-the last $128 - \ell$ bits are discarded.
+To sample efficiently a large batch of random bits we use an AES based PRG.
+To produce $n \cdot 128$ random bits the main idea is to select a random
+$128$ bit key $k$ and call $\mathsf{AES}_k(0), \dots, \mathsf{AES}_k(n-1)$.
+Since AES works on $128$ bit blocks the integer counters $0, \cdots, (n-1)$
+are encoded using Little Endian format.  In case one wants to retrieve a
+number of $\ell$ random bits which is non-divisible by $128$ then the last
+$128 - \ell$ bits are discarded.
 
 This method of generating
-randomness is used in a couple of MPC libraries such as MP-SPDZ, SCALE-MAMBA or Swanky \cite{url-swanky}.
-Security proofs for using fixed key AES in various MPC protocols were given in \cite{xiao-paper}.
+randomness is used in a couple of MPC libraries such as MP-SPDZ
+\cite{CCS:Keller20}, SCALE-MAMBA \cite{SCALE} or Swanky \cite{url-swanky}.
+Security proofs for using fixed key AES in various MPC protocols were given
+in \cite{SP:GKWY20}.
 
-This is implemented in \textsf{rust/src/prng.rs} and 
-In order to sample efficiently a large batch of ring elements we instantiate
-the $\RingSample$ command with an AES based PRG. 
-In our $\RingSample$ after a random key $k$ is generated using the sodiuomxide entropy pool
-% then  $\mathsf{AES}_{k}(generate a large chunk of random bits }$
-
-% \subsection{$128$ bitarithmetic}
-% Currently we only implement 64-bit ring arithmetic ($\Z_{2^{64}}$)
+The PRNG wrapper we have built can be found in \textsf{rust/src/prng.rs} and
+it is based on \cite{url-cargo-aes}.  We set the \textsf{AES} crate to
+compile with special SSE3 CPU instructions whenever it is possible.
+The PRNG key $k$ is generated using a call to \textsf{randombytes\_into}
+from the Sodium Oxide rust crate \cite{url-sodiumoxide}.
 
