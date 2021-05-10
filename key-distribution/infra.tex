@@ -1,29 +1,23 @@
 \subsection{Key Setup Infrastructure (Work In Progress)}
+\label{sec:infrastructure}
 
-The scope of this subsection is for workers to establish secure channels
-without trusting \verb|Cape|. Concurrent with our writing a blogpost
-appeared on establishing keys between MPC parties over the internet \cite{url-zengo}.
+The scope of this subsection is to detail how workers can establish secure channels between themselves without trusting \verb|Cape| and without relying on TLS CA infrastructure. Concurrent to our writing, a blogpost appeared on establishing keys between MPC parties over the internet \cite{url-zengo}.
 
-For our linear regression usecase there are three organizations: \verb|A|,
+For our linear regression use case there are three organizations: \verb|A|,
 \verb|B| and \verb|Cape|.  Each organization owns a set of workers to perform
-computations on encrypted data.  In this contexts workers are the parties
+computations on encrypted data.  In this context, workers are the parties
 running the MPC protocol.  On both sides of \verb|A| and \verb|B| there are
 two different types of parties (besides the workers): an operator and a data
-scientist denoted as \verb|OpA|, \verb|DS-A|, \verb|OpB|, \verb|DS-B|.  The
+scientist denoted as \verb|OpA|, \verb|DS-A|, \verb|OpB|, and \verb|DS-B| respectively.  The
 operators and data scientists talk to each other across organizations through
 a communication service ran by \verb|Cape|.
 
 We now describe the key steps for workers to establish authenticated secret
 channels in order for the replicated computations to be done securely:
 \begin{enumerate}
-  \item \verb|OpA| generates a pair of keys $\VK_A, \SK_A$
-  using Libsodium \verb|crypto_sign_keypair|.
-  \item The secret key $\SK_A$ is broadcasted internally to the workers
-  inside organization \verb|A|.  This is done for the workers inside \verb|A|
-  to sign their ephemeral keys across sessions using $\SK_A$.  Finally, a
-  hash of the public verification key $\VK_A$ denoted as $h_A^\OP =
-  \HASH(\VK_A)$ is then sent to \verb|B-DS| by the operator \verb|OpA|
-  through \verb|Cape|.
+  \item \verb|OpA| generates a signature key pair $\VK_A, \SK_A$ using Libsodium's \verb|crypto_sign_keypair|.
+  
+  \item The secret key $\SK_A$ is made available to the workers inside organization \verb|A| and a hash of the public verification key $\VK_A$ denoted as $h_A^\OP = \HASH(\VK_A)$ is sent to \verb|B-DS| by the operator \verb|OpA| through \verb|Cape|.
   
   \item Optionally, \verb|B-DS| can check via an authenticated channel (say
   \verb|mail.google.com| or some QR code using Signal app) that the hash $h_A^\OP$ received
@@ -39,7 +33,7 @@ channels in order for the replicated computations to be done securely:
   that the public key setup messages below between workers across organizations are
   forwarded correctly by \verb|Cape|.
 
-  \item On the \verb|A| side all workers $W_A^i$ generate an encryption key $\EK_A^i$ and
+  \item On the \verb|A| side all workers $W_A^i$ generate an ephemeral encryption key $\EK_A^i$ and
   its corresponding decryption key $\DK_A^i$ using \verb|crypto_box_keypair|.
 
   \item For the key-setup between workers, on the \verb|A| side each worker
@@ -65,15 +59,14 @@ channels in order for the replicated computations to be done securely:
   \item Repeat this for parties on the $B$ side (see Figure~\ref{fig:b-flow}).
 \end{enumerate}
 
-Now that after all workers agree on the public key setup infrastructure
-using the description above they continue by calling \verb|crypto_box_easy|
-which launches the Curve25519 key exchange and communicate further using a
+After all workers agree on the public key setup infrastructure
+using the description above, they continue by calling \verb|crypto_box_easy|
+which launches the Curve25519 key exchange. The workers communicate further using a
 symmetric key as described in the first section. For more details on the Libsodium API
-the reader can check Figure~\ref{fig:worker-flow}. Note that communication
-between workers happens through an entity called \verb|Broker| which is
-simply forwarding messages between workers. From a security viewpoint this is does not cause
-any problems since \verb|crypto_box_easy| authenticates the ciphertexts thus making them
-immune to replay attacks.
+the reader can refer to Figure~\ref{fig:worker-flow}. Note that communication
+between workers happens through an entity called \verb|Broker|, which is
+simply forwarding messages between workers. Since \verb|crypto_box_easy| authenticates 
+the ciphertexts, they are immune to replay attacks.
 
 % Expiration date for signatures
 

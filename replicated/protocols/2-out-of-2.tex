@@ -1,35 +1,36 @@
 
-\begin{Boxfig}{Additive to replicated share conversion protocol for semi-honest
-replicated secret sharing.}{fig:two-to-three}{$\mathsf{AdditiveToRep}[P_1, P_2, P_3](\share{\vx})$}
+\begin{Boxfig}{Additive to replicated share conversion protocol.}{fig:two-to-three}{$\mathsf{AdditiveToReplicated}_{[P_1, P_2, P_3]}(R; \share{\vx}^{\mathsf{add}}_{R})$}
 \begin{enumerate}
-\item Let $(\vx^1, \vx^2, \bot^3) = \share{\vx}$ such that $\vx^1 + \vx^2 = \vx$.
-\item On $P_3$:
-\begin{enumerate}
-  \item Sample seeds $\seed(i) \sample \derives(\dkey_3, \GenNonce)$ for $i \in [1, 2]$. Send $\seed(i)$ to $P_i$.
-  \item Compute $\vy_1 \sample \RingSample(\seed(1), \vx.\shape, \Z_{2^k})$
-  and $\vy_3 \sample \RingSample(\seed(2), \vx.\shape, \Z_{2^k})$.
-  \item Set
-  the output share as $(\vy_3, \vy_1)$.
-\end{enumerate}
+\item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{add}}_{R}$.
 
-\item On $P_i$ for $i \in [1,2]$:
-\begin{enumerate}
-   \item Receive $\seed(i)$ from $P_3$ and compute $\vy^i = \RingSample(\seed(i), \vx.\shape, \Z_{2^k})$.
-  \item Set $\vy^i = \share{\vy}$ as an additive sharing of $\vy$.
-\end{enumerate}
-\item With Additive($P_1, P_2$)
-\begin{enumerate}
-  \item Run $\Open(\share{\vx} - \share{\vy})$ between $P_1$ and $P_2$. Store $\vc$ as the output
-to the $\Open$ protocol.
-\end{enumerate}
 \item On $P_1$:
 \begin{enumerate}
-  \item Set the output share as $(\vy_1, \vx - \vy_1 + \vc)$.
+  \item $\shape \asn \mathsf{Shape}(\vx_1)$.
+  \item Send $\shape$ to $P_3$.
 \end{enumerate}
-\item On $P_2$:
+
+\item On $P_3$:
 \begin{enumerate}
-  \item Set the output share as $(\vx - \vy_2 + \vc, \vy_2)$.
+  \item Receive $\shape$ from $P_1$.
+  \item $k \asn \mathsf{GenPrfKey}()$.
+  \item $\seed_i \asn \derives(i; k)$ for $i \in \{1, 2\}$.
+  \item Send $\seed_i$ to $P_i$ for $i \in \{1, 2\}$.
+  \item $\vy_1^3 \asn \RingSample(R; \shape, \seed_1)$.
+  \item $\vy_3^3 \asn \RingSample(R; \shape, \seed_2)$.
 \end{enumerate}
+
+\item On $P_i$ for $i \in \{1,2\}$:
+\begin{enumerate}
+  \item $\shape \asn \mathsf{Shape}(\vx_i)$.
+  \item Receive $\seed_i$ from $P_3$.
+  \item $\vy_i \asn \RingSample(R; \shape, \seed_i)$.
+\end{enumerate}
+
+\item Let $\share{\vy}^{\mathsf{add}}_{R} = (\vy_1, \vy_2)$.
+
+\item $\vc \asn \mathsf{Open}_{[P_1, P_2]}\left( \share{\vx}^{\mathsf{add}}_{R} - \share{\vy}^{\mathsf{add}}_{R} \right)$
+
+\item Return $\share{\vy}^{\mathsf{rep}}_{R} = \left( (\vy_1, \vc), (\vc, \vy_2), (\vy_3^3, \vy_1^3) \right)$.
 \end{enumerate}
 \end{Boxfig}
 

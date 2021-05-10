@@ -1,22 +1,24 @@
 \section{Replicated Protocols}
 
-In this section we describe our protocols for performing encrypted computations using the three-party replicated secret sharing scheme. Much of this work follows the lines of~\cite{CCS:AFLNO16} with some optimizations derived from the fact that we focus on tensorized computations. All protocols presented here operate in the honest-but-curious security model, meaning players are assumed to follow the protocols but may try to learn additional information from the messages they receive.
+In this section we describe our protocols for performing encrypted computations using the three-party replicated secret sharing scheme. Much of this work follows the lines of~\cite{CCS:AFLNO16} with some optimizations derived from the fact that we focus on tensorized computations. All protocols presented here operate in the honest-but-curious security model, meaning players are assumed to follow the protocols but may try to learn additional information from the messages they receive. We currently only present protocols for the operations needed to support linear regressions and associated metrics (Section~\ref{sec:linreg}).
+
 
 \input{related}
 
-\subsection{Notation}
-The protocols perform computations in rings $\ring$ of form $\mathbb{Z}_{2^{k}}$; concretely, $\mathbb{Z}_{2^{64}}$ and $\mathbb{Z}_{2^{128}}$. As outlined below, this allows us to emulate fixed-point arithmetic as needed for the linear regression use case. We currently only present protocols for the operations needed to support linear regressions and associated metrics (see Section~\ref{sec:linreg}).
 
-Throughout this section we use 
+\subsection{Notation}
+
+The protocols perform computations in rings $\ring$ of form $\mathbb{Z}_{2^{k}}$, concretely $\mathbb{Z}_{2^{64}}$ and $\mathbb{Z}_{2^{128}}$, which allows us to emulate fixed-point arithmetic as needed for the linear regression use case. Throughout this section we use 
 $$
-\share{\vx}_\ring = \left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right)
+\share{\vx}^{\mathsf{rep}}_\ring = \left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right)
 $$
-to denote a replicated value consisting of shares $\vx_1 = \vx_1^1 = \vx_1^3$, $\vx_2 = \vx_2^2 = \vx_2^1$, and $\vx_3 = \vx_3^3 = \vx_3^2$ over ring $\ring$ such that $\vx = \sum_{i=1}^3 \vx_i \in \Z_{2^k}$. It will typically be the case that $P_i$ holds $\vx_i^i$ and $\vx_{i+1}^i$. To ease the notation we occasionally leave the $\ring$ implicit and simply write $\share{\vx}$, and we let indices wrapping around such that for instance $P_{3+1} = P_1$. We also often leave out $\ring$ when performing operations on shares, although these are always done using the corresponding ring arithmetic.
+to denote a replicated value consisting of shares $\vx_1 = \vx_1^1 = \vx_1^3$, $\vx_2 = \vx_2^2 = \vx_2^1$, and $\vx_3 = \vx_3^3 = \vx_3^2$ over ring $\ring$ such that $\vx = \sum_{i=1}^3 \vx_i \in \Z_{2^k}$. It will typically be the case that $P_i$ holds $\vx_i^i$ and $\vx_{i+1}^i$. To ease the notation we occasionally write this simply as $\share{\vx}$, and we let indices wrap around such that for instance $P_{3+1} = P_1$.
 %Note that $\share{x}$ hence also states that the $x_{i+1}$ held by $P_i$ matches the $x_{i+1}$ held by $P_{i+1}$. We furthermore use this to express statements about results of computing on secret shared values such as for instance $\share{\vz} = \share{\vx + \vy} = \share{\vx} + \share{\vy}$.
 
 \input{protocols/setup}
 \input{protocols/add}
 \input{protocols/mul}
+\input{protocols/sum-mean}
 \input{dot-product}
 \input{protocols/inputs}
 \input{protocols/outputs}

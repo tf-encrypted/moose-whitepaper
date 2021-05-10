@@ -1,6 +1,0 @@
-\subsection{Fixed-point arithmetic}
-\label{subsec:fixed-point}
-
-% \commentM{TODO move this up, perhaps till just after the overview}
-
-We define $\verb|fixed|(k, f)$ as the subset of the real numbers $\{x \in \mathbb{R} : x = \bar{x} \cdot 2^{-f}, \bar{x} \in \Z, -2^{k-1} \leq \bar{x} < 2^{k-1}\}$ where $\bar{x}$ is at most a $k$ bit signed integer. A fixed point number is represented as $x \cdot \bar{x} = 2^{f} \in \Z_{2^k}$, and all operations done on fixed-point numbers boil down to ring arithmetic as described in Appendix~\ref{app:fixed-point} together with lowering from the former to the latter.

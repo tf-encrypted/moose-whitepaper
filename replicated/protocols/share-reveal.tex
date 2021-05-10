@@ -1,10 +1,10 @@
 \begin{Boxfig}{Replicated opening protocol to a specific party $P_i$.}{fig:replicated-open}
-  {$\Open_{[P_1, P_2, P_3]} \left( \share{\vx} \right)$}
+  {$\Open_{[P_1, P_2, P_3]} \left( \share{\vx}^{\mathsf{rep}} \right)$}
   
   Let $P_i$ be the player to which $\vx$ is to be revealed.
   
   \begin{enumerate}
-  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}$.
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}$.
   \item On $P_{i-1}$:
   \begin{enumerate}
     \item Send $\vx_{i-1}^{i-1}$ to $P_{i-1}$.
@@ -19,10 +19,10 @@
 \end{Boxfig}
 
 
-\begin{Boxfig}{Additive opening protocol}{fig:additive-open}
-  {$\Open_{[P_1, P_2]} \left( \share{\vx} \right)$}
+\begin{Boxfig}{Additive opening protocol.}{fig:additive-open}
+  {$\Open_{[P_1, P_2]} \left( \share{\vx}^{\mathsf{add}} \right)$}
   \begin{enumerate}
-  \item Let $(\vx_1, \vx_2) = \share{\vx}$.
+  \item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{add}}$.
   \item On $P_i$ for $i \in [2]$:
   \begin{enumerate}
     \item Send $\vx_i$ to $P_{i+1}$.

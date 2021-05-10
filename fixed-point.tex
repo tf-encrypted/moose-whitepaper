@@ -1,0 +1,51 @@
+\section{Fixed-point Arithmetic}
+\label{sec:fixed-point}
+
+
+Our cryptographic protocols natively operate on ring elements, and we must use ring arithmetic to emulate other data types and computations. For this reason we use fixed-point arithmetic instead of floating point arithmetic, which results in more efficient computations. In this section we briefly outline fixed-point arithmetic and how to emulate it with ring arithmetic in $\mathbb{Z}_{2^k}$, which in turn can be emulated with our cryptographic protocols and implemented locally using integer instructions. For efficiency reasons, we only consider $k = 64$ and $k = 128$, since these give us modulus reductions for free when using wrapping instructions.
+
+\subsection{Fixed-point Numbers}
+We let $\mathtt{fixed}(k, f)$ be the subset of the real numbers 
+$$
+\{x \in \mathbb{R} : x = \bar{x} \cdot 2^{-f}, \bar{x} \in \Z_{2^k} \}
+$$
+that have a fixed-point representation in $\Z_{2^k}$ using $f$ bits fractional precision. Here, $\Z_{2^k}$ is considered as the $k$ bit signed integers $\{ \bar{x} : -2^{k-1} \leq \bar{x} < 2^{k-1} \}$.
+
+\subsection{Encoding and Decoding}
+To encode a number $x \in \mathbb{R}$ into its fixed-point representation $\bar{x} \in \Z_{2^k}$, we compute $\mathsf{Encode}(x, f) = \floor{x \cdot 2^f}$ where the result of flooring is cast as an integer. To decode a number $\bar{x}$, we compute $\mathsf{Decode}(\bar{x}, f) = x \cdot 2^{-f}$ where $\bar{x}$ is first cast as a floating point.
+
+\subsection{Addition}
+To add two fixed-point numbers $\bar{x}$ and $\bar{y}$ where $x,y \in \mathtt{fixed}(k, f)$, we can simply compute $\bar{z} = \bar{x} + \bar{y}$ using $\Z_{2^k}$ arithmetic. Note that $\mathsf{Decode}(\bar{z}) = x + y$ if and only if $x + y \in \mathtt{fixed}(k, f)$.
+
+\subsection{Multiplication}
+To multiply two fixed-point numbers $\bar{x}$ and $\bar{y}$ where $x, y \in \mathtt{fixed}(k, f)$, we can first compute $\bar{z} = \bar{x} \cdot \bar{y}$ using $\Z_{2^k}$ arithmetic. However, in general $z \in \mathtt{fixed}(k, 2f)$ and we see that the fractional precision of the numbers grow by $f$ bits with each multiplication. To circumvent this we introduce the $\mathsf{Trunc}(\bar{z})$ operation which computes $\bar{z} / 2^{f}$ over the integers, which brings us back to $z \in \mathtt{fixed}(k, f)$. In the main body the $\mathsf{Trunc}$ operation is replaced by a probabilistic variant $\mathsf{TruncPR}$ that allows for an error in the least significant bit in exchange for greater computational performance.
+
+% \noindent{\textbf{Fixed point multiplication between two secrets}.} Note that
+% multiplication between two fixed point numbers $\share{x}, \share{y}$ where
+% $x,y \in \verb|fixed(k, f)|$ gets us $z = x \cdot y \cdot 2^{2f}$. One can
+% now simply output $\Decode(z, 2f)$ if this is the last multiplication.
+% To avoid $z$ overflow in $\Z_{2^k}$ and allow
+% subsequent computations on $z$ call $z \asn \mathsf{trunc}(2 \cdot k, f)(z)$.
+
+% \noindent{\textbf{Multiplication by (clear) integer scalars}}.
+% To multiply a public scalar
+% $c$ with $\share{x}$ where $x \in \verb|fixed(k, f)|$ we output
+% $c \cdot \share{x}$. In this way when we decode the product
+% this becomes (over the ring)
+% $\Decode(c \cdot x \cdot 2^f) = c \cdot x$. Again, this operation is going to
+% be successful iff. the product $c \cdot x$ fits in $\Z_{2^k}$.
+
+% \noindent{\textbf{Multiplication by (clear) floating scalars}}. To multiply a
+% public floating point scalar $c$ with $\share{x}$ we compute $\hat{c} \asn
+% \Encode(c, f)$ and then set the output $\share{c \cdot x} =
+% \mathsf{trunc}(\hat{c} \cdot \share{x}, f)$. Note that $\hat{c} \cdot \share{x}$
+% can be done with local computations.
+
+% \subsubsection{Division}
+% TBD, SecureNN has some leakage, check MP-SPDZ - there was no description in
+% ABY3 on fixed point division.
+
+
+\subsection{Inverse and Division}
+
+Given a fixed-point $\bar{x}$ we can compute its inverse $1/x$ over the reals by computing the integer division of $1 \cdot 2^{2f}$ and $\bar{x}$. Likewise, the division of $\bar{x}$ by $\bar{y}$ can be computed as the integer division of $\bar{x} \cdot 2^f$ by $\bar{y}$. Note that no truncation is needed.

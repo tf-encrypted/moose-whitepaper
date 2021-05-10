@@ -2,9 +2,9 @@
 One reason for choosing~\cite{CCS:AFLNO16} as our foundation is that it is currently the fastest protocol for achieving semi-honest three-party multiplications in the preprocessing model using ring arithmetic.
 %An year after it was shown by \cite{SP:ABFLLN17} that the boolean version of~\cite{CCS:AFLNO16} can be converted into a protocol with active security that achieves $1$ billion AND triples per second with a cost of $7$ bits per AND gate.
 %
-Moreover, its large ring variant (when performing arithmetic over $\Z_{2^k}$ for $k \geq 64$) can be upgraded to malicious security by (roughly) just repeating all procedures twice and use a "zero check" as described in~\cite{cryptoeprint:2020:1330}.
+Moreover, its ring variant can be efficiently upgraded to malicious security by (roughly) just repeating all procedures twice and use a "zero check" as described in~\cite{cryptoeprint:2020:1330}.
 
-Finally, we also chose this line of work due to its efficiency at computing dot products by communicating a number of ring elements independently of the input tensor sizes, and other optimizations made possible by being in the three-party setting.
+Finally, we also chose this line of work due to its efficiency at computing dot products by communicating a number of ring elements independent in the size of input tensors, and other optimizations made possible by being in the three-party setting.
 %Note that the work of efficient dot products in MPC was inspired mainly from~\cite{CCS:LinNof17,C:CGHIKL18,EPRINT:ADEN19,cryptoeprint:2020:1330}.
 
 % Later it was shown by Keller et al. \cite{SCN:KRSW18} how to extend the

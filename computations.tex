@@ -1,1 +1,32 @@
-\section{Computations}
+\section{Computational Model}
+
+In this section we describe our computational model for protocols, which is loosely based on the data-flow paradigm~\cite{abadi16} and a simplified UC model~\cite{canetti-cohen-lindell15}. Concretely, all protocols are expressed as data-flow graphs where each node represents an operation to be performed by a specific party, and each edge presents a value ``flowing'' between operations.
+
+The main motivation for using the data-flow paradigm is that it leads to a very natural concurrent execution model, where in the extreme we can see each node as being executed by a separate task (e.g. green thread or actor). We take full advantage of this in the runtime which is based on the asynchronous execution paradigm. The reason for basing our computational model on the UC model is that it is a well-known paradigm for ensuring security under concurrent composition.
+
+
+\subsection{Sessions}
+
+Every execution of a graph is done under a unique session id $\sid$ used to identify values and ensure isolation when running protocols concurrently. As we shall see in more detail later, session ids are for instance used to non-interactively derive nonces and sample correlated randomness by the secret sharing schemes. There are no requirements on session ids besides uniqueness, and it can safely be chosen by an untrusted coordinator, for instance by sampling a random string.
+
+For security reasons, each party is expected to maintain a list of previous session ids in which it has engaged, and refuse to re-run any computation using those ids. This prevents for instance reply and selective failure attacks.
+
+
+\subsection{Sub-protocols}
+
+We allow graphs to call sub-graphs similar to sub-routines. When doing so, the sub-graph is executed under a unique sub-session id $\sid'$ derived from $\sid$ and an activation key $\mathsf{ac\_key}$ statically related to the call site: 
+$$
+\sid' = \sid \| \mathsf{ac\_key}
+$$
+with $\|$ denoting string concatenation. In the presentation given in this paper, we make heavy use of calling sub-protocols, yet we typically (including in the current implementation) inline their sub-graphs for performance reasons. To do so securely, the activation key associated with the call site is embedded into the sub-graphs's operations during inlining.
+
+As an example, $\mathsf{DeriveSeed}$ operations have a $\mathsf{sync\_key}$ attribute used to control uniqueness within the scope of the sub-graph, and during inlining this attribute is updated by prefixing it with the activation key, $\mathsf{sync\_key}' = \mathsf{ac\_key} \| \mathsf{sync\_key}$, so that the uniqueness is maintained in the combined scope.
+
+This approach was chosen to ensure that we (in the future) can build a deterministic compilation process of computations, yet still support inlining.
+
+
+\subsection{Communication}
+
+Transmission of values between parties is done using $\mathsf{Send}$ and $\mathsf{Receive}$ nodes, each with a static rendezvous key $\mathsf{rdv\_key}$ attribute linking them together. Together with the session id, this allows us to uniquely identify all values by tagging them with $(\sid, \mathsf{rendezvous\_key})$, and is used to derive the nonce under which messages are encrypted as well as by the Cape infrastructure to keep track of messages (see Section~\ref{sec:infrastructure}).
+
+The rendezvous key is also updated during inlining by prefixing it with the call site's activation key, ensuring that rendezvous keys likewise maintain their uniqueness: $\mathsf{rendezvous\_key}' = \mathsf{ac\_key} \| \mathsf{rendezvous\_key}$.

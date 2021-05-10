@@ -1,6 +1,6 @@
 \subsection{Sharing data}
 
-In Figure~\ref{fig:replicated-share} we show how a party $P_i$ can translate a private tensor $\vx$ (known only to $P_i$) into a replicated tensor. In the first part of the protocol parties use the same mechanism as in the $\mathsf{ZeroShare}$ to have a set of replicated shared seeds. Then $P_i$ sends to $P_{i-1}$ the shape $\vx$ in order for $P_{i-1}$ to derive a correct sized random tensor using the shared seed. In the last part the inputting party $P_i$ masks the private tensor with a random value $\vx - \vx_i^i$ and sends it to $P_{i+1}$.
+In Figure~\ref{fig:replicated-share} we show how a party $P_i$ can translate a private tensor $\vx$ (known only to $P_i$) into a replicated tensor. In the first part of the protocol parties use the same mechanism as in the $\mathsf{ZeroShare}$ to produce a set of replicated shared seeds. Then $P_i$ sends to $P_{i-1}$ the shape of $\vx$ in order for $P_{i-1}$ to derive a correct sized random tensor using the shared seed. In the last part the inputting party $P_i$ masks the private tensor with a random value $\vx - \vx_i^i$ and sends it to $P_{i+1}$.
 
 Correctness can be seen from the fact that at the end of the protocol all $\vx_1^j + \vx_2^j + \vx_3^{j+1} = \vx$ for all $j \in [1,3]$. For example, when $j = 1$ we have the following:
 $$\vx_1^1 + \vx_2^1 + \vx_3^2 = \mathbf{0} + \vx_2^1 + (\vx - \vx_2^2) = \vx $$ due to $\vx_2^1 = \vx_2^2$ since they were sampled from identical seeds. Security follows from~\cite{CCS:ABFLNO16} or~\cite{CCS:MohRin18}.

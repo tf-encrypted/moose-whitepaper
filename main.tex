@@ -3,6 +3,7 @@
 \usepackage{fullpage}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{fancyhdr}
 
 \usepackage[colorlinks,linkcolor=dblue,filecolor=black,citecolor=dblue,urlcolor=dblue]{hyperref}
 \usepackage{etex}
@@ -87,6 +88,16 @@
 
 \include{symbols}
 
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{22pt}
+\setlength{\headsep}{0.2in}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}% default is 0pt
+\cfoot{\thepage}
+\lhead{\includegraphics[width=3cm]{cape_logo.png}}
+\rhead{Proprietary and Confidential}
+
 %
 \begin{document}
 %
@@ -95,10 +106,16 @@
 \author{}
 \institute{Cape Privacy}
 
+
 \maketitle
+\thispagestyle{fancy}
+% \begin{center}
+%   \makebox[\textwidth]{\includegraphics[width=0.5\paperwidth]{cape_logo.png}}
+% \end{center}
 
 \input{intro}
-%\input{computations}
+\input{fixed-point}
+\input{computations}
 \import{replicated}{replicated.tex}
 \input{implementation}
 
