@@ -1,9 +1,9 @@
 \subsection{Truncation}
 \label{subsec:truncation}
 
-Given a replicated tensor $\share{\vx}$, the goal of the truncation functionality is to compute $\share{\vx \bmod 2^m}$ where $m$ is a public constant. 
+Given a replicated tensor $\share{\vx}$, the goal of the truncation functionality is to compute $\share{\vx \bmod 2^m}$ where $m$ is a public constant.
 %The ways of doing this can roughly be classified into two lines of thought: the more efficient but with a rounding error (probabilistic truncation) while the other slightly less efficient but with no rounding errors (deterministic truncation).
-%Current state of the art techniques use dabits/edabits as described by Escudero et al. in \cite{C:EGKRS20} together with various share conversions. In~\cite{C:EGKRS20} there are several techniques to achieve both probabilistic and deterministic truncation for field and ring case. 
+%Current state of the art techniques use dabits/edabits as described by Escudero et al. in \cite{C:EGKRS20} together with various share conversions. In~\cite{C:EGKRS20} there are several techniques to achieve both probabilistic and deterministic truncation for field and ring case.
 For our semi-honest three-parties model we implement the probabilistic truncation from~\cite{PoPETS:DalEscKel20} which avoids preprocessing.
 %and have slightly better performance.
 %For more details on edabits versus Dalskov et al. the reader can check Table 10 in \cite{C:EGKRS20}.
@@ -14,7 +14,7 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
 \begin{Boxfig}{Three party truncation protocol.}{fig:truncpr-rep-ss}{$\mathsf{TruncPr}_{[P_1, P_2, P_3]} \left(\Z_{2^k}; \share{\vx}^{\mathsf{rep}}_{R}, m \right)$}
 \begin{enumerate}
   \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}_{R}$.
-  
+
   \item On $P_3$:
   \begin{enumerate}
     \item $\shape \asn \mathsf{Shape}(\vx^3_3)$.
@@ -31,10 +31,10 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
   \item $\share{\vr_{\mathsf{msb}}}^{\mathsf{add}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr_{\mathsf{msb}})$
 
   \item $\share{\vr_{\mathsf{top}}}^{\mathsf{add}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr_{\mathsf{top}})$
- 
+
   \item $\share{\vx'}^{\mathsf{add}} \asn \mathsf{ReplicatedToAdditive}_{[P_1, P_2]}(\share{\vx}^{\mathsf{rep}})$.
 
-  \item $\share{\vy'}^{\mathsf{add}} \asn \mathsf{2PCTruncPr}_{[P_1, P_2]}(\share{\vx'}^{\mathsf{add}}, m)$.
+  \item $\share{\vy'}^{\mathsf{add}} \asn \mathsf{2PCTruncPr}_{[P_1, P_2]}(\share{\vx'}^{\mathsf{add}}, m, \share{\vr}^{\mathsf{add}}, \share{\vr_{\mathsf{msb}}}^{\mathsf{add}}, \share{\vr_{\mathsf{top}}}^{\mathsf{add}} )$.
 
   \item Return $\share{\vy}^{\mathsf{rep}} \asn \mathsf{AdditiveToReplicated}_{[P_1, P_2, P_3]}(\share{\vy'}^{\mathsf{add}})$.
 
@@ -51,20 +51,20 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
 
 \begin{Boxfig}{Two-party truncation protocol.}{fig:truncpr-generic}
   {$\mathsf{2PCTruncPr}_{[P_1, P_2]} \left( \share{\vx}, m, \share{\vr}, \share{\vr_{\mathsf{msb}}}, \share{\vr_{\mathsf{top}}} \right)$}
-  
-  Assume $\vx \in \Z_{2^k}^{\shape}$ has $\mathsf{MSB}(\vx) = 0$. 
+
+  Assume $\vx \in \Z_{2^k}^{\shape}$ has $\mathsf{MSB}(\vx) = 0$.
   \begin{enumerate}
-  
+
   \item $\share{\vc} \asn \share{\vx} + \share{\vr}$.
-  
+
   \item $\vc \asn \Open_{[P_1, P_2]}(\share{\vc})$.
-  
+
   \item $\vc_{\mathsf{top}} \asn (\vc / 2^m) \bmod 2^{k-m-1}$.
-  
+
   \item $\vc_{\mathsf{msb}} \asn \vc / 2^{k-1}$.
-    
+
   \item $\share{\vb} \asn \share{\vr_{\mathsf{msb}}} \oplus \vc_{\mathsf{msb}}$. Note here that $a \oplus b = a + b - 2a\cdot b$.
-    
+
   \item Return $\share{\vy} \asn \vc_{\mathsf{top}} - \share{\vr_{\mathsf{top}}} + \share{\vb} \cdot 2^{k-m-1}$.
 \end{enumerate}
 
@@ -73,9 +73,9 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
 
 \begin{Boxfig}{Additive sharing.}{fig:get-additive}
   {$\mathsf{AdditiveShare}_{[D, P_1, P_2]}(R; \vx)$}
-  
+
   Let $D$ be the party holding $\vx$.
-  
+
   \begin{enumerate}
     \item On $D$:
   \begin{enumerate}
@@ -103,21 +103,21 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
 
 \begin{Boxfig}{Conversion from replicated shares to additive shares.}{fig:replicated-to-additive}
   {$\mathsf{ReplicatedToAdditive}_{[P_1, P_2]}\left( \share{\vx}^{\mathsf{rep}} \right)$}
-  
+
   \begin{enumerate}
-  
+
   \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}$.
-  
+
   \item On $P_1$:
     \begin{enumerate}
     \item $\vx'_1 \asn \vx^1_1 + \vx^1_2$.
     \end{enumerate}
-    
+
   \item On $P_2$:
     \begin{enumerate}
     \item $\vx'_2 \asn \vx^2_3$.
     \end{enumerate}
-  
+
   \item Return $\share{\vx'}^{\mathsf{add}} = (\vx'_1, \vx'_2)$.
 \end{enumerate}
 \end{Boxfig}

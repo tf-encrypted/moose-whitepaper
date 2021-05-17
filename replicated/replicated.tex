@@ -8,7 +8,7 @@ In this section we describe our protocols for performing encrypted computations 
 
 \subsection{Notation}
 
-The protocols perform computations in rings $\ring$ of form $\mathbb{Z}_{2^{k}}$, concretely $\mathbb{Z}_{2^{64}}$ and $\mathbb{Z}_{2^{128}}$, which allows us to emulate fixed-point arithmetic as needed for the linear regression use case. Throughout this section we use 
+The protocols perform computations in rings $\ring$ of form $\mathbb{Z}_{2^{k}}$, concretely $\mathbb{Z}_{2^{64}}$ and $\mathbb{Z}_{2^{128}}$, which allows us to emulate fixed-point arithmetic as needed for the linear regression use case. Throughout this section we use
 $$
 \share{\vx}^{\mathsf{rep}}_\ring = \left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right)
 $$
@@ -23,4 +23,4 @@ to denote a replicated value consisting of shares $\vx_1 = \vx_1^1 = \vx_1^3$, $
 \input{protocols/inputs}
 \input{protocols/outputs}
 \input{truncation}
-%\input{comparisons}
+\input{comparisons}

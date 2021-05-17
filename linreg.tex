@@ -16,13 +16,20 @@ Using the method of maximum likelihood estimation~\cite{mml}, we can reformulate
 \end{align*}
 Note that evaluating $Z = (X^TX)^{-1}X^T$ can be performed as local preprocessing on plaintext data by the provider of $X$ (since the righthand term does not involve the target variable $y$). Thus, solving this regression problem securely reduces to a single secret-shared matrix-vector product $\coeff = Z \cdot y$.
 
-Additionally, we may want to compute certain metrics to assess the regression outcome. These metrics must also be evaluated on secret-shared data. Concretely, we present cryptographic protocols to support mean squared error ($MSE$) and R-squared ($R^2$) metrics. Denote the target predictions $\ypred = X \cdot \coeff$ and the expected target value as $\bar{y} = \instanceAvg y_i$. An argument similar to the above reduces the secure computation of $R^2$ to securely computing the residual sum of squares ($RSS$):
+Additionally, we may want to compute certain metrics to assess the regression
+outcome. These metrics must also be evaluated on secret-shared data. Concretely,
+we present cryptographic protocols to support mean squared error
+($\mathsf{MSE}$), mean absolute percentage error
+($\mathsf{MAPE}$), and R-squared ($R^2$) metrics. Denote the target predictions $\ypred = X \cdot
+\coeff$ and the expected target value as $\bar{y} = \instanceAvg y_i$. An
+argument similar to the above reduces the secure computation of $R^2$ to
+securely computing the residual sum of squares ($\mathsf{RSS}$):
 \begin{align*}
 R^2 &= 1 - \frac{\sum(y_i - \ypred_i)^2}{\sum(y_i - \bar{y})^2}
 \\
 &= 1 - \frac{RSS(\ypred, y)}{SS(\ypred, y)}
 \end{align*}
-since only the $RSS$ term depends on data from both providers (i.e. both $X$ and $y$). 
+since only the $RSS$ term depends on data from both providers (i.e. both $X$ and $y$).
 
 In summary, we are ultimately concerned with providing protocols for securely evaluating the following values:
 
@@ -31,9 +38,11 @@ In summary, we are ultimately concerned with providing protocols for securely ev
 \\
 \ypred &= X \cdot \coeff
 \\
-\mathit{MSE}(\ypred, y) &= \instanceAvg (\ypred - y_i)^2 
+\mathit{MSE}(\ypred, y) &= \instanceAvg (\ypred - y_i)^2
 \\
-\mathit{RSS}(\ypred, y) &= \sum_n (\ypred - y_i)^2 
+\mathit{RSS}(\ypred, y) &= \sum_n (\ypred - y_i)^2
+\\
+\mathsf{MAPE}(\ypred, y) &= \frac{1}{n} \sum_n \Big| \frac{\ypred - y_i}{y_i} \Big|
 \end{align*}
 
 %In order to compute the MAPE (mean absolute percentage error) metric which boils down to compute the absolute value of a secret $\share{|\vx|}$.

@@ -5,7 +5,7 @@
 Our cryptographic protocols natively operate on ring elements, and we must use ring arithmetic to emulate other data types and computations. For this reason we use fixed-point arithmetic instead of floating point arithmetic, which results in more efficient computations. In this section we briefly outline fixed-point arithmetic and how to emulate it with ring arithmetic in $\mathbb{Z}_{2^k}$, which in turn can be emulated with our cryptographic protocols and implemented locally using integer instructions. For efficiency reasons, we only consider $k = 64$ and $k = 128$, since these give us modulus reductions for free when using wrapping instructions.
 
 \subsection{Fixed-point Numbers}
-We let $\mathtt{fixed}(k, f)$ be the subset of the real numbers 
+We let $\mathtt{fixed}(k, f)$ be the subset of the real numbers
 $$
 \{x \in \mathbb{R} : x = \bar{x} \cdot 2^{-f}, \bar{x} \in \Z_{2^k} \}
 $$
@@ -18,7 +18,16 @@ To encode a number $x \in \mathbb{R}$ into its fixed-point representation $\bar{
 To add two fixed-point numbers $\bar{x}$ and $\bar{y}$ where $x,y \in \mathtt{fixed}(k, f)$, we can simply compute $\bar{z} = \bar{x} + \bar{y}$ using $\Z_{2^k}$ arithmetic. Note that $\mathsf{Decode}(\bar{z}) = x + y$ if and only if $x + y \in \mathtt{fixed}(k, f)$.
 
 \subsection{Multiplication}
-To multiply two fixed-point numbers $\bar{x}$ and $\bar{y}$ where $x, y \in \mathtt{fixed}(k, f)$, we can first compute $\bar{z} = \bar{x} \cdot \bar{y}$ using $\Z_{2^k}$ arithmetic. However, in general $z \in \mathtt{fixed}(k, 2f)$ and we see that the fractional precision of the numbers grow by $f$ bits with each multiplication. To circumvent this we introduce the $\mathsf{Trunc}(\bar{z})$ operation which computes $\bar{z} / 2^{f}$ over the integers, which brings us back to $z \in \mathtt{fixed}(k, f)$. In the main body the $\mathsf{Trunc}$ operation is replaced by a probabilistic variant $\mathsf{TruncPR}$ that allows for an error in the least significant bit in exchange for greater computational performance.
+To multiply two fixed-point numbers $\bar{x}$ and $\bar{y}$ where $x, y \in
+\mathtt{fixed}(k, f)$, we can first compute $\bar{z} = \bar{x} \cdot \bar{y}$
+using $\Z_{2^k}$ arithmetic. However, in general $z \in \mathtt{fixed}(k,
+2f)$ and we see that the fractional precision of the numbers grow by $f$ bits
+with each multiplication. To circumvent this we introduce the
+$\mathsf{Trunc}(\bar{z})$ operation which computes $\bar{z} / 2^{f}$ over the
+integers, which brings us back to $z \in \mathtt{fixed}(k, f)$. In the main
+body the $\mathsf{Trunc}$ operation is replaced by a probabilistic variant
+$\mathsf{TruncPR}$ that allows for an error in the least significant bit in
+exchange for better performance.
 
 % \noindent{\textbf{Fixed point multiplication between two secrets}.} Note that
 % multiplication between two fixed point numbers $\share{x}, \share{y}$ where
