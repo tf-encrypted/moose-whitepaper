@@ -1,11 +1,7 @@
 \begin{Boxfig}{Binary to arithmetic share conversion computation.}{fig:b2a-protocol}
-  {$\mathsf{B2A}[P_1, P_2, P_3](\share{\vx}_2)$}
-  Roles: Replicated, $P_1$, $P_2, P_3$ where $\vx \in \Z_{2}^\shape$ is an array of length $k$
-  of tensors and
-  $\vx.\mathsf{placement}$ is on ReplicatedBin($P_1, P_2, P_3$).
-
+  {$\mathsf{B2A}_{[P_1, P_2, P_3]}(\share{\vx}_2^\mathsf{rep})$}
   \begin{enumerate}
-  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}_2$.
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}_2^\mathsf{rep}$.
   \item On $P_1$:
   \begin{enumerate}
   \item Set $\vx_A^1 = \vx_1^1 \oplus \vx_2^1$.
@@ -14,15 +10,15 @@
   \begin{enumerate}
       \item Set $\vx_A^2 = \vx_3^2$.
   \end{enumerate}
-  \item Let $\shareB{\vx_A} = (\vx_A^1, \vx_A^2)$ be a $2$ out of $2$ sharing on ($P_1, P_2$).
+  \item Let $(\vx_A^1, \vx_A^2) = \shareB{\vx}^\mathsf{add}$.
   \item On ($P_1, P_2$):
   \begin{enumerate}
-      \item $\shareB{\vb}, \shareR{\vb} = \textsf{DaBit}[D=P_3, P_1, P_2](\shape)$.
-      \item Compute $\vc = \Open( \shareB{\vb} \oplus \shareB{\vx_A})$.
-      \item Let $\shareR{\vx_A} = \vc + \shareR{\vb} - 2 \cdot \vc \cdot \shareR{\vb}$
+      \item $\shareB{\vb}, \shareR{\vb} = \textsf{DaBit}_{[D=P_3, P_1, P_2]}(\shape)$.
+      \item Compute $\vc = \Open( \shareB{\vb} \oplus \shareB{\vx}^{\mathsf{add}})$.
+      \item Let $\shareR{\vx}^\mathsf{add} = \vc + \shareR{\vb} - 2 \cdot \vc \cdot \shareR{\vb}$
   \end{enumerate}
-  \item Parties convert $\shareR{\vx_A}$ to a $(2,3)$ replicated sharing by calling
-  $\textsf{AdditiveToRep}[P_1,P_2,P_3](\shareR{\vx_A})$.
+  \item Parties convert $\shareR{\vx}^\mathsf{add}$ to a $(2,3)$ replicated sharing by calling
+  $\textsf{AdditiveToRep}[P_1,P_2,P_3](\shareR{\vx}^\mathsf{add})$.
 \end{enumerate}
 
 \end{Boxfig}

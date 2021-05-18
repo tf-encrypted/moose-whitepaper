@@ -1,13 +1,12 @@
 \begin{Boxfig}{DaBit protocol generation}{fig:dabit-protocol}
-  {Protocol $\mathsf{DaBit}[D, P_1, P_2](\shape)$}
-  Roles: $P_1$, $P_2, P_3$ where $P_3$ acts as a dealer to distribute
-  an additive share of a bit of shape $\shape$ in the boolean and arithmetic domain.
+  {Protocol $\mathsf{DaBit}_{[D, P_1, P_2]}(\shape)$}
   \begin{enumerate}
   \item On D:
   \begin{enumerate}
-    \item $\seed \asn \derives(\dkey_D, \GenNonce)$.
+    \item $k \sample \mathsf{GenPrfKey}()$.
+    \item $\seed \asn \derives(0; k)$.
     \item $\vb \asn \RingSample(\seed, \shape, \{0, 1\})$.
-    \item $\seed(\textsf{bin}) \asn \derives(\dkey_D, \GenNonce), \seed(\textsf{ring}) \asn \derives(\dkey_D, \GenNonce)$.
+    \item Compute $\seed(\textsf{bin}) \asn \derives(1, k)$ and $\seed(\textsf{ring}) \asn \derives(2, k)$.
     \item Send $\seed(\textsf{bin})$ and $\seed(\textsf{ring})$ to $P_1$.
 
   \end{enumerate}
@@ -20,14 +19,14 @@
 \item On D:
 \begin{enumerate}
     \item Sample $\vb^1_{2^k} \asn \RingSample(\seed(\textsf{ring}), \shape, \Z_{2^k})$. Set $\vb^2_{2^k} = \vb - \vb^1_{2^k}$.
-    \item Sample $\vb^1_{2} \asn \RingSample(\seed(\textsf{bin}), \shape, \{0, 1\})$. Set $\vb^2_{2} = \vb - \vb^1_{2}$. 
+    \item Sample $\vb^1_{2} \asn \RingSample(\seed(\textsf{bin}), \shape, \{0, 1\})$. Set $\vb^2_{2} = \vb - \vb^1_{2}$.
     \item Send $\vb^2_{2^k}$ and $\vb^2_2$ to $P_2$.
 \end{enumerate}
 \item On $P_2$:
 \begin{enumerate}
     \item Receive $\vb^2_{2^k}$ and $\vb^2_2$ from Dealer.
 \end{enumerate}
-\item Let $\shareR{\vb} = \text{Additive}(\vb^1_{2^k}, \vb^2_{2^k})$ and $\shareB{\vb} = \text{Additive}(\vb^1_2, \vb^2_2)$. Output $(\shareR{\vb}, \shareB{\vb})$.
+\item Let $\shareR{\vb}^\mathsf{add} = (\vb^1_{2^k}, \vb^2_{2^k})$ and $\shareB{\vb}^\mathsf{add} = (\vb^1_2, \vb^2_2)$. Output $(\shareR{\vb}^\mathsf{add}, \shareB{\vb}^\mathsf{add})$.
 \end{enumerate}
 \end{Boxfig}
 

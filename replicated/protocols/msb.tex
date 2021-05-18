@@ -1,26 +1,17 @@
 \begin{Boxfig}{MSB computation from a replicated ring share}{fig:msb-protocol}
-  {$\mathsf{MSB}[P_1, P_2, P_3](\share{\vx})$}
-  Roles: Replicated, $P_1$, $P_2, P_3$ where $\vx \in \Z_{2^k}^\shape$ and
-  $\vx.\mathsf{placement}$ is on Replicated($P_1, P_2, P_3$).
+  {$\mathsf{MSB}_{[P_1, P_2, P_3]}(\share{\vx}^\mathsf{rep}_R)$}
   \begin{enumerate}
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}_{R}$.
+  \item Let $\left( (0, 0), (0, \textsf{BitDec}(\vx_3^2)(i)), (\textsf{BitDec}(\vx_3^3)(i),0) \right) = \share{\vb_i}_2^\mathsf{rep}$ for $i \in [k]$.
   \item On $P_1$:
   \begin{enumerate}
     \item $\va \asn \textsf{BitDec}(\vx^1 + \vx^2)$. Here, $\va$ is a vector of $k$ boolean tensors $\Z_{2^k}^\shape$.
+    \item For $i \in [k]$, execute $\share{\va_i}_2 \asn \mathsf{ReplicatedShare}(\Z_2; \va_i, P_1)$.
   \end{enumerate}
-  \item On $P_2$
-  \begin{enumerate}
-    \item $\vb \asn \textsf{BitDec}(\vx^3)$ where $\vb$ is a vector of $k$ boolean tensors $\Z_{2^k}^\shape$.
-  \end{enumerate}
-  \item With Replicated-Bin($P_1, P_2, P_3$)
-  \begin{enumerate}
-    \item For $i \in [k]$, execute $\share{\va_i}_2 \asn \Share(\va_i, P_1)$.
-    \item For $i \in [k]$, run $\share{\vb_i}_2 \asn \Share(\vb_i,
-    P_2)$.  \commentD{Not really, in the code we have optimized to avoid the
-    cost of this $\Share$ command}
-    \item Denote $\share{\bar{\va}}_2,
-    \share{\bar{\vb}}_2$ as the vector of $k$ boolean shares
-    $\share{\va_i}_2$ and $\share{\vb_i}_2$ respectively. Output $\share{\vc}_2 = \textsf{BinaryAdder}(\share{\bar{\va}}_2, \share{\bar{\vb}}_2, \Z_{2^k})$.
-  \end{enumerate}
+  \item Denote $\share{\bar{\va}}_2,
+  \share{\bar{\vb}}_2$ as the vector of $k$ boolean shares
+  $\share{\va_i}_2$ and $\share{\vb_i}_2$ respectively.
+  \item Compute $\share{\vc}_2 = \textsf{BinaryAdder}(\share{\bar{\va}}_2, \share{\bar{\vb}}_2, \Z_{2^k})$.
   \item Output $\textsf{B2A}(\shareB{\vc(k-1)})$.
 \end{enumerate}
 
