@@ -2,7 +2,7 @@
 \label{sec:fixed-point}
 
 
-Our cryptographic protocols natively operate on ring elements, and we must use ring arithmetic to emulate other data types and computations. For this reason we use fixed-point arithmetic instead of floating point arithmetic, which results in more efficient computations. In this section we briefly outline fixed-point arithmetic and how to emulate it with ring arithmetic in $\mathbb{Z}_{2^k}$, which in turn can be emulated with our cryptographic protocols and implemented locally using integer instructions. For efficiency reasons, we only consider $k = 64$ and $k = 128$, since these give us modulus reductions for free when using wrapping instructions.
+Our cryptographic protocols natively operate on ring elements, and we must use ring arithmetic to emulate other data types and computations. For this reason we use fixed-point arithmetic instead of floating point arithmetic, which results in more efficient computations. In this section we briefly outline fixed-point arithmetic and how to emulate it with ring arithmetic in $\mathbb{Z}_{2^k}$, which in turn can be emulated with our cryptographic protocols and implemented using integer instructions. For efficiency reasons, we only consider $k = 64$ and $k = 128$, since these give us modulus reductions for free when using wrapping instructions.
 
 \subsection{Fixed-point Numbers}
 We let $\mathtt{fixed}(k, f)$ be the subset of the real numbers
