@@ -27,6 +27,6 @@ This approach was chosen to ensure that we (in the future) can build a determini
 
 \subsection{Communication}
 
-Transmission of values between parties is done using $\mathsf{Send}$ and $\mathsf{Receive}$ nodes, each with a static rendezvous key $\mathsf{rdv\_key}$ attribute linking them together. Together with the session id, this allows us to uniquely identify all values by tagging them with $(\sid, \mathsf{rendezvous\_key})$, and is used to derive the nonce under which messages are encrypted as well as by the Cape infrastructure to keep track of messages (see Section~\ref{sec:infrastructure}).
+Transmission of values between parties is done using $\mathsf{Send}$ and $\mathsf{Receive}$ nodes, each with a static rendezvous key $\mathsf{rdv\_key}$ attribute linking them together. Together with the session id, this allows us to uniquely identify all values by tagging them with $(\sid, \mathsf{rdv\_key})$, and is used to derive the nonce under which messages are encrypted as well as by the Cape infrastructure to keep track of messages (see Section~\ref{sec:infrastructure}).
 
-The rendezvous key is also updated during inlining by prefixing it with the call site's activation key, ensuring that rendezvous keys likewise maintain their uniqueness: $\mathsf{rendezvous\_key}' = \mathsf{ac\_key} \| \mathsf{rendezvous\_key}$.
+The rendezvous key is also updated during inlining by prefixing it with the call site's activation key, ensuring that rendezvous keys likewise maintain their uniqueness: $\mathsf{rdv\_key}' = \mathsf{ac\_key} \| \mathsf{rdv\_key}$.

@@ -18,39 +18,27 @@ In the 3PC semi-honest model there are few approaches to this:
   \item Comparisons using edaBits \cite{C:EGKRS20}. The 3PC case has roughly the same cost as ABY3.
 \end{enumerate}
 
-In Moose we use the MSB subtraction protocol from ABY3 with a Kogge-Stone binary adder and
-some minor optimizations for tensor operations. 
-We avoid the special three-party OT that ABY3 had along with edabits preprocessing by introducing
-our custom protocol \textsf{B2A} for binary to ring share conversion in Figure~\ref{fig:b2a-protocol}.
-The MSB protocol can be found in Figure~\ref{fig:msb-protocol}.
+We use the MSB extraction protocol from ABY3 with a Kogge-Stone binary adder and minor optimizations for tensor operations. We avoid the special three-party OT that ABY3 had along with edaBits preprocessing by introducing our custom protocol \textsf{B2A} for binary to ring share conversion in Figure~\ref{fig:b2a-protocol}.
+The MSB protocol can be found in Figure~\ref{fig:msb-protocol} where $\overline{\cdot}$ is used to denote a vector with $k$ elements indexed using $(i)$ for $i \in [k]$.
+
+
 \input{protocols/msb}
 
 \subsubsection{Improved ABY3 boolean to ring sharing protocol}
 When the inputs are tensors we can perform the share conversion $\share{\cdot}_2
-\mapsto \share{\cdot}_{\Z_{2^k}}$ ($\mathsf{B2A}$ function)
-more efficient by making use that all parties
+\mapsto \share{\cdot}_{2^k}$ ($\mathsf{B2A}$ function)
+more efficient by making use of the fact that all parties
 follow the protocol specifications. The starting point is using a similar idea
 from daBit/edaBit \cite{INDOCRYPT:RotWoo19,C:EGKRS20}
 line of work with the twist that $P_3$ generates the preprocessing
 material. We fully describe this share conversion protocol in Figure~\ref{fig:b2a-protocol}.
 
 Acting as a trusted third party, $P_3$ generates a random
-daBit $(\share{b}_2, \share{b}_{2^k})$ locally and then shares it to $P_1$ and $P_2$. 
-Since the shared tuple contains tensors which sum up to the bit $b$ then $P_3$ can
-send to $P_1$ only two seeds $\seed(\mathsf{bin}), \seed(\mathsf{ring})$
-which are going to be later expanded
-locally by $P_1$. Next $P_3$ sends to $P_2$ the difference the original
-bit $b_2$ and the expansion of its associated seed using  $\RingSample(\seed(\mathsf{bin}))$, similar for $b_{2^k}$ 
-the difference $b_{2^k} - \RingSample(\seed(\mathsf{ring}))$.
-
-Now $P_1$ and $P_2$ run a two-party protocol to convert $\share{x}_2$ to
-$\share{x}_{2^k}$ by computing $c \asn \mathsf{Open}(\share{x}_2 \oplus
-\share{b}_2)$ and then locally XOR-ing in the arithmetic domain
-$\share{x}_{2^k} = c + \share{b}_{2^k} - 2 \cdot c \cdot \share{b}_{2^k}$.
-Finally they convert the $(2,2)$ sharing of $\share{x}_{2^k}$ to a $(2,3)$
-sharing using $\mathsf{AdditiveToRep}$ from Figure~\ref{fig:two-to-three}.
+daBit $(\share{\vb}_2, \share{\vb}_{2^k})$ locally and shares it to $P_1$ and $P_2$. Then $P_1$ and $P_2$ run a two-party protocol to convert $\share{\vx}_2$ to
+$\share{\vx}_{2^k}$ by computing $\vc \asn \vx_2 \oplus \vb_2$ and then locally XOR-ing in the arithmetic domain $\vx_{2^k} = \vc + \vb_{2^k} - 2 \cdot \vc \cdot \vb_{2^k}$.
+Finally they convert back to a replicated sharing using $\mathsf{AdditiveToReplicated}$ from Figure~\ref{fig:two-to-three}.
 
 \input{protocols/b2a}
 \input{protocols/dabit}
-\input{protocols/2-out-of-2.tex}
+% \input{protocols/2-out-of-2.tex}
 \input{protocols/abs}

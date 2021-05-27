@@ -1,24 +1,18 @@
 \begin{Boxfig}{Binary to arithmetic share conversion computation.}{fig:b2a-protocol}
-  {$\mathsf{B2A}_{[P_1, P_2, P_3]}(\share{\vx}_2^\mathsf{rep})$}
+  {$\mathsf{B2A}_{[P_1, P_2, P_3]} \left( \shareB{\vx}^\mathsf{rep} \right)$}
   \begin{enumerate}
-  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}_2^\mathsf{rep}$.
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \shareB{\vx}^\mathsf{rep}$.
   \item On $P_1$:
   \begin{enumerate}
-  \item Set $\vx_A^1 = \vx_1^1 \oplus \vx_2^1$.
+  \item $\vx^1_{12} \asn \vx_1^1 \oplus \vx_2^1$.
+  \item $\shape \asn \mathsf{Shape}(\vx^1_1)$.
   \end{enumerate}
-  \item On $P_2$:
-  \begin{enumerate}
-      \item Set $\vx_A^2 = \vx_3^2$.
-  \end{enumerate}
-  \item Let $(\vx_A^1, \vx_A^2) = \shareB{\vx}^\mathsf{add}$.
-  \item On ($P_1, P_2$):
-  \begin{enumerate}
-      \item $\shareB{\vb}, \shareR{\vb} = \textsf{DaBit}_{[D=P_3, P_1, P_2]}(\shape)$.
-      \item Compute $\vc = \Open( \shareB{\vb} \oplus \shareB{\vx}^{\mathsf{add}})$.
-      \item Let $\shareR{\vx}^\mathsf{add} = \vc + \shareR{\vb} - 2 \cdot \vc \cdot \shareR{\vb}$
-  \end{enumerate}
-  \item Parties convert $\shareR{\vx}^\mathsf{add}$ to a $(2,3)$ replicated sharing by calling
-  $\textsf{AdditiveToRep}[P_1,P_2,P_3](\shareR{\vx}^\mathsf{add})$.
+  \item Let $\shareB{\vx}^\mathsf{add} = (\vx^1_{12}, \vx_3^2)$.
+  \item $\shareB{\vb}^\mathsf{add}, \shareR{\vb}^\mathsf{add} \asn \textsf{DaBit}_{[D=P_3, P_1, P_2]}(\shape)$.
+  \item $\shareB{\vc}^{\mathsf{add}} \asn \shareB{\vb}^\mathsf{add} \oplus \shareB{\vx}^{\mathsf{add}}$.
+  \item $\vc \asn \Open_{[P_1, P_2]}(\shareB{\vc}^{\mathsf{add}})$.
+  \item $\shareR{\vx}^\mathsf{add} \asn \vc + \shareR{\vb}^{\mathsf{add}} - 2 \cdot \vc \cdot \shareR{\vb}^{\mathsf{add}}$.
+  \item Return $\textsf{AdditiveToReplicated}_{[P_1,P_2,P_3]}(\shareR{\vx}^\mathsf{add})$.
 \end{enumerate}
 
 \end{Boxfig}

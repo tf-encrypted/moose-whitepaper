@@ -3,30 +3,33 @@
   \begin{enumerate}
   \item On D:
   \begin{enumerate}
-    \item $k \sample \mathsf{GenPrfKey}()$.
-    \item $\seed \asn \derives(0; k)$.
-    \item $\vb \asn \RingSample(\seed, \shape, \{0, 1\})$.
-    \item Compute $\seed(\textsf{bin}) \asn \derives(1, k)$ and $\seed(\textsf{ring}) \asn \derives(2, k)$.
-    \item Send $\seed(\textsf{bin})$ and $\seed(\textsf{ring})$ to $P_1$.
-
+    \item $\prfkey \sample \mathsf{GenPrfKey}()$.
+    \item $\seed \asn \derives(0; \prfkey)$.
+    \item $\vb \asn \mathsf{SampleUniform}(\Z_2; \seed, \shape)$.
+    \item $\seed_2 \asn \derives(1, \prfkey)$.
+    \item $\seed_{2^k} \asn \derives(2, \prfkey)$.
+    \item Send $\seed_2$ and $\seed_{2^k}$ to $P_1$.
+    
+    \item $\vb^1_{2} \asn \RingSample(\Z_2; \seed_2, \shape)$.
+    \item $\vb^2_{2} \asn \vb - \vb^1_{2}$.
+    \item $\vb^1_{2^k} \asn \RingSample(\Z_{2^k}; \seed_{2^k}, \shape)$.
+    \item $\vb^2_{2^k} \asn \vb - \vb^1_{2^k}$.
+    \item Send $\vb^2_2$ and $\vb^2_{2^k}$ to $P_2$.
   \end{enumerate}
+
   \item On $P_1$:
  \begin{enumerate}
-     \item Receive $\seed(\textsf{bin})$ and $\seed(\textsf{ring})$ from Dealer.
-     \item Locally compute $\vb^1_{2^k} \asn \RingSample(\seed(\textsf{ring}), \shape, \Z_{2^k})$.
-     \item Locally compute $\vb^1_{2} \asn \RingSample(\seed(\textsf{bin}), \shape, \{0, 1\})$.
+     \item Receive $\seed_2$ and $\seed_{2^k}$ from $D$.
+     \item $\vb^1_{2} \asn \RingSample(\Z_2; \seed_2, \shape)$.
+     \item $\vb^1_{2^k} \asn \RingSample(\Z_{2^k}; \seed_{2^k}, \shape)$.
  \end{enumerate}
-\item On D:
-\begin{enumerate}
-    \item Sample $\vb^1_{2^k} \asn \RingSample(\seed(\textsf{ring}), \shape, \Z_{2^k})$. Set $\vb^2_{2^k} = \vb - \vb^1_{2^k}$.
-    \item Sample $\vb^1_{2} \asn \RingSample(\seed(\textsf{bin}), \shape, \{0, 1\})$. Set $\vb^2_{2} = \vb - \vb^1_{2}$.
-    \item Send $\vb^2_{2^k}$ and $\vb^2_2$ to $P_2$.
-\end{enumerate}
 \item On $P_2$:
 \begin{enumerate}
-    \item Receive $\vb^2_{2^k}$ and $\vb^2_2$ from Dealer.
+    \item Receive $\vb^2_2$ and $\vb^2_{2^k}$ from $D$.
 \end{enumerate}
-\item Let $\shareR{\vb}^\mathsf{add} = (\vb^1_{2^k}, \vb^2_{2^k})$ and $\shareB{\vb}^\mathsf{add} = (\vb^1_2, \vb^2_2)$. Output $(\shareR{\vb}^\mathsf{add}, \shareB{\vb}^\mathsf{add})$.
+\item Let $\shareB{\vb}^\mathsf{add} = (\vb^1_2, \vb^2_2)$.
+\item Let $\shareR{\vb}^\mathsf{add} = (\vb^1_{2^k}, \vb^2_{2^k})$
+\item Return $\shareB{\vb}^\mathsf{add}$ and $\shareR{\vb}^\mathsf{add}$.
 \end{enumerate}
 \end{Boxfig}
 

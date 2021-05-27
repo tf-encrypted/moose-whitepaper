@@ -7,12 +7,12 @@
   \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}$.
   \item On $P_{i-1}$:
   \begin{enumerate}
-    \item Send $\vx_{i-1}^{i-1}$ to $P_{i-1}$.
+    \item Send $\vx_{i-1}^{i-1}$ to $P_{i}$.
   \end{enumerate}
   \item On $P_i$:
   \begin{enumerate}
-   \item Receive $\vx_{i-1}^{i}$ from $P_{i-1}$.
-   \item $\vx \asn \vx_{i-1}^{i} + \vx_i^i + \vx_{i+1}^{i}$.
+   \item Receive $\vx_{i-1}^{i-1}$ from $P_{i-1}$.
+   \item $\vx \asn \vx_{i-1}^{i-1} + \vx_i^i + \vx_{i+1}^{i}$.
   \end{enumerate}
   \item Return $\vx$.
 \end{enumerate}

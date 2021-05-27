@@ -1,10 +1,9 @@
 \begin{Boxfig}{Absolute value computation from a replicated ring share.}{fig:abs-protocol}
-  {$\mathsf{Abs}_{[P_1, P_2, P_3]}(\share{\vx}_R^{\mathsf{rep}})$}
+  {$\mathsf{Abs}_{[P_1, P_2, P_3]} \left( \shareR{\vx}^{\mathsf{rep}} \right)$}
   \begin{enumerate}
-    \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}_{R}$.
-    \item Compute $\share{\vb} = \mathsf{MSB}_{[P_1, P_2, P_3]}(\vx)$.
-    \item Let $\share{\vs} \asn 1 - 2 \cdot \share{\vb}$.
-    \item Output $\share{\vs} \cdot \share{\vb}$.
+    \item $\shareR{\vb}^{\mathsf{rep}} \asn \mathsf{MSB}_{[P_1, P_2, P_3]}(\shareR{\vx}^{\mathsf{rep}})$.
+    \item $\shareR{\vs}^{\mathsf{rep}} \asn 1 - 2 \cdot \shareR{\vb}^{\mathsf{rep}}$.
+    \item Return $\shareR{\vs}^{\mathsf{rep}} \cdot \shareR{\vx}^{\mathsf{rep}}$.
   \end{enumerate}
 
 \end{Boxfig}
