@@ -9,7 +9,7 @@ The main motivation for using the data-flow paradigm is that it leads to a very 
 
 Every execution of a graph is performed under a unique session id $\sid$ used to identify values and ensure isolation when running protocols concurrently. As we shall see in more detail later, session ids are for instance used to non-interactively derive nonces and sample correlated randomness by the secret sharing schemes.
 
-There are no requirements on session ids besides uniqueness, and it can safely be chosen by an untrusted coordinator, for instance by sampling a random string. However, for security reasons, each party is expected to maintain a list of previous session ids in which it has engaged, and refuse to re-run any computation using those ids. This prevents for instance reply and selective failure attacks.
+There are no requirements on session ids besides uniqueness, and it can safely be chosen by an untrusted coordinator, for instance by sampling a random string. However, for security reasons, each party maintains a list of previous session ids in which it has engaged, and refuses to re-run any computation using those ids. This prevents for instance replay and selective failure attacks.
 
 
 \subsection{Sub-protocols}
