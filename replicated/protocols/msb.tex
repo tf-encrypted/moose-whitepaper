@@ -1,30 +1,38 @@
+
+
+\begin{Boxfig}{Ring bit decomposition to binary shares}{fig:bitdecraw}
+  {$\mathsf{BitDecRaw}_{[P_1, P_2, P_3]} \left( \share{\vx}^\mathsf{rep}_{2^k} \right) \rightarrow [\share{\cdot}^\mathsf{rep}_2; k]$}
+  \begin{enumerate}
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}_{2^k}$.
+
+  \item On $P_1$:
+  \begin{enumerate}
+    \item $\overline{\va} \asn \textsf{LocalBitDec}(\vx^1_1 + \vx^1_2)$.
+    \item $\overline{\share{\va}_2}(i) \asn \mathsf{ReplicatedShare}(\Z_2; \overline{\va}(i))$ for $i \in [k]$.
+  \end{enumerate}
+
+  \item On $P_2$:
+  \begin{enumerate}
+      \item $\overline{\vb^2} \asn \textsf{LocalBitDec}(\vx_3^2)$.
+  \end{enumerate}
+
+  \item On $P_3$:
+  \begin{enumerate}
+      \item $\overline{\vb^3} \asn \textsf{LocalBitDec}(\vx_3^3)$.
+  \end{enumerate}
+  \item Let $\overline{\share{\vb}_2}(i) = \left( (0, 0), (0, \overline{\vb^2}(i)), (\overline{\vb^3}(i), 0) \right)$ for $i \in [k]$.
+  \item Return $\textsf{BinaryAdder}(\overline{\share{\va}_2}, \overline{\share{\vb}_2})$.
+\end{enumerate}
+
+\end{Boxfig}
+
+
 \begin{Boxfig}{MSB computation from a replicated ring share}{fig:msb-protocol}
   {$\mathsf{MSB}_{[P_1, P_2, P_3]} \left( \share{\vx}^\mathsf{rep}_{2^k} \right)$}
   \begin{enumerate}
-  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}_{2^k}$.
-  
-  \item On $P_1$:
-  \begin{enumerate}
-    \item $\overline{\va} \asn \textsf{BitDec}(\vx^1_1 + \vx^1_2)$.
-    \item $\overline{\share{\va}_2}(i) \asn \mathsf{ReplicatedShare}(\Z_2; \overline{\va}(i))$ for $i \in [k]$.
+  \item $\overline{\share{\vb}} \asn \mathsf{BitDecRaw}(\share{\vx})$.
+  \item Return $\textsf{B2A}(\overline{\share{\vb}_2}(k-1))$.
   \end{enumerate}
-  
-  \item On $P_2$:
-  \begin{enumerate}
-      \item $\overline{\vb^2} \asn \textsf{BitDec}(\vx_3^2)$.
-  \end{enumerate}
-  
-  \item On $P_3$:
-  \begin{enumerate}
-      \item $\overline{\vb^3} \asn \textsf{BitDec}(\vx_3^3)$.
-  \end{enumerate}
-  
-  \item Let $\overline{\share{\vb}_2}(i) = \left( (0, 0), (0, \overline{\vb^2}(i)), (\overline{\vb^3}(i), 0) \right)$ for $i \in [k]$.
-  
-  \item $\overline{\share{\vc}_2} \asn \textsf{BinaryAdder}(\overline{\share{\va}_2}, \overline{\share{\vb}_2})$.
-  
-  \item Return $\textsf{B2A}(\overline{\share{\vc}_2}(k-1))$.
-\end{enumerate}
 
 \end{Boxfig}
 
