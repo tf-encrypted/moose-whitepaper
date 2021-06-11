@@ -1,6 +1,9 @@
 \subsection{Division}
 \label{subsec:division}
 
+The division algorithm was firstly introduced by Catrina and Saxena \cite{FC:CatSax10}.
+A few modifications to it were brought by MP-SPDZ to work over ring based circuits.
+We present the division algorithm in Figure~\ref{fig:division-generic}.
 
 \begin{Boxfig}{Generic fixed point division protocol.}{fig:division-generic}
   {$\mathsf{3PCDiv}_{[P_1, P_2, P_3]}(R; \share{\va}^\mathsf{rep}_{2^k}, \share{\vb}^\mathsf{rep}_{2^k})$}
@@ -9,8 +12,8 @@
     \item Compute $\theta = \log_2({k/3.5})$.
     \item Denote $r_f = f$.
     \item Set $\alpha = 2^{2\cdot f}$. Note that $\alpha = 1 \in \Q_{\langle k, 2\cdot f \rangle}$ representation.
-    \item $\share{\vw} = \mathsf{AppRcr}(\share{\vb}, k, f, \kappa)$.
-    \item $\share{\vx} = \valpha - \share{\vb} \cdot w$.
+    \item $\share{\vw} = \mathsf{AppRcr}(\share{\vb}, k, f)$.
+    \item $\share{\vx} = \valpha - \share{\vb} \cdot \share{\vw}$.
     \item $\share{\vy} = \share{\va} \cdot \share{\vw}$.
     \item $\share{\vy} = \mathsf{Round}(\share{\vy}, 2\cdot k, f)$.
     \item For $i \in [0, \theta - 1]$:
@@ -73,30 +76,8 @@
 \begin{Boxfig}{Rounding a $k$ bit integer by $m$ bits.}{fig:rounding}
   {$\mathsf{Round}_{[P_1, P_2, P_3]}(R; \share{\vx}^\mathsf{rep}_R, k, m)$}
   \begin{enumerate}
-  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}_R$.
-
-  \item On $P_3$:
-  \begin{enumerate}
-    \item $\shape \asn \mathsf{Shape}(\vx^3_3)$.
-    \item $\prfkey \asn \mathsf{GenPrfKey}()$.
-    \item $\seed_\ell \asn \mathsf{DeriveSeed}(\ell; \prfkey)$ for $\ell \in [k]$.
-    \item $\mathbf{b}_\ell \asn \mathsf{SampleBits}(R; \shape, \seed_\ell)$ for $\ell \in [k]$.
-    \item $\mathbf{r} \asn \sum_{\ell=0}^{k-1}2^\ell \cdot \vb_\ell$
-    \item $\mathbf{r}_{\mathsf{msb}} \asn \vb_{k-1}$
-    \item $\mathbf{r}_{\mathsf{top}} \asn \sum_{\ell=m}^{k-2} 2^{\ell-m} \cdot \vb_\ell$.
-  \end{enumerate}
-
-  \item $\share{\vr}^{\mathsf{add}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr)$
-
-  \item $\share{\vr_{\mathsf{msb}}}^{\mathsf{add}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr_{\mathsf{msb}})$
-
-  \item $\share{\vr_{\mathsf{top}}}^{\mathsf{add}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr_{\mathsf{top}})$
-
-  \item $\share{\vx'}^{\mathsf{add}} \asn \mathsf{ReplicatedToAdditive}_{[P_1, P_2]}(\share{\vx}^{\mathsf{rep}})$.
-
-  \item $\share{\vy'}^{\mathsf{add}} \asn \mathsf{2PCTruncPr}_{[P_1, P_2]}(\share{\vx'}^{\mathsf{add}}, m, \share{\vr}^{\mathsf{add}}, \share{\vr_{\mathsf{msb}}}^{\mathsf{add}}, \share{\vr_{\mathsf{top}}}^{\mathsf{add}} )$.
-
-  \item Return $\share{\vy}^{\mathsf{rep}} \asn \mathsf{AdditiveToReplicated}_{[P_1, P_2, P_3]}(\share{\vy'}^{\mathsf{add}})$.
+  \item If numbers are unsigned assert $k + 1 \leq \log_2{R}$. Otherwise assert $k+1 < \log_2{R}$.
+  \item Output $\mathsf{TruncPr}(\share{\vx}^\mathsf{rep}, m)$.
 \end{enumerate}
 \end{Boxfig}
 
