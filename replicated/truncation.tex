@@ -26,17 +26,17 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
     \item $\mathbf{r}_{\mathsf{top}} \asn \sum_{\ell=m}^{k-2} 2^{\ell-m} \cdot \vb_\ell$.
   \end{enumerate}
 
-  \item $\share{\vr}^{\mathsf{add}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr)$
+  \item $\share{\vr}^{\mathsf{adt}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr)$
 
-  \item $\share{\vr_{\mathsf{msb}}}^{\mathsf{add}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr_{\mathsf{msb}})$
+  \item $\share{\vr_{\mathsf{msb}}}^{\mathsf{adt}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr_{\mathsf{msb}})$
 
-  \item $\share{\vr_{\mathsf{top}}}^{\mathsf{add}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr_{\mathsf{top}})$
+  \item $\share{\vr_{\mathsf{top}}}^{\mathsf{adt}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr_{\mathsf{top}})$
 
-  \item $\share{\vx'}^{\mathsf{add}} \asn \mathsf{ReplicatedToAdditive}_{[P_1, P_2]}(\share{\vx}^{\mathsf{rep}})$.
+  \item $\share{\vx'}^{\mathsf{adt}} \asn \mathsf{ReplicatedToAdditive}_{[P_1, P_2]}(\share{\vx}^{\mathsf{rep}})$.
 
-  \item $\share{\vy'}^{\mathsf{add}} \asn \mathsf{2PCTruncPr}_{[P_1, P_2]}(\share{\vx'}^{\mathsf{add}}, m, \share{\vr}^{\mathsf{add}}, \share{\vr_{\mathsf{msb}}}^{\mathsf{add}}, \share{\vr_{\mathsf{top}}}^{\mathsf{add}} )$.
+  \item $\share{\vy'}^{\mathsf{adt}} \asn \mathsf{2PCTruncPr}_{[P_1, P_2]}(\share{\vx'}^{\mathsf{adt}}, m, \share{\vr}^{\mathsf{adt}}, \share{\vr_{\mathsf{msb}}}^{\mathsf{adt}}, \share{\vr_{\mathsf{top}}}^{\mathsf{adt}} )$.
 
-  \item Return $\share{\vy}^{\mathsf{rep}} \asn \mathsf{AdditiveToReplicated}_{[P_1, P_2, P_3]}(\share{\vy'}^{\mathsf{add}})$.
+  \item Return $\share{\vy}^{\mathsf{rep}} \asn \mathsf{AdtToReplicated}_{[P_1, P_2, P_3]}(\share{\vy'}^{\mathsf{adt}})$.
 
 \end{enumerate}
 
@@ -97,7 +97,7 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
   \begin{enumerate}
       \item Receive $\vx^2_2$ from $D$.
   \end{enumerate}
-  \item Return $\share{\vx}^{\mathsf{add}} = (\vx^1_1, \vx^2_2)$.
+  \item Return $\share{\vx}^{\mathsf{adt}} = (\vx^1_1, \vx^2_2)$.
 \end{enumerate}
 \end{Boxfig}
 
@@ -118,7 +118,7 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
     \item $\vx'_2 \asn \vx^2_3$.
     \end{enumerate}
 
-  \item Return $\share{\vx'}^{\mathsf{add}} = (\vx'_1, \vx'_2)$.
+  \item Return $\share{\vx'}^{\mathsf{adt}} = (\vx'_1, \vx'_2)$.
 \end{enumerate}
 \end{Boxfig}
 

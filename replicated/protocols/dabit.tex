@@ -9,7 +9,7 @@
     \item $\seed_2 \asn \derives(1, \prfkey)$.
     \item $\seed_{2^k} \asn \derives(2, \prfkey)$.
     \item Send $\seed_2$ and $\seed_{2^k}$ to $P_1$.
-    
+
     \item $\vb^1_{2} \asn \RingSample(\Z_2; \seed_2, \shape)$.
     \item $\vb^2_{2} \asn \vb - \vb^1_{2}$.
     \item $\vb^1_{2^k} \asn \RingSample(\Z_{2^k}; \seed_{2^k}, \shape)$.
@@ -27,9 +27,9 @@
 \begin{enumerate}
     \item Receive $\vb^2_2$ and $\vb^2_{2^k}$ from $D$.
 \end{enumerate}
-\item Let $\shareB{\vb}^\mathsf{add} = (\vb^1_2, \vb^2_2)$.
-\item Let $\shareR{\vb}^\mathsf{add} = (\vb^1_{2^k}, \vb^2_{2^k})$
-\item Return $\shareB{\vb}^\mathsf{add}$ and $\shareR{\vb}^\mathsf{add}$.
+\item Let $\shareB{\vb}^\mathsf{adt} = (\vb^1_2, \vb^2_2)$.
+\item Let $\shareR{\vb}^\mathsf{adt} = (\vb^1_{2^k}, \vb^2_{2^k})$
+\item Return $\shareB{\vb}^\mathsf{adt}$ and $\shareR{\vb}^\mathsf{adt}$.
 \end{enumerate}
 \end{Boxfig}
 

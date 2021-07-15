@@ -1,8 +1,34 @@
 \subsection{Sharing data}
 
-In Figure~\ref{fig:replicated-share} we show how a party $P_i$ can translate a private tensor $\vx$ (known only to $P_i$) into a replicated tensor. In the first part of the protocol parties use the same mechanism as in the $\mathsf{ZeroShare}$ to produce a set of replicated shared seeds. Then $P_i$ sends to $P_{i-1}$ the shape of $\vx$ in order for $P_{i-1}$ to derive a correct sized random tensor using the shared seed. In the last part the inputting party $P_i$ masks the private tensor with a random value $\vx - \vx_i^i$ and sends it to $P_{i+1}$.
+In Figure~\ref{fig:replicated-share} we show how a party $D$ can translate a
+private tensor $\vx$ (known only to $D$) into a replicated tensor.
+Here we distinguish two cases: a) when $D$ is amongst the parties on the replicated placement
+i.e. $D \in \{P_1, P_2, P_3\}$ and b) when $D$ is an external party, not in the replicated set.
 
-Correctness can be seen from the fact that at the end of the protocol all $\vx_1^j + \vx_2^j + \vx_3^{j+1} = \vx$ for all $j \in [1,3]$. For example, when $j = 1$ we have the following:
-$$\vx_1^1 + \vx_2^1 + \vx_3^2 = \mathbf{0} + \vx_2^1 + (\vx - \vx_2^2) = \vx $$ due to $\vx_2^1 = \vx_2^2$ since they were sampled from identical seeds. Security follows from~\cite{CCS:ABFLNO16} or~\cite{CCS:MohRin18}.
+In the first case the parties use a similar mechanism as in the
+$\mathsf{ZeroShare}$ to produce a set of replicated shared seeds. Wlog., consider $D=P_i$,
+then $P_i$ sends to $P_{i-1}$ the shape of $\vx$ in order for $P_{i-1}$ to derive a correct
+sized random tensor using the shared seed. Then the inputting party
+$P_i$ masks the private tensor with a random value $\vx - \vx_i^i$ and sends it
+to $P_{i+1}$.
+
+Correctness can be seen from the fact that at the end of the protocol all
+$\vx_1^j + \vx_2^j + \vx_3^{j+1} = \vx$ for all $j \in [1,3]$. For example, when
+$j = 1$ we have the following: $$\vx_1^1 + \vx_2^1 + \vx_3^2 = \mathbf{0} +
+\vx_2^1 + (\vx - \vx_2^2) = \vx $$ due to $\vx_2^1 = \vx_2^2$ since they were
+sampled from identical seeds. Security follows from~\cite{CCS:ABFLNO16}
+or~\cite{CCS:MohRin18}.
+
+
+In the second case $D$ is an external party sharing their input. Two of the
+parties $(P_1, P_2)$ produce the randomness used to mask $\vx$ in $\vx_3 \asn
+\vx - \vx_1 - \vx_2$ such that any two parties can reconstruct the secret
+$\share{\vx}$ afterwards. Correctness can be seen as in the first case since all
+$\vx_1^j + \vx_2^j + \vx_3^{j+1} = \vx$ for all $j \in [1,3]$. For example, when
+$j = 1$ we have: $$ \vx_1^1 + \vx_2^1 + \vx_3^2 = \vx_1 + \vx_2 + (\vx - \vx_1 -
+\vx_2) = \vx.$$ The security argument differs slightly then the first case since
+$D$ broadcasts $\vx - \vx_1 - \vx_2$. Since $\vx_1$ and $\vx_2$ are joint
+randomness produced by $P_1$ and $P_2$ then any two parties (no less) can reconstruct the
+secret.
 
 \input{protocols/share-input}

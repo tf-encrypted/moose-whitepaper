@@ -10,9 +10,9 @@ In the 3PC semi-honest model there are few approaches to this:
    reconstruct the secret modulo $\Z_{2^k}$ using shares from $\Z^k_2$ and a
    binary adder. Once a boolean sharing of the MSB is computed using the binary adder
    this is converted to a ring sharing in $\Z_{2^k}$.
-   In ABY3 this was done using a three-party OT protocol. In MP-SPDZ \cite{CCS:Keller20} 
+   In ABY3 this was done using a three-party OT protocol. In MP-SPDZ \cite{CCS:Keller20}
    the boolean to ring sharing conversion was achieved using a daBit.
-   \item SecureNN \cite{PoPETS:WagGupCha19} 
+   \item SecureNN \cite{PoPETS:WagGupCha19}
    similar to ABY3 with the downside that it uses arithmetic modulo
    some small fields but avoids ring-to-boolean conversion.
   \item Comparisons using edaBits \cite{C:EGKRS20}. The 3PC case has roughly the same cost as ABY3.
@@ -33,10 +33,17 @@ from daBit/edaBit \cite{INDOCRYPT:RotWoo19,C:EGKRS20}
 line of work with the twist that $P_3$ generates the preprocessing
 material. We fully describe this share conversion protocol in Figure~\ref{fig:b2a-protocol}.
 
-Acting as a trusted third party, $P_3$ generates a random
-daBit $(\share{\vb}_2, \share{\vb}_{2^k})$ locally and shares it to $P_1$ and $P_2$. Then $P_1$ and $P_2$ run a two-party protocol to convert $\share{\vx}_2$ to
-$\share{\vx}_{2^k}$ by computing $\vc \asn \vx_2 \oplus \vb_2$ and then locally XOR-ing in the arithmetic domain $\vx_{2^k} = \vc + \vb_{2^k} - 2 \cdot \vc \cdot \vb_{2^k}$.
-Finally they convert back to a replicated sharing using $\mathsf{AdditiveToReplicated}$ from Figure~\ref{fig:two-to-three}.
+Acting as a trusted third party, $P_3$ generates a random daBit $(\share{\vb}_2,
+\share{\vb}_{2^k})$ locally and shares it to $P_1$ and $P_2$. Then $P_1$ and
+$P_2$ run a two-party protocol to convert $\share{\vx}_2$ to $\share{\vx}_{2^k}$
+by computing $\vc \asn \vx_2 \oplus \vb_2$ and then locally XOR-ing in the
+arithmetic domain $\vx_{2^k} = \vc + \vb_{2^k} - 2 \cdot \vc \cdot \vb_{2^k}$.
+Finally they convert back to a replicated sharing using
+$\mathsf{AdtToReplicated}$ from Figure~\ref{fig:two-to-three}. Note that in our
+implementation of the additive to replicated share conversions we consider a
+more general variant where $\share{\vx}^\mathsf{adt}$ is converted to
+$\share{\vx}^\mathsf{rep}$ where the host placements on the additive placement
+$\mathsf{adt}$ are not necessarily a subset of host placements composing $\mathsf{rep}$.
 
 \input{protocols/b2a}
 \input{protocols/dabit}

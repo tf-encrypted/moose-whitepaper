@@ -1,7 +1,7 @@
 
-\begin{Boxfig}{Additive to replicated share conversion protocol.}{fig:two-to-three}{$\mathsf{AdditiveToReplicated}_{[P_1, P_2, P_3]}(R; \share{\vx}^{\mathsf{add}}_{R})$}
+\begin{Boxfig}{Additive to replicated share conversion protocol.}{fig:two-to-three}{$\mathsf{AdtToReplicated}_{[P_1, P_2, P_3]}(R; \share{\vx}^{\mathsf{adt}}_{R})$}
 \begin{enumerate}
-\item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{add}}_{R}$.
+\item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{adt}}_{R}$.
 
 \item On $P_1$:
 \begin{enumerate}
@@ -26,9 +26,9 @@
   \item $\vy_i \asn \RingSample(R; \shape, \seed_i)$.
 \end{enumerate}
 
-\item Let $\share{\vy}^{\mathsf{add}}_{R} = (\vy_1, \vy_2)$.
+\item Let $\share{\vy}^{\mathsf{adt}}_{R} = (\vy_1, \vy_2)$.
 
-\item $\vc \asn \mathsf{Open}_{[P_1, P_2]}\left( \share{\vx}^{\mathsf{add}}_{R} - \share{\vy}^{\mathsf{add}}_{R} \right)$
+\item $\vc \asn \mathsf{Open}_{[P_1, P_2]}\left( \share{\vx}^{\mathsf{adt}}_{R} - \share{\vy}^{\mathsf{adt}}_{R} \right)$
 
 \item Return $\share{\vy}^{\mathsf{rep}}_{R} = \left( (\vy_1, \vc), (\vc, \vy_2), (\vy_3^3, \vy_1^3) \right)$.
 \end{enumerate}

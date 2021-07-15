@@ -1,38 +1,81 @@
 
 \begin{Boxfig}{Replicated sharing protocol.}{fig:replicated-share}
-  {Protocol $\mathsf{ReplicatedShare}_{[P_1, P_2, P_3]}(R; \prfkeys, \vx)$}
-  
-  Let $P_i$ be the player holding $\vx$.
-  
+  {Protocol $\mathsf{ReplicatedShare}_{[D, P_1, P_2, P_3]}(R; \prfkeys, \vx)$}
+
+  Let $D$ be the player holding $\vx$.
+
   \begin{enumerate}
   \item Let $\left( (k_1^1, k_2^1), (k_2^2, k_3^2), (k_2^3, k_1^3) \right) = \prfkeys$ be PRF keys generated during setup.
-  
-  \item On $P_i$:
-  \begin{enumerate}
-    \item $\shape^i \asn \mathsf{Shape}(\vx)$.
-    \item ${\seed}^i \asn \mathsf{DeriveSeed}(0; k^i_i)$.
-    \item $\vx_i^i \asn \RingSample(R; \shape^i, \seed^i)$.
-    \item $\vx_{i+1}^i \asn \vx - \vx_i^i$.
-    \item Send $\shape^i$ to $P_{i-1}$ and $P_{i+1}$.
-    \item Send $\vx_{i+1}^i$ to $P_{i+1}$.
-  \end{enumerate}
-  
-  \item On $P_{i-1}$:
-  \begin{enumerate}
-    \item Receive $\shape^{i-1}$ from $P_i$.
-    \item ${\seed}^{i-1} \asn \mathsf{DeriveSeed}(0; k^{i-1}_i)$.
-    \item $\vx_{i-1}^{i-1} \asn \mathsf{Zeros}(R; \shape^{i-1})$.
-    \item $\vx_i^{i-1} \asn \RingSample(R; \shape^{i-1}, \seed^{i-1})$.
-  \end{enumerate}
-  
-  \item On $P_{i+1}$:
-  \begin{enumerate}
-    \item Receive $\shape^{i+1}$ from $P_i$.
-    \item Receive $\vx_{i+1}^i$ from $P_i$.
-    \item $\vx_{i+1}^{i+1} \asn \vx_{i+1}^i$.
-    \item $\vx_{i+2}^{i+1} \asn \mathsf{Zeros}(R; \shape^{i+1})$.
-  \end{enumerate}
-  
+  \item If $D \in \{P_1, P_2, P_3\}$ let $i$ the index for which $D = P_i$:
+
+    \begin{enumerate}
+    \item On $P_i$:
+      \begin{enumerate}
+        \item $\shape^i \asn \mathsf{Shape}(\vx)$.
+        \item ${\seed}^i \asn \mathsf{DeriveSeed}(0; k^i_i)$.
+        \item $\vx_i^i \asn \RingSample(R; \shape^i, \seed^i)$.
+        \item $\vx_{i+1}^i \asn \vx - \vx_i^i$.
+        \item Send $\shape^i$ to $P_{i-1}$ and $P_{i+1}$.
+        \item Send $\vx_{i+1}^i$ to $P_{i+1}$.
+      \end{enumerate}
+
+    \item On $P_{i-1}$:
+      \begin{enumerate}
+        \item Receive $\shape^{i-1}$ from $P_i$.
+        \item ${\seed}^{i-1} \asn \mathsf{DeriveSeed}(0; k^{i-1}_i)$.
+        \item $\vx_{i-1}^{i-1} \asn \mathsf{Zeros}(R; \shape^{i-1})$.
+        \item $\vx_i^{i-1} \asn \RingSample(R; \shape^{i-1}, \seed^{i-1})$.
+      \end{enumerate}
+
+    \item On $P_{i+1}$:
+      \begin{enumerate}
+        \item Receive $\shape^{i+1}$ from $P_i$.
+        \item Receive $\vx_{i+1}^i$ from $P_i$.
+        \item $\vx_{i+1}^{i+1} \asn \vx_{i+1}^i$.
+        \item $\vx_{i+2}^{i+1} \asn \mathsf{Zeros}(R; \shape^{i+1})$.
+      \end{enumerate}
+    \end{enumerate}
+  \item If $D \notin \{P_1, P_2, P_3\}$ then:
+
+      \begin{enumerate}
+        \item On $D$ compute $\shape^D \asn \mathsf{Shape}(\vx)$ and broadcast $\shape^D$ to all $P_{i \in [3]}$.
+
+        \item On $P_1$:
+        \begin{enumerate}
+          \item $\seed_0^1 \asn \mathsf{DeriveSeed}(0, k_1^1)$.
+          \item $\seed_1^1 \asn \mathsf{DeriveSeed}(1, k_2^1)$.
+          \item $\vx_1^1 \asn \RingSample(R, \shape^D, \seed_0^0)$.
+          \item $\vx_2^1 \asn \RingSample(R, \shape^D, \seed_1^0)$.
+          \item Send $\seed_1^1$ to $D$.
+        \end{enumerate}
+
+        \item On $P_2$:
+        \begin{enumerate}
+          \item $\seed_2^2 \asn \mathsf{DeriveSeed}(1, k_2^2)$.
+          \item $\vx_2^2 \asn \RingSample(R, \shape^D, \seed_2^2)$.
+          \item Send $\seed_2^2$ to $D$
+        \end{enumerate}
+
+        \item On $D$:
+        \begin{enumerate}
+          \item Receive $\seed_i^i$ from $P_i$ for $i \in [1, 2]$.
+          \item $\vx_i \asn \RingSample(R, \shape^D, \seed_i^i)$ for $i \in [1, 2]$.
+          \item $\vx_3 \asn \vx - \vx_1 - \vx_2$.
+          \item Send $\vx_3$ to $P_2$ and $P_3$.
+        \end{enumerate}
+
+        \item On $P_2$:
+        \begin{enumerate}
+          \item Receive $\vx_3$ from $D$ and set $\vx_3^2 \asn \vx_3$.
+        \end{enumerate}
+
+        \item On $P_3$.
+        \begin{enumerate}
+          \item Receive $\vx_3$ from $D$. Set $\vx_3^3 \asn \vx_3$.
+          \item $\seed_1^3 \asn \mathsf{DeriveSeed}(0, k_1^3)$.
+          \item $\vx_1^3 \asn \RingSample(R, \shape^D, \seed_1^3)$.
+        \end{enumerate}
+    \end{enumerate}
   \item Return $\share{\vx}_R = \left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right)$.
   \end{enumerate}
 \end{Boxfig}
