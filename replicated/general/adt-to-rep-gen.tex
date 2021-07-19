@@ -33,7 +33,22 @@ protocol.}{fig:two-to-three}{$\mathsf{AdtToRep}_\mathsf{rep}(R;
 \item Each $A_j$ sends $\vy_j$ to $R_k$ for which $R_k = A_j$ $\forall j \in [2], k \in [3]$.
 \item The $A_j$ parties that didn't have a 1-1 match to $R_k$ in the previous step now pick an unique $R_k \neq R_i$
 that hasn't received any $\vy$ share and sends it to $R_k$.
-\item Return $\share{\vy}^{\mathsf{rep}}_{R} = \left( (\vy_1, \vc), (\vc, \vy_2), (\vy_3^3, \vy_1^3) \right)$ // TODO: Find proper formula for ordering shares.
+\item The set of shares owned by the $R$ parties are: $\{ \{\vy_1, \vc\}, \{\vy_2, \vc\}, \{\vy^i_1, \vy^i_2\} \}$.
+\item Parties order their shares such that it is a valid sharing of $\vy$.
+\item Return $\share{\vy}^{\mathsf{rep}}_{R}$.
 \end{enumerate}
 \end{Boxfig}
 
+Note that in the last steps the parties must provide a valid ordering of their
+shares such that it reconstructs to $\vy$. There are multiple cases here,
+depending on which host placement the share provider ($R_i$) was assigned and
+the way the parties on the additive placement sent their shares to the replicated ones.
+
+\begin{align*}
+(R_i = R_1, A_1 = R_2, A_2 = R_3) \mapsto \left( (\vy_2^1, \vy_1^1), (\vy_1, \vc), (\vc, \vy_2) \right) \\
+(R_i = R_1, A_2 = R_2, A_1 = R_3) \mapsto \left( (\vy_1^1, \vy_2^1), (\vy_2, \vc), (\vc, \vy_1) \right) \\
+(A_1 = R_1, R_i = R_2, A_2 = R_3) \mapsto \left( (\vc, \vy_1), (\vy^2_1, \vy^2_2), (\vy_2, \vc) \right) \\
+(A_2 = R_1, R_i = R_2, A_1 = R_3) \mapsto \left( (\vc, \vy_2), (\vy^2_2, \vy^2_1), (\vy_1, \vc) \right) \\
+(A_1 = R_1, A_2 = R_2, R_i = R_3) \mapsto \left( (\vy_1, \vc), (\vc, \vy_2), (\vy_2^3, \vy_1^3) \right) \\
+(A_2 = R_1, A_1 = R_2, R_i = R_3) \mapsto \left( (\vy_2, \vc), (\vc, \vy_1), (\vy_1^3, \vy_2^3) \right)
+\end{align*}

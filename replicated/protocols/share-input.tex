@@ -5,7 +5,7 @@
   Let $D$ be the player holding $\vx$.
 
   \begin{enumerate}
-  \item Let $\left( (k_1^1, k_2^1), (k_2^2, k_3^2), (k_2^3, k_1^3) \right) = \prfkeys$ be PRF keys generated during setup.
+  \item Let $\left( (k_1^1, k_2^1), (k_2^2, k_3^2), (k_3^3, k_1^3) \right) = \prfkeys$ be PRF keys generated during setup.
   \item If $D \in \{P_1, P_2, P_3\}$ let $i$ the index for which $D = P_i$:
 
     \begin{enumerate}
@@ -44,22 +44,23 @@
         \begin{enumerate}
           \item $\seed_0^1 \asn \mathsf{DeriveSeed}(0, k_1^1)$.
           \item $\seed_1^1 \asn \mathsf{DeriveSeed}(1, k_2^1)$.
-          \item $\vx_1^1 \asn \RingSample(R, \shape^D, \seed_0^0)$.
-          \item $\vx_2^1 \asn \RingSample(R, \shape^D, \seed_1^0)$.
-          \item Send $\seed_1^1$ to $D$.
+          \item $\vx_1^1 \asn \RingSample(R, \shape^D, \seed_0^1)$.
+          \item $\vx_2^1 \asn \RingSample(R, \shape^D, \seed_1^1)$.
+          \item Send $\seed_0^1$ to $D$.
         \end{enumerate}
 
         \item On $P_2$:
         \begin{enumerate}
-          \item $\seed_2^2 \asn \mathsf{DeriveSeed}(1, k_2^2)$.
+          \item $\seed_1^2 \asn \mathsf{DeriveSeed}(1, k_2^2)$.
           \item $\vx_2^2 \asn \RingSample(R, \shape^D, \seed_2^2)$.
           \item Send $\seed_2^2$ to $D$
         \end{enumerate}
 
         \item On $D$:
         \begin{enumerate}
-          \item Receive $\seed_i^i$ from $P_i$ for $i \in [1, 2]$.
-          \item $\vx_i \asn \RingSample(R, \shape^D, \seed_i^i)$ for $i \in [1, 2]$.
+          \item Receive $\seed_0^1$ from $P_1$ and $\seed_1^2$ from $P_2$.
+          \item $\vx_1 \asn \RingSample(R, \shape^D, \seed_0^1)$.
+          \item $\vx_2 \asn \RingSample(R, \shape^D, \seed_1^2)$.
           \item $\vx_3 \asn \vx - \vx_1 - \vx_2$.
           \item Send $\vx_3$ to $P_2$ and $P_3$.
         \end{enumerate}
@@ -72,8 +73,8 @@
         \item On $P_3$.
         \begin{enumerate}
           \item Receive $\vx_3$ from $D$. Set $\vx_3^3 \asn \vx_3$.
-          \item $\seed_1^3 \asn \mathsf{DeriveSeed}(0, k_1^3)$.
-          \item $\vx_1^3 \asn \RingSample(R, \shape^D, \seed_1^3)$.
+          \item $\seed_0^3 \asn \mathsf{DeriveSeed}(0, k_1^3)$.
+          \item $\vx_1^3 \asn \RingSample(R, \shape^D, \seed_0^3)$.
         \end{enumerate}
     \end{enumerate}
   \item Return $\share{\vx}_R = \left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right)$.

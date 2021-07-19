@@ -27,7 +27,7 @@ $\share{\vx}$ afterwards. Correctness can be seen as in the first case since all
 $\vx_1^j + \vx_2^j + \vx_3^{j+1} = \vx$ for all $j \in [1,3]$. For example, when
 $j = 1$ we have: $$ \vx_1^1 + \vx_2^1 + \vx_3^2 = \vx_1 + \vx_2 + (\vx - \vx_1 -
 \vx_2) = \vx.$$ The security argument differs slightly then the first case since
-$D$ broadcasts $\vx - \vx_1 - \vx_2$. Since $\vx_1$ and $\vx_2$ are joint
+$D$ sends $\vx - \vx_1 - \vx_2$ to $P_2$ and $P_3$. Since $\vx_1$ and $\vx_2$ are joint
 randomness produced by $P_1$ and $P_2$ then any two parties (no less) can reconstruct the
 secret.
 
