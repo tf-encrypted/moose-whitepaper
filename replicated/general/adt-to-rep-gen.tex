@@ -1,0 +1,39 @@
+\subsection{More general additive to replicated share conversion}
+
+
+\begin{Boxfig}{Additive to replicated share conversion
+protocol.}{fig:two-to-three}{$\mathsf{AdtToRep}_\mathsf{rep}(R;
+\share{\vx}^{\mathsf{adt}}_{R}) \rightarrow \share{\vy}^\mathsf{rep}$}
+\begin{enumerate}
+\item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{adt}}_{R}$.
+\item Let $(A_1, A_2) \asn \mathsf{adt}.\mathsf{host\_placements()}$.
+\item Let $(R_1, R_2, R_3) \asn \mathsf{rep}.\mathsf{host\_placements()}$.
+\item If $\{A_1, A_2\} \subset \{R_1, R_2, R_3\}$ run the $\mathsf{AdtToRep}$ described Figure~\ref{fig:two-to-three} and end the protocol.
+\item Select one $R_i$ such that $R_i \neq A_j, \forall j \in [2]$ which will act as the third party provider for the other $R_k, k \neq i$.
+\item On $R_i$:
+\begin{enumerate}
+    \item $k \asn \mathsf{GenPrfKey}()$.
+    \item $\mathsf{seed}_1 \asn \mathsf{DeriveSeed}(0, k)$.
+    \item $\mathsf{seed}_2 \asn \mathsf{DeriveSeed}(1, k)$.
+    \item $\vy_j^i \asn \RingSample(R; \shape, \seed_j)$ for $j \in [2]$.
+\end{enumerate}
+\item On $A_1$:
+\begin{enumerate}
+    \item Receive $\mathsf{seed}_1$ from $R_i$.
+    \item Compute $\vy_1 \asn \RingSample(R; \shape, \seed_1)$.
+\end{enumerate}
+\item On $A_2$:
+\begin{enumerate}
+    \item Receive $\mathsf{seed}_2$ from $R_i$.
+    \item Compute $\vy_2 \asn \RingSample(R; \shape, \seed_2)$.
+\end{enumerate}
+\item Let $\share{\vy}^{\mathsf{adt}}_{R} = (\vy_1, \vy_2)$.
+\item $\vc \asn \mathsf{Open}_{[A_1, A_2]}\left( \share{\vx}^{\mathsf{adt}}_{R}
+- \share{\vy}^{\mathsf{adt}}_{R} \right)$
+\item Each $A_j$ sends $\vy_j$ to $R_k$ for which $R_k = A_j$ $\forall j \in [2], k \in [3]$.
+\item The $A_j$ parties that didn't have a 1-1 match to $R_k$ in the previous step now pick an unique $R_k \neq R_i$
+that hasn't received any $\vy$ share and sends it to $R_k$.
+\item Return $\share{\vy}^{\mathsf{rep}}_{R} = \left( (\vy_1, \vc), (\vc, \vy_2), (\vy_3^3, \vy_1^3) \right)$ // TODO: Find proper formula for ordering shares.
+\end{enumerate}
+\end{Boxfig}
+

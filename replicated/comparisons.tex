@@ -39,7 +39,7 @@ $P_2$ run a two-party protocol to convert $\share{\vx}_2$ to $\share{\vx}_{2^k}$
 by computing $\vc \asn \vx_2 \oplus \vb_2$ and then locally XOR-ing in the
 arithmetic domain $\vx_{2^k} = \vc + \vb_{2^k} - 2 \cdot \vc \cdot \vb_{2^k}$.
 Finally they convert back to a replicated sharing using
-$\mathsf{AdtToReplicated}$ from Figure~\ref{fig:two-to-three}. Note that in our
+$\mathsf{AdtToRep}$ from Figure~\ref{fig:two-to-three}. Note that in our
 implementation of the additive to replicated share conversions we consider a
 more general variant where $\share{\vx}^\mathsf{adt}$ is converted to
 $\share{\vx}^\mathsf{rep}$ where the host placements on the additive placement
