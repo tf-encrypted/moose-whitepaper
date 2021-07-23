@@ -50,22 +50,23 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
 \end{Boxfig}
 
 \begin{Boxfig}{Two-party truncation protocol.}{fig:truncpr-generic}
-  {$\mathsf{2PCTruncPr}_{[P_1, P_2]} \left( \share{\vx}, m, \share{\vr}, \share{\vr_{\mathsf{msb}}}, \share{\vr_{\mathsf{top}}} \right)$}
+  {$\mathsf{2PCTruncPr}_{[P_1, P_2]} \left( \share{\vx}, m, \share{\vr},
+  \share{\vr_{\mathsf{msb}}}, \share{\vr_{\mathsf{top}}} \right)$}
 
-  Assume $\vx \in \Z_{2^k}^{\shape}$ has $\mathsf{MSB}(\vx) = 0$.
+  Assume $0 \leq \vx < 2^{\log_2{(R - 1})}$ in the unsigned representation. \\
+  Since we deal with signed numbers the bounds are $-2^{\log_2{(R - 2)}} \leq x <
+  2^{\log_2{(R - 2)}}$ in order to have enough room to make $\vx$ positive (i.e.
+  add $2^{\log_2{(R-2)}}$) but also keep its MSB equal to $0$.  Denote $k =
+  \log_2(R) - 1$, considered in some literature as the unsigned input bound (in bits).
   \begin{enumerate}
-
-  \item $\share{\vc} \asn \share{\vx} + \share{\vr}$.
-
+  \item $\share{\vc} \asn \share{\vx} + 2^{k-1} + \share{\vr}$. By adding $2^{k-1}$ we make sure we mask a positive number.
   \item $\vc \asn \Open_{[P_1, P_2]}(\share{\vc})$.
-
   \item $\vc_{\mathsf{top}} \asn (\vc / 2^m) \bmod 2^{k-m-1}$.
 
-  \item $\vc_{\mathsf{msb}} \asn \vc / 2^{k-1}$.
-
-  \item $\share{\vb} \asn \share{\vr_{\mathsf{msb}}} \oplus \vc_{\mathsf{msb}}$. Note here that $a \oplus b = a + b - 2a\cdot b$.
-
-  \item Return $\share{\vy} \asn \vc_{\mathsf{top}} - \share{\vr_{\mathsf{top}}} + \share{\vb} \cdot 2^{k-m-1}$.
+  \item $\vc_{\mathsf{msb}} \asn \vc / 2^{k}$.
+  \item $\share{\vw} \asn \share{\vr_{\mathsf{msb}}} \oplus \vc_{\mathsf{msb}}$. Note here that $a \oplus b = a + b - 2a\cdot b$.
+  \item $\share{\vy_+} \asn \vc_{\mathsf{top}} - \share{\vr_{\mathsf{top}}} + \share{\vw}  \cdot 2^{k-m}$.
+  \item Return $\share{\vy} \asn \share{\vy_+} - 2^{k-m-1}$.
 \end{enumerate}
 
 \end{Boxfig}
