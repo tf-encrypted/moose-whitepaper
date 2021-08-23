@@ -4,6 +4,9 @@
 \begin{Boxfig}{Additive to replicated share conversion
 protocol.}{fig:general-two-to-three}{$\mathsf{AdtToRep}_\mathsf{rep}(R;
 \share{\vx}^{\mathsf{adt}}_{R}) \rightarrow \share{\vy}^\mathsf{rep}$}
+
+Let $\mathsf{sync\_key}_1$ and $\mathsf{sync\_key}_2$ be distinct fixed values.
+  
 \begin{enumerate}
 \item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{adt}}_{R}$.
 \item Let $(A_1, A_2) \asn \mathsf{adt}.\mathsf{host\_placements()}$.
@@ -21,19 +24,19 @@ protocol.}{fig:general-two-to-three}{$\mathsf{AdtToRep}_\mathsf{rep}(R;
 \begin{enumerate}
     \item Receive $\shape_1$ from $A_1$.
     \item $k \asn \mathsf{GenPrfKey}()$.
-    \item $\mathsf{seed}_1 \asn \mathsf{DeriveSeed}(0, k)$.
-    \item $\mathsf{seed}_2 \asn \mathsf{DeriveSeed}(1, k)$.
-    \item $\vy_j^i \asn \RingSample(R; \shape_1, \seed_j)$ for $j \in [2]$.
+    \item $\mathsf{seed}_1 \asn \mathsf{DeriveSeed}(\mathsf{sync\_key}_1, k)$.
+    \item $\mathsf{seed}_2 \asn \mathsf{DeriveSeed}(\mathsf{sync\_key}_2, k)$.
+    \item $\vy_j^i \asn \mathsf{SampleUniformSeeded}(R; \shape_1, \seed_j)$ for $j \in [2]$.
 \end{enumerate}
 \item On $A_1$:
 \begin{enumerate}
     \item Receive $\mathsf{seed}_1$ from $R_i$.
-    \item Compute $\vy_1 \asn \RingSample(R; \shape_1, \seed_1)$.
+    \item Compute $\vy_1 \asn \mathsf{SampleUniformSeeded}(R; \shape_1, \seed_1)$.
 \end{enumerate}
 \item On $A_2$:
 \begin{enumerate}
     \item Receive $\mathsf{seed}_2$ from $R_i$.
-    \item Compute $\vy_2 \asn \RingSample(R; \shape_2, \seed_2)$.
+    \item Compute $\vy_2 \asn \mathsf{SampleUniformSeeded}(R; \shape_2, \seed_2)$.
 \end{enumerate}
 \item Let $\share{\vy}^{\mathsf{adt}}_{R} = (\vy_1, \vy_2)$.
 \item $\vc \asn \mathsf{Open}_{[A_1, A_2]}\left( \share{\vx}^{\mathsf{adt}}_{R}

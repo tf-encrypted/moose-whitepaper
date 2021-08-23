@@ -1,6 +1,6 @@
 \section{Computational Model}
 
-In this section we describe our computational model for protocols, which is loosely based on the data-flow paradigm~\cite{abadi16} and a simplified UC model~\cite{canetti-cohen-lindell15}. Concretely, all protocols are expressed as data-flow graphs where each node represents an operation to be performed by a specific party, and each edge presents a value ``flowing'' between operations.
+In this section we describe our computational model for protocols, which is loosely based on the data-flow paradigm~\cite{abadi16} and a simplified UC model~\cite{canetti-cohen-lindell15}. Concretely, protocols are expressed as graphs where nodes represent operations to be performed by a specific party, and edges present values ``flowing'' between operations.
 
 The main motivation for using the data-flow paradigm is that it leads to a very natural concurrent execution model, where in the extreme we can see each node as being executed by a separate task (e.g. green thread or actor). We take full advantage of this in the runtime which is based on the asynchronous execution paradigm. The reason for basing our computational model on the UC model is that it is a well-known paradigm for ensuring security under concurrent composition.
 
@@ -9,24 +9,27 @@ The main motivation for using the data-flow paradigm is that it leads to a very 
 
 Every execution of a graph is performed under a unique session id $\sid$ used to identify values and ensure isolation when running protocols concurrently. As we shall see in more detail later, session ids are for instance used to non-interactively derive nonces and sample correlated randomness by the secret sharing schemes.
 
-There are no requirements on session ids besides uniqueness, and it can safely be chosen by an untrusted coordinator, for instance by sampling a random string. However, for security reasons, each party maintains a list of previous session ids in which it has engaged, and refuses to re-run any computation using those ids. This prevents for instance replay and selective failure attacks.
+Session ids must be unique and of fixed length for security reasons, but can otherwise safely be chosen by an untrusted coordinator, for instance by sampling a random string. To satisfy the security requirements, each party maintains a list of previous session ids in which it has engaged, and refuses to re-run any computation using those ids; this prevents for instance replay and selective failure attacks. It additionally checks that session ids have the correct length.
 
 
 \subsection{Sub-protocols}
 
-We allow graphs to call sub-graphs similar to sub-routines. When doing so, the sub-graph is executed under a unique sub-session id $\sid'$ derived from $\sid$ and an activation key $\mathsf{ac\_key}$ statically related to the call site: 
+We allow graphs to call sub-graphs similar to calling sub-routines. When doing so, the sub-graph is executed under a sub-session id $\sid'$ derived from $\sid$ and an activation key $\mathsf{ac\_key}$ statically related to the call site:
 $$
-\sid' = \sid \| \mathsf{ac\_key}
+\sid' = \mathsf{h}( \sid \| \mathsf{ac\_key} )
 $$
-with $\|$ denoting string concatenation. In the presentation given in this paper, we make heavy use of calling sub-protocols, yet we typically (including in the current implementation) inline their sub-graphs for performance reasons. To do so securely, the activation key associated with the call site is embedded into the sub-graphs's operations during inlining.
-
-As an example, $\mathsf{DeriveSeed}$ operations have a $\mathsf{sync\_key}$ attribute used to control uniqueness within the scope of the sub-graph, and during inlining this attribute is updated by prefixing it with the activation key, $\mathsf{sync\_key}' = \mathsf{ac\_key} \| \mathsf{sync\_key}$, so that the uniqueness is maintained in the combined scope.
-
-This approach was chosen to ensure that we (in the future) can build a deterministic compilation process of computations, yet still support inlining.
+with $\mathsf{h}$ being a secure hash function and $\|$ denoting string concatenation. For security we require $\sid$ to have fixed length $\ell$. Calling a sub-graph is done through $\mathsf{Enter}$ and $\mathsf{Exit}$ operations that are implicitly linked to $\mathsf{Input}$ and $\mathsf{Output}$ operations.
 
 
 \subsection{Communication}
 
-Transmission of values between parties is done using $\mathsf{Send}$ and $\mathsf{Receive}$ nodes, each with a static rendezvous key $\mathsf{rdv\_key}$ attribute linking them together. Together with the session id, this allows us to uniquely identify all values by tagging them with $(\sid, \mathsf{rdv\_key})$, and is used to derive the nonce under which messages are encrypted as well as by the Cape infrastructure to keep track of messages (see Section~\ref{sec:infrastructure}).
+Transmission of values between parties is done using $\mathsf{Send}$ and $\mathsf{Receive}$ nodes where each pair is linked together by a static $\mathsf{rdv\_key}$ attribute. Together with the session id, this allows us to uniquely identify all values by tagging them with $(\sid, \mathsf{rdv\_key})$ during transmission.
 
-The rendezvous key is also updated during inlining by prefixing it with the call site's activation key, ensuring that rendezvous keys likewise maintain their uniqueness: $\mathsf{rdv\_key}' = \mathsf{ac\_key} \| \mathsf{rdv\_key}$.
+In some configurations we also use this pair to derive unique nonces for encrypting messages (see Section~\ref{sec:infrastructure}). This is done using a secure hash function as $\mathsf{nonce} = \mathsf{h}(\sid \| \mathsf{rdv\_key})$ and security again depends on $\sid$ having fixed length $\ell$.
+
+
+\subsection{Inlining}
+
+In the presentation given in this paper we make heavy use of calling sub-protocols, yet for performance reasons it may be interesting to inline sub-graphs. To do so securely, special attention must be paid to certain node attributes that control uniqueness.
+
+As an example, the $\mathsf{rdv\_key}$ attribute of $\mathsf{Send}$ and $\mathsf{Receive}$ nodes in the graph being inlined must be updated to $\mathsf{h}(\mathsf{ac\_key} \| \mathsf{rdv\_key})$ where $\mathsf{ac\_key}$ is the activation key of the $\mathsf{Enter}$ and $\mathsf{Exit}$ nodes being replaced, and $\mathsf{rdv\_key}$ in the graph being inlined into must be updated to $\mathsf{h}(\mathsf{rdv\_key})$. Other examples are the $\mathsf{sync\_key}$ attribute of $\mathsf{DeriveSeed}$ operations and the $\mathsf{ac\_key}$ attribute of $\mathsf{Enter}$ and $\mathsf{Exit}$ operations. For this to be secure we require all $\mathsf{ac\_key}$, $\mathsf{rdv\_key}$, and $\mathsf{sync\_key}$ to be of fixed length $\ell$.

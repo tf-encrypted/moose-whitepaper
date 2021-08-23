@@ -18,12 +18,9 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
   \item On $P_3$:
   \begin{enumerate}
     \item $\shape \asn \mathsf{Shape}(\vx^3_3)$.
-    \item $\prfkey \asn \mathsf{GenPrfKey}()$.
-    \item $\seed_\ell \asn \mathsf{DeriveSeed}(\ell; \prfkey)$ for $\ell \in [k]$.
-    \item $\mathbf{b}_\ell \asn \mathsf{SampleBits}(\Z_{2^k}; \shape, \seed_\ell)$ for $\ell \in [k]$.
-    \item $\mathbf{r} \asn \sum_{\ell=0}^{k-1}2^\ell \cdot \vb_\ell$
-    \item $\mathbf{r}_{\mathsf{msb}} \asn \vb_{k-1}$
-    \item $\mathbf{r}_{\mathsf{top}} \asn \sum_{\ell=m}^{k-2} 2^{\ell-m} \cdot \vb_\ell$.
+    \item $\mathbf{r} \asn \mathsf{SampleUniform}(\Z_{2^k}; \shape)$.
+    \item $\mathbf{r}_{\mathsf{msb}} \asn \mathsf{Shr}(k-1; \mathbf{r})$.
+    \item $\mathbf{r}_{\mathsf{top}} \asn \mathsf{Shr}(m+1; \mathsf{Shl}(1; \mathbf{r}))$.
   \end{enumerate}
 
   \item $\share{\vr}^{\mathsf{adt}} \asn \mathsf{AdditiveShare}_{[D=P_3, P_1, P_2]}(\vr)$
@@ -81,9 +78,7 @@ The protocol is described in Fig~\ref{fig:truncpr-rep-ss}. At a high-level the i
     \item On $D$:
   \begin{enumerate}
     \item $\shape \asn \mathsf{Shape}(\vx)$.
-    \item $k \asn \mathsf{GenPrfKey}()$.
-    \item $\seed \asn \derives(0; k)$.
-    \item $\vx^1 \asn \RingSample(R; \shape, \seed)$.
+    \item $\vx^1 \asn \mathsf{SampleUniform}(R; \shape)$.
     \item $\vx^2 \asn \vx - \vx^1$.
     %\item Send $\shape$ and $\seed$ to $P_1$.
     \item Send $\vx^1$ to $P_1$.

@@ -1,5 +1,8 @@
 
 \begin{Boxfig}{Additive to replicated share conversion protocol.}{fig:two-to-three}{$\mathsf{AdtToRep}_{[P_1, P_2, P_3]}(R; \share{\vx}^{\mathsf{adt}}_{R})$}
+
+Let $\mathsf{sync\_key}_1$ and $\mathsf{sync\_key}_2$ be distinct fixed values.
+
 \begin{enumerate}
 \item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{adt}}_{R}$.
 
@@ -13,17 +16,17 @@
 \begin{enumerate}
   \item Receive $\shape$ from $P_1$.
   \item $k \asn \mathsf{GenPrfKey}()$.
-  \item $\seed_i \asn \derives(i; k)$ for $i \in \{1, 2\}$.
+  \item $\seed_i \asn \derives(\mathsf{sync\_key}_i; k)$ for $i \in \{1, 2\}$.
   \item Send $\seed_i$ to $P_i$ for $i \in \{1, 2\}$.
-  \item $\vy_1^3 \asn \RingSample(R; \shape, \seed_1)$.
-  \item $\vy_3^3 \asn \RingSample(R; \shape, \seed_2)$.
+  \item $\vy_1^3 \asn \mathsf{SampleUniformSeeded}(R; \shape, \seed_1)$.
+  \item $\vy_3^3 \asn \mathsf{SampleUniformSeeded}(R; \shape, \seed_2)$.
 \end{enumerate}
 
 \item On $P_i$ for $i \in \{1,2\}$:
 \begin{enumerate}
   \item $\shape \asn \mathsf{Shape}(\vx_i)$.
   \item Receive $\seed_i$ from $P_3$.
-  \item $\vy_i \asn \RingSample(R; \shape, \seed_i)$.
+  \item $\vy_i \asn \mathsf{SampleUniformSeeded}(R; \shape, \seed_i)$.
 \end{enumerate}
 
 \item Let $\share{\vy}^{\mathsf{adt}}_{R} = (\vy_1, \vy_2)$.
