@@ -11,7 +11,7 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
     \item Let $\va, \vb \in \verb|fixed(k, f)|$ be fixed point encoded tensors.
     \item Compute $\theta = \log_2({k/3.5})$.
     \item Denote $r_f = f$.
-    \item Set $\alpha = 2^{2\cdot f}$. Note that $\alpha = 1 \in \Q_{\langle k, 2\cdot f \rangle}$ representation.
+    \item Set $\alpha = 2^{2\cdot f}$. Note that $\alpha = 1 \in \Q_{\langle 2\cdot k, 2\cdot f \rangle}$ representation.
     \item $\share{\vw} = \mathsf{AppRcr}(\share{\vb}, k, f)$.
     \item $\share{\vx} = \valpha - \share{\vb} \cdot \share{\vw}$.
     \item $\share{\vy} = \share{\va} \cdot \share{\vw}$.
@@ -31,6 +31,7 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
 
 \begin{Boxfig}{Approximate reciprocical.}{fig:appRcr}
   {$\mathsf{AppRcr}_{[P_1, P_2, P_3]}(R; \share{\vb}^\mathsf{rep}_{2^k}, k, f)$}
+  Outputs a secret $\share{\vw}$ such that $\vw \approx 1/\vb$, i.e. $\vw \cdot \vb \approx 1$.
   \begin{enumerate}
     \item Compute $\alpha = 2.9142 \cdot 2^k$. Here $\alpha = 2.9142 \in \Q_{\langle k + f, k\rangle}$.
     \item $\share{\vc}, \share{\vv} = \mathsf{Norm}(\share{\vb}, k, f)$.
@@ -44,19 +45,21 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
 
 \begin{Boxfig}{Normalize algorithm.}{fig:norm}
   {$\mathsf{Norm}_{[P_1, P_2, P_3]}(R; \share{\vb}^\mathsf{rep}_{2^k}, k, f)$}
+  Outputs a secret shared tuple $(\share{\vc}, \share{\vv})$ such that $2^{k-1} \leq \vc < 2^k$ and $\vc = \vb \cdot \vv$.
   \begin{enumerate}
     \item $\share{\mathsf{sgn}} = 1 - 2 \cdot \mathsf{LTZ}(\share{\vb})$.
     \item $\share{\vx} = \share{\mathsf{sgn}} \cdot \share{\vb}$.
     \item $\share{\vx_0}, \dots, \share{\vx_{k-1}} = \mathsf{BitDec}(\vx, k)$.
-    \item $\share{\vy_0}, \dots, \share{\vy_{k-1}} = \mathsf{PreOR}(\share{\vx_{k-1}}, \dots, \share{\vx_0})$.
+    \item $\share{\vy_0}, \dots, \share{\vy_{k-1}} = \mathsf{Rev}(\mathsf{PreOR}(\share{\vx_{k-1}}, \dots, \share{\vx_0}))$.
     \item For $i \in [0, k-2]$:
     \begin{enumerate}
         \item $\share{\vz_i} = \share{\vy_i} - \share{\vy_{i+1}}$
     \end{enumerate}
-    \item $\share{z_{k-1}} = \share{\vy_{k-1}}$.
+    \item $\share{\vz_{k-1}} = \share{\vy_{k-1}}$.
     \item $\share{\vs} \asn \sum_{i=0}^{k-1}2^{k-i-1} \cdot \share{\vz_i}$.
     \item $\share{\vc} = \share{\vx} \cdot \share{\vs}$.
     \item $\share{\vv} = \share{\mathsf{sgn}} \cdot \share{\vs}$.
+    \item Return $(\share{\vc}, \share{\vv})$.
 \end{enumerate}
 \end{Boxfig}
 
@@ -81,4 +84,24 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
 \end{enumerate}
 \end{Boxfig}
 
+\begin{Boxfig}{PreOR operation.}{fig:preor}
+  {$\mathsf{PreOr}_{[P_1, P_2, P_3]}(R; \share{\vx}^\mathsf{rep}_R)$}
+  \begin{enumerate}
+    \item $n = \share{\vx}.\mathsf{len}$.
+    \item $\ell = \ceil{\log_2{n}}$.
+    \item $\share{\vt} = \share{\vx}$.
+    \item For $i \in [0, \ell-1]$:
+    \begin{enumerate}
+      \item For $j \in [0, 2^\ell/2^{i+1}]$:
+      \begin{enumerate}
+        \item $y = 2^i + j \cdot 2^{i+1} - 1$.
+        \item For $k \in [1, 2^i]$:
+        \begin{enumerate}
+            \item Note that $\va | \vb = \va + \vb - \va \cdot \vb$.
+            \item If $y + k < n$ then $\share{\vt_{i+k}} = \share{\vt_y} | \share{\vt_{y + k}}$.
+        \end{enumerate}
+      \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+\end{Boxfig}
 
