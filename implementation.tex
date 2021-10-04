@@ -3,7 +3,7 @@
 
 \subsection{Runtime}
 
-Operations on ring tensors is implemented using the \texttt{ndarray} Rust crate on
+Operations on ring tensors are implemented using the \texttt{ndarray} Rust crate on
 \texttt{Wrapping<u64>} and \texttt{Wrapping<u128>} scalars. Computations are executed
 asynchronously via the \texttt{tokio} Rust crate by spawning a task for each operations.
 
