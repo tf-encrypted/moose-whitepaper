@@ -57,4 +57,20 @@ exchange for better performance.
 
 \subsection{Inverse and Division}
 
-Given a fixed-point $\bar{x}$ we can compute its inverse $1/x$ over the reals by computing the integer division of $1 \cdot 2^{2f}$ and $\bar{x}$. Likewise, the division of $\bar{x}$ by $\bar{y}$ can be computed as the integer division of $\bar{x} \cdot 2^f$ by $\bar{y}$. Note that no truncation is needed.
+Given a fixed-point $\bar{x}$ we can compute its inverse $1/x$ over the reals by
+computing the integer division of $\bar{1} \cdot 2^f = 1 \cdot 2^{2f}$ and $\bar{x}$,
+so that the result $\bar{y} = \bar{1} \cdot 2^f / \bar{x} = y \cdot 2^f$ for some
+$y \in \mathtt{fixed}(k, f)$. Likewise, the division of $\bar{x}$ by $\bar{y}$ can
+be computed as the integer division of $\bar{x} \cdot 2^f$ by $\bar{y}$. Note that
+no truncation is needed.
+
+\subsection{Square root}
+
+A protocol for accurately computing the square root function $f(x) = \sqrt{x}$ on a
+secret was first described by Liedel in \cite{Liedel2012SecureDC}, and subsequently
+generalized in \cite{cryptoeprint:2019:354}. In both cases, we start with an initial
+approximation (of $\sqrt{x}$ or $\frac{1}{\sqrt{x}}$) that is then refined by
+Newton-Raphson or Goldschmidt iterations. Since Liedel's algorithm does not
+necessarily work for all fixedpoint configurations, we only implement the algorithm
+from \cite{cryptoeprint:2019:354} for computing square root on fixedpoints. Note this
+function is referred to as SimplifiedFxSqrt in the SCALE-Mamba package.

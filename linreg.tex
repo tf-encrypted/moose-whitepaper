@@ -14,7 +14,7 @@ Using the method of maximum likelihood estimation~\cite{mml}, we can reformulate
 \\
 &= Z \cdot y
 \end{align*}
-Note that evaluating $Z = (X^TX)^{-1}X^T$ can be performed as local preprocessing on plaintext data by the provider of $X$ (since the righthand term does not involve the target variable $y$). Thus, solving this regression problem securely reduces to a single secret-shared matrix-vector product $\coeff = Z \cdot y$.
+Note that evaluating $Z = (X^TX)^{-1}X^T$ can be performed as local preprocessing on plaintext data by the provider of $X$ (since this term does not involve the target variable $y$). Thus, solving this regression problem securely reduces to a single secret-shared matrix-vector product $\coeff = Z \cdot y$.
 
 Additionally, we may want to compute certain metrics to assess the regression
 outcome. These metrics must also be evaluated on secret-shared data. Concretely,
@@ -27,7 +27,7 @@ securely computing the residual sum of squares ($\mathsf{RSS}$):
 \begin{align*}
 R^2 &= 1 - \frac{\sum(y_i - \ypred_i)^2}{\sum(y_i - \bar{y})^2}
 \\
-&= 1 - \frac{RSS(\ypred, y)}{SS(\ypred, y)}
+&= 1 - \frac{RSS(\ypred, y)}{SS(y)}
 \end{align*}
 since only the $RSS$ term depends on data from both providers (i.e. both $X$ and $y$).
 
@@ -100,4 +100,4 @@ In summary, we are ultimately concerned with providing protocols for securely ev
 %         residuals_ss = edsl.identity(residuals_ss)
 % \end{lstlisting}
 
-Finally, these operations must be implemented for fixed-point numbers as described in Section~\ref{sec:fixed-point}.
+For compatibility with our protocols, all operations will be implemented for fixed-point numbers as described in Section~\ref{sec:fixed-point}.
