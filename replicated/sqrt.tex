@@ -44,27 +44,27 @@ to condition the Newton-Raphson/Goldschmidt optimization.
     \item $f_{odd} = f \bmod 2$
     % m_odd = choose(f mod2, 1 - m_odd, m_odd)
     % if fractional precision is odd, bitswap m_odd. o.w. do nothing
-    \item $\share{\vm_{odd}} = \vm_{odd} + (1 - 2 \share{\vm_{odd}}) \cdot f_{odd}$
+    \item $\share{\vm_{odd}} = \share{\vm_{odd}} + (1 - 2 \share{\vm_{odd}}) \cdot f_{odd}$
     % w = choose((1 - m_odd)(f mod2), 2w, w)
     % if parity of msb is even and fractional precision is odd, bump power of approx by 1. o.w. do nothing
     \item $\share{\vw} = \share{\vw} + (2 \share{\vw} - \share{\vw}) \cdot (1 - \share{\vm_{odd}}) \cdot f_{odd}$
     \item $t = (f - f_{odd}) / 2$
-    \item $\share{\vw'} = \mathsf{Encode}(\share{\vw} \cdot 2^t, k-f, f)$
+    \item $\shareF{\vw} = \mathsf{Encode}(\share{\vw} \cdot 2^t, k-f, f)$
     % w' = choose(m_odd, w' * \sqrt{2}, w')
     % if parity of msb is odd, bump power of w' by 1/2. o.w. do nothing
-    \item $\share{\vw'} = (\sqrt{2} \share{\vw'} - \share{\vw'}) \cdot \share{\vm_{odd}} + \share{\vw'}$
-    \item $\share{\vy} = \share{\vw'}^{-1}$
-    \item $\share{\vg} = \share{\vx} \cdot \share{\vy}$
-    \item $\share{\vh} = \share{\vy} / 2$
+    \item $\shareF{\vw} = \shareF{\vw} + (\sqrt{2} \shareF{\vw} - \shareF{\vw}) \cdot \share{\vm_{odd}}$
+    \item $\shareF{\vy} = \shareF{\vw}^{-1}$
+    \item $\shareF{\vg} = \shareF{\vx} \cdot \shareF{\vy}$
+    \item $\shareF{\vh} = \shareF{\vy} / 2$
     \item For $i \in [1, \theta]$:
     \begin{enumerate}
-      \item $\share{\vr} = \frac{3}{2} - \share{\vg} \cdot \share{\vh}$
-      \item $\share{\vg} = \share{\vg} \cdot \share{\vr}$
-      \item $\share{\vh} = \share{\vh} \cdot \share{\vr}$
+      \item $\shareF{\vr} = \frac{3}{2} - \shareF{\vg} \cdot \shareF{\vh}$
+      \item $\shareF{\vg} = \shareF{\vg} \cdot \shareF{\vr}$
+      \item $\shareF{\vh} = \shareF{\vh} \cdot \shareF{\vr}$
     \end{enumerate}
-    \item $\share{\vr} = \frac{3}{2} - \share{\vg} \cdot \share{\vh}$
-    \item $\share{\vh} = \share{\vh} \cdot \share{\vr}$
-    \item $\share{\vH} = \share{\vh} \cdot (3 - 4 \cdot \share{\vx} \cdot \share{\vh}^2)$
-    \item $\share{\sqrt{\vx}} = \share{\vx} \cdot \share{\vH}$
+    \item $\shareF{\vr} = \frac{3}{2} - \shareF{\vg} \cdot \shareF{\vh}$
+    \item $\shareF{\vh} = \shareF{\vh} \cdot \shareF{\vr}$
+    \item $\shareF{\vH} = \shareF{\vh} \cdot (3 - 4 \cdot \shareF{\vx} \cdot \shareF{\vh}^2)$
+    \item $\shareF{\sqrt{\vx}} = \shareF{\vx} \cdot \shareF{\vH}$
   \end{enumerate}
 \end{Boxfig}

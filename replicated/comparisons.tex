@@ -19,7 +19,7 @@ In the 3PC semi-honest model there are few approaches to this:
 \end{enumerate}
 
 We use the MSB extraction protocol from ABY3 with a Kogge-Stone binary adder and minor optimizations for tensor operations. We avoid the special three-party OT that ABY3 had along with edaBits preprocessing by introducing our custom protocol \textsf{B2A} for binary to ring share conversion in Figure~\ref{fig:b2a-protocol}.
-The MSB protocol can be found in Figure~\ref{fig:msb-protocol} where $\overline{\cdot}$ is used to denote a vector with $k$ elements indexed using $(i)$ for $i \in [k]$.
+The MSB protocol can be found in Figure~\ref{fig:msb-protocol} where $\overline{\cdot}$ is used to denote a vector with $k$ elements indexed using $\overline{\cdot}[i]$ for $i \in [k]$.
 
 
 \input{protocols/msb}
