@@ -17,7 +17,22 @@ to condition the Newton-Raphson/Goldschmidt optimization.
   Returns a secret $\share{\vw} = \share{2^{\vm/2}}$ for some $\vm$ such that
   $2^{\vm-1} \leq \share{\vb} < 2^\vm$.
   \begin{enumerate}
-    \item Hi
+    \item $\share{\vz} = \mathsf{MSB}_{[P_1, P_2, P_3]} ( \share{\vb})$
+    \item $\share{\vm} = \sum_{i=0}^{k-1}(i+1)\cdot\share{\vz_i}$
+    \item $\vm_{odd} = 0$
+    \item For $i \in [0, k-1]$:
+    \begin{enumerate}
+      \item If $i \bmod 2 == 0$:
+      \begin{enumerate}
+        \item $\share{\vm_{odd}} = \share{\vm_{odd}} + \share{\vz_i}$
+      \end{enumerate}
+    \end{enumerate}
+    \item For $i \in [1, \frac{k}{2}]$:
+    \begin{enumerate}
+      \item $\share{\vw_i} = \share{\vz_{2i-1}} + \share{\vz_{2i}}$
+    \end{enumerate}
+    \item $\share{\vw} = \sum_{i=1}^{\frac{k}{2} - 1}2^i\share{\vw_i}$
+    \item Return $\share{\vm_{odd}},\share{\vw}$.
   \end{enumerate}
 \end{Boxfig}
 
@@ -29,10 +44,10 @@ to condition the Newton-Raphson/Goldschmidt optimization.
     \item $f_{odd} = f \bmod 2$
     % m_odd = choose(f mod2, 1 - m_odd, m_odd)
     % if fractional precision is odd, bitswap m_odd. o.w. do nothing
-    \item $\share{\vm_{odd}} = (1 - 2 \share{\vm_{odd}}) \cdot f_{odd} + \vm_{odd}$
+    \item $\share{\vm_{odd}} = \vm_{odd} + (1 - 2 \share{\vm_{odd}}) \cdot f_{odd}$
     % w = choose((1 - m_odd)(f mod2), 2w, w)
     % if parity of msb is even and fractional precision is odd, bump power of approx by 1. o.w. do nothing
-    \item $\share{\vw} = (2 \share{\vw} - \share{\vw}) \cdot (1 - \share{\vm_{odd}}) \cdot f_{odd} + \share{\vw}$
+    \item $\share{\vw} = \share{\vw} + (2 \share{\vw} - \share{\vw}) \cdot (1 - \share{\vm_{odd}}) \cdot f_{odd}$
     \item $t = (f - f_{odd}) / 2$
     \item $\share{\vw'} = \mathsf{Encode}(\share{\vw} \cdot 2^t, k-f, f)$
     % w' = choose(m_odd, w' * \sqrt{2}, w')
