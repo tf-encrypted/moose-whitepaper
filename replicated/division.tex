@@ -1,5 +1,47 @@
-\subsection{Division (Not yet supported)}
+\msubsection{Fixed point division}
 \label{subsec:division}
+
+
+The most straightforward choice is to use Newton-Raphson method for finding
+$a/b$ presented in Figure~\ref{fig:newton-raphson}.
+
+\msubsubsection{$\mathsf{NewtonDiv}(a,b)$:}
+% We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
+  \begin{enumerate}
+    \item $b' \asn b$.
+    \item $p = 1$.
+    \item While $b' > 1$:
+    \begin{enumerate}
+      \item $b' \asn b' / 2$.
+      \item $p \asn p \cdot 2$.
+    \end{enumerate}
+    \item $x \asn 48/17 - 32/17 \cdot b'$. // initial approximation.
+    \item For $i \in [1, \theta]$:
+    \begin{enumerate}
+        \item $x \asn x \cdot (2 - b') \cdot x$.
+    \end{enumerate}
+    \item Return $a / p \cdot x$.
+  \end{enumerate}
+
+% \begin{Boxfig}{Newton-Raphson method for finding $a/b$.}{fig:newton-raphson}
+%   {$\mathsf{Div}(a: \mathsf{float}, b: \mathsf{float})$}
+%   \begin{enumerate}
+%     \item $b' \asn b$.
+%     \item $p = 1$.
+%     \item While $b' > 1$:
+%     \begin{enumerate}
+%       \item $b' \asn b' / 2$.
+%       \item $p \asn p \cdot 2$.
+%     \end{enumerate}
+%     \item $x \asn 48/17 - 32/17 \cdot b'$. // initial approximation.
+%     \item For $i \in [1, \theta]$:
+%     \begin{enumerate}
+%         \item $x \asn x \cdot (2 - b') \cdot x$.
+%     \end{enumerate}
+%     \item Return $a / p \cdot x$.
+%   \end{enumerate}
+% \end{Boxfig}
+
 
 The division algorithm was firstly introduced by Catrina and Saxena \cite{FC:CatSax10}.
 A few modifications to it were brought by MP-SPDZ to work over ring based circuits.
@@ -102,6 +144,7 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
         \end{enumerate}
       \end{enumerate}
     \end{enumerate}
+    \item Return $\share{\vt}$.
 \end{enumerate}
 \end{Boxfig}
 

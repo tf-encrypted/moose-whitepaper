@@ -1,4 +1,4 @@
-\documentclass{llncs}
+\documentclass{article}
 
 \usepackage{fullpage}
 \usepackage{amsmath}
@@ -32,13 +32,32 @@
 \usepackage{multirow}
 \usepackage{import}
 \usepackage{rotating}
+
+% For tables
+\usepackage{adjustbox}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+
+% For better precision math computations and formatting in tables
+\usepackage{tikz,fp}
+\usepackage[nottoc]{tocbibind}
+
+\usepackage{listings}% http://ctan.org/pkg/listings
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
+
+\include{symbols}
+
 %\usepackage[color=oxygenorange]{todonotes}
 %\newcommand{\crec}[1]{\todo[inline]{\textbf{crec:} #1}\xspace}
 
-\usepackage{draftwatermark}
-\SetWatermarkLightness{0.9}
-\SetWatermarkText{DRAFT \\ \today}
-\SetWatermarkScale{2}
+% \usepackage{draftwatermark}
+% \SetWatermarkLightness{0.9}
+% \SetWatermarkText{DRAFT \\ \today}
+% \SetWatermarkScale{2}
 
 
 \usetikzlibrary{matrix,chains,positioning,decorations.pathreplacing,arrows,calc}
@@ -53,41 +72,6 @@
 \end{tikzpicture}%
 }
 
-
-
-
-% For tables
-\usepackage{adjustbox}
-\usepackage{booktabs}
-\usepackage{multirow}
-\usepackage{tabularx}
-
-% For better precision math computations and formatting in tables
-\usepackage{tikz,fp}
-\usetikzlibrary{fixedpointarithmetic}
-\pgfkeys{
-  /pgf/fixed point arithmetic,
-  /pgf/number format/precision=3,
-  /pgf/number format/fixed zerofill=true,
-  /pgf/number format/.cd,1000 sep={}
-}
-
-\makeatletter
-\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
-  \hskip -\arraycolsep
-  \let\@ifnextchar\new@ifnextchar
-  \array{#1}}
-\makeatother
-\newcommand\todo[1]{\textcolor{red}{#1}}
-
-\usepackage{listings}% http://ctan.org/pkg/listings
-\lstset{
-  basicstyle=\ttfamily,
-  mathescape
-}
-
-\include{symbols}
-
 \pagestyle{fancy}
 \fancyhf{}
 \setlength{\headheight}{22pt}
@@ -98,20 +82,24 @@
 \lhead{\includegraphics[width=3cm]{cape_logo.png}}
 \rhead{Proprietary and Confidential}
 
+\newcommand\todo[1]{\textcolor{red}{#1}}
+
 %
 \begin{document}
 %
+\newcommand{\mainsection}[1]{\newpage \section{#1}}
+\newcommand{\msubsection}[1]{\newpage \subsection{#1}}
+\newcommand{\msubsubsection}[1]{\subsubsection{#1}}
 
 \title{Cryptographic Whitepaper}
-\author{}
-\institute{Cape Privacy}
+\author{Cape Privacy}
+% \institute{Cape Privacy}
 
 
 \maketitle
+\tableofcontents
+
 \thispagestyle{fancy}
-% \begin{center}
-%   \makebox[\textwidth]{\includegraphics[width=0.5\paperwidth]{cape_logo.png}}
-% \end{center}
 
 \input{intro}
 \input{fixed-point}
