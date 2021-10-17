@@ -1,46 +1,61 @@
 \msubsection{Fixed point division}
 \label{subsec:division}
 
+In order to compute $N/D$ using fixed point arithmetic only relying on additions and multiplications
+there are two main lines of thought:
+\begin{enumerate}
+  \item Approximate using Newton-Raphson method.
+  \item Goldschmidt method.
+\end{enumerate}
 
-The most straightforward choice is to use Newton-Raphson method for finding
-$a/b$ presented in Figure~\ref{fig:newton-raphson}.
+They both start with finding a good approximation of the reciprocal $D' = 1/D$
+where $D' = [0.5, 1]$ in order to find a function $f(X) = 1/X - D = 0$. The
+Newton-Raphson iteration is given by $X_{i+1} = X_i - \frac{f(X_i)}{f'(X_i)} =
+X_i(2 - DX_i)$.
 
-\msubsubsection{$\mathsf{NewtonDiv}(a,b)$:}
+The most straightforward choice
+is to use Newton-Raphson method for finding $a/b$ described below.
+
+\msubsubsection{$\mathsf{NewtonDivFloat}(N,D)$:}
 % We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
+\begin{enumerate}
+  \item $D' \asn D$.
+  \item $p = 1$.
+  \item While $D' > 1$:
   \begin{enumerate}
-    \item $b' \asn b$.
-    \item $p = 1$.
-    \item While $b' > 1$:
-    \begin{enumerate}
-      \item $b' \asn b' / 2$.
-      \item $p \asn p \cdot 2$.
-    \end{enumerate}
-    \item $x \asn 48/17 - 32/17 \cdot b'$. // initial approximation.
-    \item For $i \in [1, \theta]$:
-    \begin{enumerate}
-        \item $x \asn x \cdot (2 - b') \cdot x$.
-    \end{enumerate}
-    \item Return $a / p \cdot x$.
+    \item $D' \asn D' / 2$.
+    \item $p \asn p \cdot 2$.
+  \end{enumerate}
+  \item $X \asn 48/17 - 32/17 \cdot D'$. (initial approximation)
+  \item For $i \in [1, \theta]$:
+  \begin{enumerate}
+      \item $X \asn X \cdot (2 - D'X)$.
+  \end{enumerate}
+  \item Return $N / p \cdot x$.
+\end{enumerate}
+
+When working with fixed-point arithmetic (while also keeping in mind MPC), the
+Newton-Raphson division is the following:
+
+\msubsubsection{$\mathsf{NewtonDivFixed}(N,D)$:}
+% We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
+\begin{enumerate}
+  \item $D' \asn D$.
+  \item $p = 1$.
+  \item While $D' > 1$:
+  \begin{enumerate}
+    \item $D' \asn D' / 2$.
+    \item $p \asn p \cdot 2$.
   \end{enumerate}
 
-% \begin{Boxfig}{Newton-Raphson method for finding $a/b$.}{fig:newton-raphson}
-%   {$\mathsf{Div}(a: \mathsf{float}, b: \mathsf{float})$}
-%   \begin{enumerate}
-%     \item $b' \asn b$.
-%     \item $p = 1$.
-%     \item While $b' > 1$:
-%     \begin{enumerate}
-%       \item $b' \asn b' / 2$.
-%       \item $p \asn p \cdot 2$.
-%     \end{enumerate}
-%     \item $x \asn 48/17 - 32/17 \cdot b'$. // initial approximation.
-%     \item For $i \in [1, \theta]$:
-%     \begin{enumerate}
-%         \item $x \asn x \cdot (2 - b') \cdot x$.
-%     \end{enumerate}
-%     \item Return $a / p \cdot x$.
-%   \end{enumerate}
-% \end{Boxfig}
+  \item $D' = \mathsf{ApproxRec}(D, k, f)$. ($D'$ is an $f$ bit number $\in [0.5, 1]$).
+  \item $X \asn 48/17 - 32/17 \cdot D'$. (initial approximation)
+  \item For $i \in [1, \theta]$:
+  \begin{enumerate}
+      \item $X \asn X \cdot (2 - D'X)$.
+  \end{enumerate}
+  \item Return $N / p \cdot x$.
+\end{enumerate}
 
 
 The division algorithm was firstly introduced by Catrina and Saxena \cite{FC:CatSax10}.
