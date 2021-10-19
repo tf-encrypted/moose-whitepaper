@@ -64,6 +64,49 @@ $y \in \mathtt{fixed}(k, f)$. Likewise, the division of $\bar{x}$ by $\bar{y}$ c
 be computed as the integer division of $\bar{x} \cdot 2^f$ by $\bar{y}$. Note that
 no truncation is needed.
 
+In order to compute $N/D$ using fixed point arithmetic only relying on additions
+and multiplications there are two main lines of thought: Newton-Raphson method
+or Goldschmidt method.
+
+They both start with finding a good approximation of the reciprocal $D' = 1/D$
+where $D' = [0.5, 1]$ in order to find a function $f(X) = 1/X - D = 0$. The
+Newton-Raphson iteration is given by $X_{i+1} = X_i - \frac{f(X_i)}{f'(X_i)} =
+X_i(2 - DX_i)$. The most straightforward choice would be to use Newton-Raphson
+method for finding $a/b$ described below.
+
+The Goldschmidt method starts with the same reciprocal approximation like
+Newton-Raphson. However, instead of applying the result of each iteration on the
+denomitor, one iteration has an effect on the nominator as well.  Once an
+approximation $D_{-1} \approx 1/D$ is found then one Gldschmidt iteration is the
+following:
+$$
+X_i = 2 - D_{i-1}, 
+D_i = X_i \cdot D_{i-1},
+N_i = X_i \cdot N_{i-1}
+$$
+
+where $N_0 = N$ and $D_0 = D$.
+
+\msubsubsection{$\mathsf{NewtonDivFloat}(N,D)$:}
+% We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
+\begin{enumerate}
+  \item $D' \asn D$.
+  \item $p = 1$.
+  \item While $D' > 1$:
+  \begin{enumerate}
+    \item $D' \asn D' / 2$.
+    \item $p \asn p \cdot 2$.
+  \end{enumerate}
+  \item $X \asn 48/17 - 32/17 \cdot D'$. (initial approximation)
+  \item For $i \in [1, \theta]$:
+  \begin{enumerate}
+      \item $X \asn X \cdot (2 - D'X)$.
+  \end{enumerate}
+  \item Return $N / p \cdot x$.
+\end{enumerate}
+
+
+
 \subsection{Square root}
 
 A protocol for accurately computing the square root function $f(x) = \sqrt{x}$ on a
