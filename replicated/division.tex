@@ -1,59 +1,40 @@
 \msubsection{Fixed point division}
 \label{subsec:division}
 
+% When working with fixed-point arithmetic (while also keeping in mind MPC), the
+% Newton-Raphson division is the following:
 
-The most straightforward choice is to use Newton-Raphson method for finding
-$a/b$ presented in Figure~\ref{fig:newton-raphson}.
-
-\msubsubsection{$\mathsf{NewtonDiv}(a,b)$:}
-% We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
-  \begin{enumerate}
-    \item $b' \asn b$.
-    \item $p = 1$.
-    \item While $b' > 1$:
-    \begin{enumerate}
-      \item $b' \asn b' / 2$.
-      \item $p \asn p \cdot 2$.
-    \end{enumerate}
-    \item $x \asn 48/17 - 32/17 \cdot b'$. // initial approximation.
-    \item For $i \in [1, \theta]$:
-    \begin{enumerate}
-        \item $x \asn x \cdot (2 - b') \cdot x$.
-    \end{enumerate}
-    \item Return $a / p \cdot x$.
-  \end{enumerate}
-
-% \begin{Boxfig}{Newton-Raphson method for finding $a/b$.}{fig:newton-raphson}
-%   {$\mathsf{Div}(a: \mathsf{float}, b: \mathsf{float})$}
+% \msubsubsection{$\mathsf{NewtonDivFixed}(N,D)$:}
+% % We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
+% \begin{enumerate}
+%   \item $D' \asn D$.
+%   \item $p = 1$.
+%   \item While $D' > 1$:
 %   \begin{enumerate}
-%     \item $b' \asn b$.
-%     \item $p = 1$.
-%     \item While $b' > 1$:
-%     \begin{enumerate}
-%       \item $b' \asn b' / 2$.
-%       \item $p \asn p \cdot 2$.
-%     \end{enumerate}
-%     \item $x \asn 48/17 - 32/17 \cdot b'$. // initial approximation.
-%     \item For $i \in [1, \theta]$:
-%     \begin{enumerate}
-%         \item $x \asn x \cdot (2 - b') \cdot x$.
-%     \end{enumerate}
-%     \item Return $a / p \cdot x$.
+%     \item $D' \asn D' / 2$.
+%     \item $p \asn p \cdot 2$.
 %   \end{enumerate}
-% \end{Boxfig}
 
+%   \item $D' = \mathsf{ApproxRec}(D, k, f)$. ($D'$ is an $f$ bit number $\in [0.5, 1]$).
+%   \item $X \asn 48/17 - 32/17 \cdot D'$. (initial approximation)
+%   \item For $i \in [1, \theta]$:
+%   \begin{enumerate}
+%       \item $X \asn X \cdot (2 - D'X)$.
+%   \end{enumerate}
+%   \item Return $N / p \cdot x$.
+% \end{enumerate}
 
 The division algorithm was firstly introduced by Catrina and Saxena \cite{FC:CatSax10}.
 A few modifications to it were brought by MP-SPDZ to work over ring based circuits.
 We present the division algorithm in Figure~\ref{fig:division-generic}.
 
-\begin{Boxfig}{Generic fixed point division protocol.}{fig:division-generic}
-  {$\mathsf{3PCDiv}_{[P_1, P_2, P_3]}(R; \share{\va}^\mathsf{rep}_{2^k}, \share{\vb}^\mathsf{rep}_{2^k})$}
-  \begin{enumerate}
-    \item Let $\va, \vb \in \verb|fixed(k, f)|$ be fixed point encoded tensors.
+\msubsubsection
+  {$\mathsf{FxDiv}_{[P_1, P_2, P_3]}(\shareF{\va}, \shareF{\vb})$}
+
+% We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
+\begin{enumerate}
     \item Compute $\theta = \log_2({k/3.5})$.
-    \item Denote $r_f = f$.
-    \item Set $\alpha = 2^{2\cdot f}$. Note that $\alpha = 1 \in \Q_{\langle 2\cdot k, 2\cdot f \rangle}$ representation.
+    \item Set $\valpha = \mathsf{Fill}(2^{2\cdot f},\mathsf{shape}(\share{\va}))$. Note that $\valpha = 1 \in \Q_{\langle 2\cdot k, 2\cdot f \rangle}$ representation.
     \item $\share{\vw} = \mathsf{AppRcr}(\share{\vb}, k, f)$.
     \item $\share{\vx} = \valpha - \share{\vb} \cdot \share{\vw}$.
     \item $\share{\vy} = \share{\va} \cdot \share{\vw}$.
@@ -66,26 +47,27 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
     \item $\share{\vx} = \mathsf{Round}(\share{\vx}, 2\cdot k, 2\cdot f)$.
   \end{enumerate}
   \item $\share{\vy} = \share{\vy} \cdot (\valpha + \share{\vx})$.
-  \item $\share{\vy} = \mathsf{Round}(k + 3 \cdot f - r_f, 3 \cdot f - r_f)$.
-  \item Return $\share{\vy}$.
+  \item $\share{\vy} = \mathsf{Round}(k + 2 \cdot f, 2 \cdot f)$.
+  \item Return $\shareF{\vy} = \share{\vy}$.
 \end{enumerate}
-\end{Boxfig}
 
-\begin{Boxfig}{Approximate reciprocal.}{fig:appRcr}
+\msubsubsection
   {$\mathsf{AppRcr}_{[P_1, P_2, P_3]}(R; \share{\vb}^\mathsf{rep}_{2^k}, k, f)$}
   Outputs a secret $\share{\vw}$ such that $\vw \approx 1/\vb$, i.e. $\vw \cdot \vb \approx 1$.
   \begin{enumerate}
-    \item Compute $\alpha = 2.9142 \cdot 2^k$. Here $\alpha = 2.9142 \in \Q_{\langle k + f, k\rangle}$.
+    \item Compute $\valpha = \mathsf{Fill}(2.9142 \cdot 2^k,
+    \mathsf{shape}(\share{\vb}))$. Here $\valpha = 2.9142 \in \Q_{\langle k + f,
+    k\rangle}$. 
     \item $\share{\vc}, \share{\vv} = \mathsf{Norm}(\share{\vb}, k, f)$.
     \item $\share{\vd} = \valpha - 2 \cdot \share{\vc}$.
     \item $\share{\vw} = \share{\vd} \cdot \share{\vv}$.
-    \item $\share{\vw} = \mathsf{Round}(\share{\vw}, 2 \cdot k, 2 \cdot (k - f))$.
-  \item Return $\share{\vw}$.
+    \item $\share{\vw} = \mathsf{Round}(\share{\vw}, 2 \cdot k, 2 \cdot (k -
+    f))$. (get rid of the integral part since we want an output between $[0, 1]$) \item Return
+    $\share{\vw}$.
 \end{enumerate}
-\end{Boxfig}
 
 
-\begin{Boxfig}{Normalize algorithm.}{fig:norm}
+\msubsubsection
   {$\mathsf{Norm}_{[P_1, P_2, P_3]}(R; \share{\vb}^\mathsf{rep}_{2^k}, k, f)$}
   Outputs a secret shared tuple $(\share{\vc}, \share{\vv})$ such that $2^{k-1} \leq \vc < 2^k$ and $\vc = \vb \cdot \vv$.
   \begin{enumerate}
@@ -103,11 +85,10 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
     \item $\share{\vv} = \share{\mathsf{sgn}} \cdot \share{\vs}$.
     \item Return $(\share{\vc}, \share{\vv})$.
 \end{enumerate}
-\end{Boxfig}
 
 
 
-\begin{Boxfig}{Ring Bit Decomposition.}{fig:ring-bit-dec}
+\msubsubsection
   {$\mathsf{BitDec}_{[P_1, P_2, P_3]}(R; \share{\vx}^\mathsf{rep}_{2^k}, k)$}
   \begin{enumerate}
   \item $(\share{\vb_0}_2, \dots, \share{\vb_{k-1}}_2) \asn \mathsf{BitDecRaw}(\vx^\mathsf{rep}_{2^k})$.
@@ -115,19 +96,19 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
   \item Call $\overline{\share{\vc}} = \mathsf{B2A}(\overline{\share{\vb}_2})$ where $\share{\vc}: \share{\cdot}_{\Z_{2^k}}$.
   \item Return $(\overline{\share{\vc}(0)}, \dots, \overline{\share{\vc}(k-1)})$.
 \end{enumerate}
-\end{Boxfig}
 
 
-\begin{Boxfig}{Rounding a $k$ bit integer by $m$ bits.}{fig:rounding}
+\msubsubsection
   {$\mathsf{Round}_{[P_1, P_2, P_3]}(R; \share{\vx}^\mathsf{rep}_R, k, m)$}
+  Rounding a $k$ bit integer by $m$ bits.
   \begin{enumerate}
   \item If numbers are unsigned assert $k + 1 \leq \log_2{R}$. Otherwise assert $k+1 < \log_2{R}$.
   \item Output $\mathsf{TruncPr}(\share{\vx}^\mathsf{rep}, m)$.
 \end{enumerate}
-\end{Boxfig}
 
-\begin{Boxfig}{PreOR operation.}{fig:preor}
+\msubsubsection
   {$\mathsf{PreOr}_{[P_1, P_2, P_3]}(R; \share{\vx}^\mathsf{rep}_R)$}
+  PrefixOR operation.
   \begin{enumerate}
     \item $n = \share{\vx}.\mathsf{len}$.
     \item $\ell = \ceil{\log_2{n}}$.
@@ -146,5 +127,4 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
     \end{enumerate}
     \item Return $\share{\vt}$.
 \end{enumerate}
-\end{Boxfig}
 
