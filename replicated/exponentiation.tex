@@ -1,3 +1,109 @@
 \subsection{Exponentiation (Not yet supported)}
 \label{subsec:exp}
 
+These methods are inspired from Aly and Smart paper and MP-SPDZ optimizations
+for doing exact truncation on replicated secrets.
+
+\msubsubsection
+  {$\mathsf{FxExp2}_{[P_1, P_2, P_3]}(\shareF{\va})$}
+  Computes $\shareF{2^\va}$.
+\begin{enumerate}
+	\item Let $n_{\mathsf{int}} = \ceil{\log_2({k - f})}$.
+	\item Let $n_{\mathsf{bits}} = n_{\mathsf{int}} + f$.
+	\item $(\shareB{\vx_0}, \shareB{\vx_1}) = \mathsf{split}(\share{\va})$.
+	\item $\shareB{\vb} = \mathsf{BinaryAdder}(\share{\vx_0}, \share{\vx_1})$.
+	\item $\shareB{\mathsf{higher}} = \share{\vb}[f:n_\mathsf{bits}]$.
+	\item $\share{\vs}_R = \shareB{\vb}[k]$.
+	\item $\share{\mathsf{overflow}}_R = \share{\vx_0}_R[f] + \share{
+	\vx_0[f] \oplus \vx_1[f] \oplus \share{\vb}[f]}_R$.
+	\item $\shareF{\vc} = \mathsf{RawShr}(\share{\va}, f) - \share{\mathsf{overflow}} \ll f$.
+	\item $\share{\vp}_R = \share{\mathsf{higher}}$.
+	\item $\share{\vd}_R = \mathsf{Pow2FromBits}(\share{\vp})$.
+	\item $\shareF{\vg} = \mathsf{ExpFromParts}(\share{\vd},\share{\vc})$.
+	\item $\shareF{\vr} = \mathsf{TruncPr}(\share{\vg}_R, n_\mathsf{int})$.
+	\item Return $\shareF{\vr}$.
+
+\end{enumerate}
+
+
+\msubsubsection
+  {$\mathsf{Pow2FromBits}_{[P_1, P_2, P_3]}([\share{\vb}_R; \ell])$}
+  Computes $\share{2^{\sum_i{2^i\cdot \vb[i]}}}$.
+\begin{enumerate}
+	\item Let $\shareRR{\vt}$ an $\ell$ dimensional vector filled with
+	shared ring $R$ tensors.
+	\item For $i \in \ell$:
+	\begin{enumerate}
+		\item $\share{\vt}[i] = \share{\vb}[i] \ll i + (1 - \share{\vb}[i])$.
+	\end{enumerate}
+	\item Return $\mathsf{Reduce}(\share{\vt}, \cdot)$.
+\end{enumerate}
+
+\msubsubsection
+  {$\mathsf{ExpFromParts}_{[P_1, P_2, P_3]}(\shareRR{\ve_{\mathsf{int}}}; \shareF{\ve_{\mathsf{frac}}})$}
+  Computes exponentiation by dividing the exponent into integral and fractional part.
+\begin{enumerate}
+	\item Let $\mathsf{amount} = k - 2 - f$.
+	\item $\share{x}_{k, k - 2} = \shareRR{\ve_{\mathsf{frac}}} \ll \mathsf{amount}$.
+	\item $\share{\ve}_{k, k-2} = \mathsf{PolyEval}(p_{1045}, \share{x})$.
+	\item $\shareRR{\ve_{\mathsf{final}}} = \mathsf{TruncPr}(\shareRR{\ve}, \mathsf{amount})$.
+	\item Return $\shareF{\ve_{\mathsf{final}}}$.
+\end{enumerate}
+
+\msubsubsection
+{$\mathsf{PolyEval}(\mathsf{coeffs}, \shareF{\vx})$}
+Secret polynomial evaluation in point $\vx$.
+\begin{enumerate}
+	\item Let $\ell$ the length of $\mathsf{coeffs}$.
+	\item Let $d = \argmin_i (\mathsf{coeffs}[j] < 2^{-f+1}) \text{ } \forall j \in [i, \ell]$ (ignore small coefficients)
+	\item $\shareF{\vm} = \mathsf{PrefixOp}([\share{\vx}, \dots, \share{\vx}, \cdot])$ where $\shareF{\vx}$ is cloned $d$ times.
+	\item For $i \in [1, d]$:
+	\begin{enumerate}
+		\item $\shareRR{s} \asn \shareRR{s} + \mathsf{coeffs}[i] \cdot \shareRR{\vm}[i]$.
+	\end{enumerate}
+	\item $\shareF{\vr} = \mathsf{TruncPR}(\shareRR{s}, f)$.
+	\item Return $\shareF{\vr} + \mathsf{coeffs}[0]$.
+\end{enumerate}
+
+
+
+% def exp2_fx(a, zero_output=False, as19=False):
+
+% 	def exp_from_parts(whole_exp, frac):
+% 		class my_fix(type(a)):
+% 			pass
+% 		# improve precision
+% 		my_fix.set_precision(a.k - 2, a.k)
+% 		n_shift = a.k - 2 - a.f
+% 		x = my_fix._new(frac.v << n_shift)
+% 		# evaluates fractional part of a in p_1045
+% 		e = p_eval(p_1045, x)
+% 		g = a._new(whole_exp.TruncMul(e.v, 2 * a.k, n_shift,
+% 							nearest=a.round_nearest), a.k, a.f)
+% 		return g
+
+% 	x = a.v.split_to_two_summands(a.k)
+% 	bits = types._bitint.carry_lookahead_adder(x[0], x[1],
+% 							fewer_inv=False)
+% 	# converting MSB first reduces the number of rounds
+% 	s = sint.conv(bits[-1])
+% 	lower_overflow = sint.conv(x[0][a.f]) + \
+% 				sint.conv(x[0][a.f] ^ x[1][a.f] ^ bits[a.f])
+% 	lower = a.v.raw_mod2m(a.f) - (lower_overflow << a.f)
+%  	higher_bits = bits[a.f:n_bits]
+
+
+
+% 	c = types.sfix._new(lower, k=a.k, f=a.f)
+% 	assert(len(higher_bits) == n_bits - a.f)
+% 	pow2_bits = [sint.conv(x) for x in higher_bits]
+% 	d = floatingpoint.Pow2_from_bits(pow2_bits)
+% 	g = exp_from_parts(d, c)
+% 	small_result = types.sfix._new(g.v.round(a.f + 2 ** n_int_bits,
+% 						2 ** n_int_bits, signed=False,
+% 						nearest=types.sfix.round_nearest),
+% 					k=a.k, f=a.f)
+% 	if zero_output:
+% 		t = sint.conv(floatingpoint.KOpL(lambda x, y: x.bit_and(y),
+% 						bits_to_check))
+% 		small_result = t.if_else(small_result, 0)
