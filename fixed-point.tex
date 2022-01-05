@@ -64,7 +64,7 @@ $y \in \mathtt{fixed}(k, f)$. Likewise, the division of $\bar{x}$ by $\bar{y}$ c
 be computed as the integer division of $\bar{x} \cdot 2^f$ by $\bar{y}$. Note that
 no truncation is needed.
 
-In order to compute $N/D$ using fixed point arithmetic only relying on additions
+In order to compute $N/D$ using fixed-point arithmetic only relying on additions
 and multiplications there are two main lines of thought: Newton-Raphson method
 or Goldschmidt method.
 
@@ -77,14 +77,13 @@ method for finding $a/b$ described below.
 The Goldschmidt method starts with the same reciprocal approximation like
 Newton-Raphson. However, instead of applying the result of each iteration on the
 denomitor, one iteration has an effect on the nominator as well.  Once an
-approximation $D_{-1} \approx 1/D$ is found then one Gldschmidt iteration is the
+approximation $D_{-1} \approx 1/D$ is found then one Goldschmidt iteration is the
 following:
-$$
-X_i = 2 - D_{i-1}, 
-D_i = X_i \cdot D_{i-1},
-N_i = X_i \cdot N_{i-1}
-$$
-
+\begin{eqnarray*}
+X_i &=& 2 - D_{i-1} \\
+D_i &=& X_i \cdot D_{i-1} \\
+N_i &=& X_i \cdot N_{i-1}
+\end{eqnarray*}
 where $N_0 = N$ and $D_0 = D$.
 
 \msubsubsection{$\mathsf{NewtonDivFloat}(N,D)$:}
@@ -116,4 +115,4 @@ approximation (of $\sqrt{x}$ or $\frac{1}{\sqrt{x}}$) that is then refined by
 Newton-Raphson or Goldschmidt iterations. Since Liedel's algorithm does not
 necessarily work for all fixedpoint configurations, we only implement the algorithm
 from \cite{cryptoeprint:2019:354} for computing square root on fixedpoints. Note this
-function is referred to as SimplifiedFxSqrt in the SCALE-Mamba package.
+function is referred to as SimplifiedFxSqrt in the SCALE-MAMBA package.
