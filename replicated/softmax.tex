@@ -1,0 +1,41 @@
+\subsection{Softmax}
+\label{subsec:softmax}
+
+We use Aly and Smart subprotocols since various MPC-friendly softmax
+approximations are comparable with the more precise variant (see Keller and Sun
+\cite{keller2021effectiveness}).
+
+\msubsubsection
+  {$\mathsf{FxSoftmax}_{[P_1, P_2, P_3]}(\shareF{\vx})$}
+  Computes $e^\vx / \sum \vx_i$.
+\begin{enumerate}
+    \item Compute $e^\shareF{\vx}$ using the fixedpoint exponentiation protocol described above.
+    \item Return $\share{e^\vx} / \mathsf{sum}(\shareF{\vx}, \mathsf{axis}:-1)$ using fixed point division.
+\end{enumerate}
+
+The normalized version of the softmax is computed:
+
+\msubsubsection
+  {$\mathsf{FxNormedSoftmax}_{[P_1, P_2, P_3]}(\shareF{\vx})$}
+  Computes $e^\vx / \sum \vx_i$.
+\begin{enumerate}
+    \item Compute  $\shareF{\vt} \asn e^{\shareF{\vx} -\mathsf{max}(\shareF{\vx}, -1)}$.
+    \item Return $\shareF{\vt} / \mathsf{sum}(\shareF{\vx}, -1)$.
+\end{enumerate}
+
+
+The example above the $\mathsf{max}$ function has an extra parameter, called $\mathsf{axis}$,
+for more details the reader can check the $\mathsf{numpy}$ $\mathsf{max}$ function.
+At the lowest level, the max function between two values is implemented as the
+following:
+
+
+\msubsubsection
+  {$\mathsf{Maximum}_{[P_1, P_2, P_3]}(\shareR{\vx}, \shareR{\vy})$}
+\begin{enumerate}
+    \item Let $\shareB{\vb} \asn \shareR{\vx} < \shareR{\vy}$.
+    \item Convert $\shareR{\vb} \asn \shareB{\vb}$.
+    \item Compute $\shareR{\vb} \cdot \shareR{\vy} + (1 - \shareR{\vb}) \cdot \shareR{\vx}$.
+\end{enumerate}
+
+
