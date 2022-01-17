@@ -1,33 +1,41 @@
 \subsection{Exponentiation}
 \label{subsec:exp}
 
-These methods are inspired from Aly and Smart paper and MP-SPDZ optimizations
-for doing exact truncation on replicated secrets.
+These methods are inspired from Aly and Smart \cite{ACNS:AlySma19} and few
+optimizations from MP-SPDZ.
 
 \msubsubsection
-  {$\mathsf{FxExp2}_{[P_1, P_2, P_3]}(\shareF{\va})$}
-  Computes $\shareF{2^\va}$.
+  {$\mathsf{Exp}_{[P_1, P_2, P_3]}(\shareF{\vx})$}
+  Computes $e^\vx = 2^{ \vx \cdot \log_2{e}}$.
 \begin{enumerate}
-	\item Let $n_{\mathsf{int}} = \ceil{\log_2({k - f})}$.
-	\item Let $n_{\mathsf{bits}} = n_{\mathsf{int}} + f$.
-	\item $(\shareB{\vx_0}, \shareB{\vx_1}) = \mathsf{split}(\share{\va})$.
-	\item $\shareB{\vb} = \mathsf{BinaryAdder}(\share{\vx_0}, \share{\vx_1})$.
-	\item $\shareB{\mathsf{higher}} = \share{\vb}[f:n_\mathsf{bits}]$.
-	\item $\share{\vs}_R = \shareB{\vb}[k]$.
-	\item $\share{\mathsf{overflow}}_R = \share{\vx_0}_R[f] + \share{
-	\vx_0[f] \oplus \vx_1[f] \oplus \share{\vb}[f]}_R$.
-	\item $\shareF{\vc} = \mathsf{RawShr}(\share{\va}, f) - \share{\mathsf{overflow}} \ll f$.
-	\item $\share{\vp}_R = \share{\mathsf{higher}}$.
-	\item $\share{\vd}_R = \mathsf{Pow2FromBits}(\share{\vp})$.
-	\item $\shareF{\vg} = \mathsf{ExpFromParts}(\share{\vd},\share{\vc})$.
-	\item $\shareF{\vr} = \mathsf{TruncPr}(\share{\vg}_R, n_\mathsf{int})$.
-	\item Return $\shareF{\vr}$.
-
+	\item Compute $\vc = \log_2{e}$.
+	\item $\shareF{\vs} = \vc_{k, f} \cdot \shareF{\vx}$.
+	\item Return $\mathsf{Pow2}(\shareF{\vs})$.
 \end{enumerate}
 
 
 \msubsubsection
-  {$\mathsf{Pow2FromBits}_{[P_1, P_2, P_3]}([\share{\vb}_R; \ell])$}
+  {$\mathsf{Pow2}_{[P_1, P_2, P_3]}(R; \shareF{\va})$}
+  Computes $\shareF{2^\va}$.
+\begin{enumerate}
+	\item $n_{\mathsf{int}} = \ceil{\log_2({k - f})}$.
+	\item $n_{\mathsf{bits}} = n_{\mathsf{int}} + f$.
+	\item $\shareB{\vb} = \mathsf{BitDec}(\share{\va})$.
+	\item $\shareRR{\mathsf{msb}} = \mathsf{B2A}(\share{\vb}[-1])$.
+	\item $\shareRR{\va_+} = \mathsf{Mux}(\shareRR{\mathsf{msb}}, \shareRR{\va}, \shareRR{-\va})$.
+	\item $\shareRR{\mathsf{higher}} = \mathsf{B2A}(\share{\vb}[f:n_\mathsf{bits}])$.
+	\item $\shareRR{\mathsf{higher}_{\mathsf{int}}} = \sum_{i=0}^{n_\mathsf{int}}(\shareRR{\mathsf{higher}[i]} \cdot 2^{f + i})$.
+	\item $\shareRR{\mathsf{fract}} = \shareRR{\va_+} - \shareRR{\mathsf{higher}_\mathsf{int}}$.
+	\item $\shareRR{\vd} = \mathsf{Pow2FromBits}(\shareRR{\mathsf{higher}})$.
+	\item $\shareF{\vg} = \mathsf{ExpFromParts}(\shareRR{\vd},\shareRR{\mathsf{fract}})$.
+	\item $\shareF{\vg^{-1}} = 1_{k,f} / \shareF{\vg}$.
+	\item $\shareRR{\vr} = \mathsf{Mux}(\shareRR{\mathsf{msb}}, \shareRR{\vg^{-1}}, \shareRR{\vg})$.
+	\item Return $\shareF{\vr}$.
+\end{enumerate}
+
+
+\msubsubsection
+  {$\mathsf{Pow2FromBits}_{[P_1, P_2, P_3]}(R; [\share{\vb}_R; \ell])$}
   Computes $\share{2^{\sum_i{2^i\cdot \vb[i]}}}$.
 \begin{enumerate}
 	\item Let $\shareRR{\vt}$ an $\ell$ dimensional vector filled with
@@ -40,22 +48,22 @@ for doing exact truncation on replicated secrets.
 \end{enumerate}
 
 \msubsubsection
-  {$\mathsf{ExpFromParts}_{[P_1, P_2, P_3]}(\shareRR{\ve_{\mathsf{int}}}; \shareF{\ve_{\mathsf{frac}}})$}
+  {$\mathsf{ExpFromParts}_{[P_1, P_2, P_3]}(R; \shareRR{\ve_{\mathsf{int}}}; \shareF{\ve_{\mathsf{frac}}})$}
   Computes exponentiation by dividing the exponent into integral and fractional part.
 \begin{enumerate}
 	\item Let $\mathsf{amount} = k - 2 - f$.
 	\item $\share{x}_{k, k - 2} = \shareRR{\ve_{\mathsf{frac}}} \ll \mathsf{amount}$.
 	\item $\share{\ve}_{k, k-2} = \mathsf{PolyEval}(p_{1045}, \share{x})$.
-	\item $\shareRR{\ve_{\mathsf{final}}} = \mathsf{TruncPr}(\shareRR{\ve}, \mathsf{amount})$.
+	\item $\shareRR{\ve_{\mathsf{final}}} = \mathsf{TruncPr}(\shareRR{\ve} \cdot \shareRR{\ve_{\mathsf{int}}}, \mathsf{amount})$.
 	\item Return $\shareF{\ve_{\mathsf{final}}}$.
 \end{enumerate}
 
 \msubsubsection
-{$\mathsf{PolyEval}(\mathsf{coeffs}, \shareF{\vx})$}
+{$\mathsf{PolyEval}(R; \mathsf{coeffs}, \shareF{\vx})$}
 Secret polynomial evaluation in point $\vx$.
 \begin{enumerate}
 	\item Let $\ell$ the length of $\mathsf{coeffs}$.
-	\item Let $d = \argmin_i (\mathsf{coeffs}[j] < 2^{-f+1}) \text{ } \forall j \in [i, \ell]$ (ignore small coefficients)
+	\item $d = \argmin_i (\mathsf{coeffs}[j] < 2^{-f+1}) \text{ } \forall j \in [i, \ell]$ (ignore small coefficients)
 	\item $\shareF{\vm} = \mathsf{PrefixOp}([\share{\vx}, \dots, \share{\vx}, \cdot])$ where $\shareF{\vx}$ is cloned $d$ times.
 	\item For $i \in [1, d]$:
 	\begin{enumerate}

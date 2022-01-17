@@ -26,10 +26,11 @@
 
 The division algorithm was firstly introduced by Catrina and Saxena \cite{FC:CatSax10}.
 A few modifications to it were brought by MP-SPDZ to work over ring based circuits.
-We present the division algorithm in Figure~\ref{fig:division-generic}.
+We present the division algorithm in Figure~\ref{fig:division} below.
 
 \msubsubsection
-  {$\mathsf{FxDiv}_{[P_1, P_2, P_3]}(\shareF{\va}, \shareF{\vb})$}
+  {$\mathsf{Div}_{[P_1, P_2, P_3]}(\shareF{\va}, \shareF{\vb})$}
+  \label{fig:division}
 
 % We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
 \begin{enumerate}
@@ -57,7 +58,7 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
   \begin{enumerate}
     \item Compute $\valpha = \mathsf{Fill}(2.9142 \cdot 2^k,
     \mathsf{shape}(\share{\vb}))$. Here $\valpha = 2.9142 \in \Q_{\langle k + f,
-    k\rangle}$. 
+    k\rangle}$.
     \item $\share{\vc}, \share{\vv} = \mathsf{Norm}(\share{\vb}, k, f)$.
     \item $\share{\vd} = \valpha - 2 \cdot \share{\vc}$.
     \item $\share{\vw} = \share{\vd} \cdot \share{\vv}$.
@@ -69,6 +70,7 @@ We present the division algorithm in Figure~\ref{fig:division-generic}.
 
 \msubsubsection
   {$\mathsf{Norm}_{[P_1, P_2, P_3]}(R; \share{\vb}^\mathsf{rep}_{2^k}, k, f)$}
+  \label{fig:div-norm}
   Outputs a secret shared tuple $(\share{\vc}, \share{\vv})$ such that $2^{k-1} \leq \vc < 2^k$ and $\vc = \vb \cdot \vv$.
   \begin{enumerate}
     \item $\share{\mathsf{sgn}} = 1 - 2 \cdot \mathsf{LTZ}(\share{\vb})$.
