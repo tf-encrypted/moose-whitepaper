@@ -1,0 +1,47 @@
+\subsection{Logarithm}
+\label{subsec:logarithm}
+
+We follow the same blueprint as Aly and Smart protocol for logarithm. In order
+to compute $\log_b{\share{\vx}}$ where $\vx$ is secret, we first compute $\vc =
+\log_2{\share{\vx}}$ and then output $\vc \cdot \log_2{b}$. Next, the procedure
+$\mathsf{Int2FL}$ is used to normalize $\log_2{\share{\vx}}$ into $[0.5, 1]$
+which is then forwarded to a Pade polynomial approximation using polynomials
+$p_{2524}$ and $q_{2524}$.
+
+\msubsubsection
+  {$\mathsf{Log}_{[P_1, P_2, P_3]}(\vb, \shareF{\vx})$}
+  Computes $\log_{\vb}{\vx}$.
+\begin{enumerate}
+    \item $\vc \asn \log_2{\vb}$.
+    \item Return $\vc_{k, f} \cdot \mathsf{Log2}(\shareF{\vx})$.
+\end{enumerate}
+
+\msubsubsection
+  {$\mathsf{Log2}_{[P_1, P_2, P_3]}(\shareF{\vx})$}
+  Computes $\log_2{\vx}$.
+\begin{enumerate}
+    \item $(\shareRR{\vv}, \shareRR{\vp}, \shareRR{\vs}, \shareRR{\vz}) \asn \mathsf{Int2FL}(\shareRR{\vx}, k, f)$.
+    \item $\shareF{\vp_{2524}} \asn \mathsf{PolyEval}(p_{2524}, \shareF{\vv})$.
+    \item $\shareF{\vq_{2524}} \asn \mathsf{PolyEval}(q_{2524}, \shareF{\vv})$.
+    \item Return $\shareF{\vp} + \shareF{\vp_{2524}} / \shareF{\vq_{2524}}$.
+\end{enumerate}
+
+
+
+
+\msubsubsection
+  {$\mathsf{Int2FL}_{[P_1, P_2, P_3]}(\shareRR{\vx}, k, f)$}
+  Computes $\vv, \vp, \vs, \vz$ such that $(1 - 2\vs) \cdot (1- \vz) \cdot \vv \cdot 2^\vp  = \vx$.
+\begin{enumerate}
+    \item $\shareR{\vs} = \shareR{\va} < 0$.
+    \item $\shareR{\vz} = \mathsf{Equal}(\shareR{\va}, 0)$.
+    \item $\shareR{\va^+} = \mathsf{Mux}(\shareR{\vs}, \shareR{-\va}, \shareR{\va})$.
+    \item $\shareB{\va^+_0}, \dots, \shareB{\va^+_{k-1}} = \mathsf{BitDec}(\shareR{\va^+}, k-1)$.
+    \item $\shareB{\vb_0}, \dots, \shareB{\vb_{k-1}} = \mathsf{PreOr}(\shareB{\va^+_{k-1}}, \dots, \shareB{\va^+_0})$.
+    \item $\shareR{\vt} = \shareR{\va^+} \cdot (1 + \sum_{i=0}^{k-1} (2^i \cdot \shareR{\va^+_i})$.
+    \item $\shareR{\vp} = \sum_{i=0}^{k-1} \shareR{\vb_i}$.
+    \item $\shareR{\vv} = \mathsf{Round}(\shareR{\vt} , k, f)$.
+    \item $\shareR{\vp} = (\shareR{\vp} - f) \cdot (1 - \shareR{\vz})$.
+    \item Return $\shareR{\vv}, \shareR{\vp}, \shareR{\vs}, \shareR{\vz}$.
+\end{enumerate}
+
