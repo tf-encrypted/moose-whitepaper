@@ -19,3 +19,16 @@ http://tug.org/texlive/quickinstall.html
 make doc
 ```
 
+## Additional dependencies
+Make sure you have the necessary style sheets and additional textlive packages.
+You can get them with the following command:
+
+On Ubuntu
+```
+sudo apt-get install texlive-latex-extra
+```
+
+On Fedora
+```
+sudo dnf install texlive-collection-latexextra
+```
