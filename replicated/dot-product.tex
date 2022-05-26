@@ -3,10 +3,10 @@
 Due to the bilinearity of the dot-product operations
 one can simply replace the calls of ring tensor multiplication with
 calls to ring tensor dot product and the protocol will be valid as long as
-$\valpha_1, \valpha_2, \valpha_3$ have the correct dimensions.
+$\valpha_1, \valpha_2, \valpha_3$ have matching dimensions.
 % randomize $\vx \cdot \vy$.
 For more details, the reader can check the
-\verb|replicated_dot_product| definition in the compiler.
+\verb|DotOp| implementation in \verb|moose|.
 
 % \subsubsection{3-party malicious (HM)}
 % Note that the first progress

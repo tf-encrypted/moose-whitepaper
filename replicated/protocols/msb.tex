@@ -1,7 +1,8 @@
 
-
-\begin{Boxfig}{Ring bit decomposition to binary shares}{fig:bitdecraw}
+\msubsubsection
   {$\mathsf{BitDecRaw}_{[P_1, P_2, P_3]} \left( \share{\vx}^\mathsf{rep}_{2^k} \right) \rightarrow [\share{\cdot}^\mathsf{rep}_2; k]$}
+  Ring bit decomposition to binary shares.
+
   \begin{enumerate}
   \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}_{2^k}$.
 
@@ -24,15 +25,12 @@
   \item Return $\textsf{BinaryAdder}(\overline{\share{\va}_2}, \overline{\share{\vb}_2})$.
 \end{enumerate}
 
-\end{Boxfig}
-
-
-\begin{Boxfig}{MSB computation from a replicated ring share}{fig:msb-protocol}
+\msubsubsection
   {$\mathsf{MSB}_{[P_1, P_2, P_3]} \left( \share{\vx}^\mathsf{rep}_{2^k} \right)$}
+  \label{fig:msb-protocol}
+  Most significant bit from a replicated ring sharing.
+
   \begin{enumerate}
   \item $\overline{\share{\vb}} \asn \mathsf{BitDecRaw}(\share{\vx})$.
   \item Return $\textsf{B2A}(\overline{\share{\vb}_2}[k-1])$.
   \end{enumerate}
-
-\end{Boxfig}
-

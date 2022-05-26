@@ -1,7 +1,10 @@
 
-\begin{Boxfig}{Additive to replicated share conversion protocol.}{fig:two-to-three}{$\mathsf{AdtToRep}_{[P_1, P_2, P_3]}(R; \share{\vx}^{\mathsf{adt}}_{R})$}
+\msubsubsection
+{$\mathsf{AdtToRep}_{[P_1, P_2, P_3]}(R; \share{\vx}^{\mathsf{adt}}_{R})$}
+\label{fig:two-to-three}
 
-Let $\mathsf{sync\_key}_1$ and $\mathsf{sync\_key}_2$ be distinct fixed values.
+Additive to replicated share conversion protocol. Let $\mathsf{sync\_key}_1$ and
+$\mathsf{sync\_key}_2$ be distinct fixed values.
 
 \begin{enumerate}
 \item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{adt}}_{R}$.
@@ -35,5 +38,4 @@ Let $\mathsf{sync\_key}_1$ and $\mathsf{sync\_key}_2$ be distinct fixed values.
 
 \item Return $\share{\vy}^{\mathsf{rep}}_{R} = \left( (\vy_1, \vc), (\vc, \vy_2), (\vy_3^3, \vy_1^3) \right)$.
 \end{enumerate}
-\end{Boxfig}
 

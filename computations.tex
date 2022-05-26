@@ -23,9 +23,16 @@ with $\mathsf{h}$ being a secure hash function and $\|$ denoting string concaten
 
 \subsection{Communication}
 
-Transmission of values between parties is done using $\mathsf{Send}$ and $\mathsf{Receive}$ nodes where each pair is linked together by a static $\mathsf{rdv\_key}$ attribute. Together with the session id, this allows us to uniquely identify all values by tagging them with $(\sid, \mathsf{rdv\_key})$ during transmission.
+Transmission of values between parties is done using $\mathsf{Send}$ and
+$\mathsf{Receive}$ nodes where each pair is linked together by a static
+$\mathsf{rdv\_key}$ attribute. Together with the session id, this allows us to
+uniquely identify all values by tagging them with $(\sid, \mathsf{rdv\_key})$
+during transmission.
 
-In some configurations we also use this pair to derive unique nonces for encrypting messages (see Section~\ref{sec:infrastructure}). This is done using a secure hash function as $\mathsf{nonce} = \mathsf{h}(\sid \| \mathsf{rdv\_key})$ and security again depends on $\sid$ having fixed length $\ell$.
+% In some configurations we also use this pair to derive unique nonces for
+% encrypting messages (see Section~\ref{sec:infrastructure}). This is done using a
+% secure hash function as $\mathsf{nonce} = \mathsf{h}(\sid \| \mathsf{rdv\_key})$
+% and security again depends on $\sid$ having fixed length $\ell$.
 
 
 \subsection{Inlining}

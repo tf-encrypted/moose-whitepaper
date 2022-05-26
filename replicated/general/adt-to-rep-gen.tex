@@ -1,12 +1,16 @@
 \subsection{More general additive to replicated share conversion}
 
 
-\begin{Boxfig}{Additive to replicated share conversion
-protocol.}{fig:general-two-to-three}{$\mathsf{AdtToRep}_\mathsf{rep}(R;
-\share{\vx}^{\mathsf{adt}}_{R}) \rightarrow \share{\vy}^\mathsf{rep}$}
+Additive to replicated share conversion
+protocol.
+
+
+\msubsubsection
+{$\mathsf{AdtToRep}_\mathsf{rep}(R;\share{\vx}^{\mathsf{adt}}_{R}) \rightarrow \share{\vy}^\mathsf{rep}$}
+\label{fig:general-two-to-three}
 
 Let $\mathsf{sync\_key}_1$ and $\mathsf{sync\_key}_2$ be distinct fixed values.
-  
+
 \begin{enumerate}
 \item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{adt}}_{R}$.
 \item Let $(A_1, A_2) \asn \mathsf{adt}.\mathsf{host\_placements()}$.
@@ -48,7 +52,6 @@ that hasn't received any $\vy$ share and sends it to $R_k$.
 \item Parties order their shares such that it is a valid sharing of $\vy$.
 \item Return $\share{\vy}^{\mathsf{rep}}_{R}$.
 \end{enumerate}
-\end{Boxfig}
 
 Note that in the last steps the parties must provide a valid ordering of their
 shares such that it reconstructs to $\vy$. There are multiple cases here,

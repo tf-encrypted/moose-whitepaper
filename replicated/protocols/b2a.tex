@@ -1,5 +1,10 @@
-\begin{Boxfig}{Binary to arithmetic share conversion computation.}{fig:b2a-protocol}
-  {$\mathsf{B2A}_{[P_1, P_2, P_3]} \left( \shareB{\vx}^\mathsf{rep} \right)$}
+
+\msubsubsection
+{$\mathsf{B2A}_{[P_1, P_2, P_3]} \left( \shareB{\vx}^\mathsf{rep} \right)$}
+  \label{fig:b2a-protocol}
+
+  Binary to arithmetic share conversion.
+
   \begin{enumerate}
   \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \shareB{\vx}^\mathsf{rep}$.
   \item On $P_1$:
@@ -14,6 +19,4 @@
   \item $\shareR{\vx}^\mathsf{adt} \asn \vc + \shareR{\vb}^{\mathsf{adt}} - 2 \cdot \vc \cdot \shareR{\vb}^{\mathsf{adt}}$.
   \item Return $\textsf{AdtToRep}_{[P_1,P_2,P_3]}(\shareR{\vx}^\mathsf{adt})$.
 \end{enumerate}
-
-\end{Boxfig}
 

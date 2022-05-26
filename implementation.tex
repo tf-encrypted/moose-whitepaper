@@ -11,7 +11,7 @@ asynchronously via the \texttt{tokio} Rust crate by spawning a task for each ope
 \subsection{AES based PRG}
 \label{sec:aes}
 
-To efficiently sample a large batch of random bits, we use an AES-based PRG. We can produce $n \cdot 128$ random bits by calling $\mathsf{AES}_k(0), \cdots, \mathsf{AES}_k(n-1)$ with a $128$ bit key $k$. 
+To efficiently sample a large batch of random bits, we use an AES-based PRG. We can produce $n \cdot 128$ random bits by calling $\mathsf{AES}_k(0), \cdots, \mathsf{AES}_k(n-1)$ with a $128$ bit key $k$.
 Since AES works on $128$ bit blocks, the integer counters $0, \cdots, (n-1)$
 are encoded using Little Endian format. In case one wants to retrieve a
 number of $\ell$ random bits which is non-divisible by $128$, the last
@@ -30,4 +30,4 @@ The PRNG key $k$ is generated using a call to \textsf{randombytes\_into}
 from the Sodium Oxide rust crate \cite{url-sodiumoxide}.
 
 
-\import{key-distribution}{infra.tex}
+% \import{key-distribution}{infra.tex}

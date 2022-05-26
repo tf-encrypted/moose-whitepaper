@@ -4,39 +4,41 @@ To compute the addition of two replicated tensors $\share{\vz} = \share{\vx + \v
 the parties simply add their local shares of $\share{\vx}$ and $\share{\vy}$
 as described in protocol~$\mathsf{RepAdd}$ in Figure~\ref{fig:replicated-add}. Subtraction as shown in Figure~\ref{fig:replicated-sub} is almost identical, with the parties simply subtracting their shares locally instead of adding. Correctness and security follow from~\cite{CCS:ABFLNO16}.
 
-\begin{Boxfig}{Replicated addition.}{fig:replicated-add}
-  {Protocol $\mathsf{RepAdd}_{[P_1, P_2, P_3]}\left(\share{\vx}, \share{\vy} \right)$}
-  
+
+\msubsubsection
+{$\mathsf{RepAdd}_{[P_1, P_2, P_3]}\left(\share{\vx}, \share{\vy} \right)$}
+\label{fig:replicated-add}
+  Replicated addition protocol.
+
   \begin{enumerate}
   \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}$.
-  
+
   \item Let $\left( (\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \right) = \share{\vy}$.
-  
+
   \item On $P_i$ for $i \in [3]$:
   \begin{enumerate}
     \item $\vz_i^i \asn \vx_i^i + \vy_i^i$
     \item $\vz_{i+1}^i \asn \vx_{i+1}^i + \vy_{i+1}^i$
   \end{enumerate}
-  
+
   \item Return $\share{\vz} = \left( (\vz_1^1, \vz_2^1), (\vz_2^2, \vz_3^2), (\vz_3^3, \vz_1^3) \right)$.
   \end{enumerate}
-\end{Boxfig}
 
+\subsubsection
+{$\mathsf{RepSub}_{[P_1, P_2, P_3]}\left(\share{\vx}, \share{\vy} \right)$}
+\label{fig:replicated-sub}
+  Replicated subtraction protocol.
 
-\begin{Boxfig}{Replicated subtraction.}{fig:replicated-sub}
-  {Protocol $\mathsf{RepSub}_{[P_1, P_2, P_3]}\left(\share{\vx}, \share{\vy} \right)$}
-  
   \begin{enumerate}
   \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}$.
-  
+
   \item Let $\left( (\vy_1^1, \vy_2^1), (\vy_2^2, \vy_3^2), (\vy_3^3, \vy_1^3) \right) = \share{\vy}$.
-  
+
   \item On $P_i$ for $i \in [3]$:
   \begin{enumerate}
     \item $\vz_i^i \asn \vx_i^i - \vy_i^i$
     \item $\vz_{i+1}^i \asn \vx_{i+1}^i - \vy_{i+1}^i$
   \end{enumerate}
-  
+
   \item Return $\share{\vz} = \left( (\vz_1^1, \vz_2^1), (\vz_2^2, \vz_3^2), (\vz_3^3, \vz_1^3) \right)$.
   \end{enumerate}
-\end{Boxfig}

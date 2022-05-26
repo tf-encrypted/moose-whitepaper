@@ -38,7 +38,7 @@ $p_{2524}$ and $q_{2524}$.
     \item $\shareR{\va^+} = \mathsf{Mux}(\shareR{\vs}, \shareR{-\va}, \shareR{\va})$.
     \item $\shareB{\va^+_0}, \dots, \shareB{\va^+_{k-1}} = \mathsf{BitDec}(\shareR{\va^+}, k-1)$.
     \item $\shareB{\vb_0}, \dots, \shareB{\vb_{k-1}} = \mathsf{PreOr}(\shareB{\va^+_{k-1}}, \dots, \shareB{\va^+_0})$.
-    \item $\shareR{\vt} = \shareR{\va^+} \cdot (1 + \sum_{i=0}^{k-1} (2^i \cdot \shareR{\va^+_i})$.
+    \item $\shareR{\vt} = \shareR{\va^+} \cdot (1 + \sum_{i=0}^{k-1} (2^i \cdot (1 - \shareR{\vb_i}))$.
     \item $\shareR{\vp} = \sum_{i=0}^{k-1} \shareR{\vb_i}$.
     \item $\shareR{\vv} = \mathsf{Round}(\shareR{\vt} , k, f)$.
     \item $\shareR{\vp} = (\shareR{\vp} - f) \cdot (1 - \shareR{\vz})$.
