@@ -1,4 +1,4 @@
-# Documentation for Cape algorithms+infrastructure
+# Documentation for moose cryptographic protocols
 
 Please make sure you have the latest tex-live package. Building the whitepaper works with any version that's at least this version
 
