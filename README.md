@@ -32,3 +32,8 @@ On Fedora
 ```
 sudo dnf install texlive-collection-latexextra
 ```
+
+
+## Direct download from github
+
+You can download the pre-built pdf directly from the [repository](https://github.com/tf-encrypted/moose-whitepaper/blob/main/draft.pdf).
