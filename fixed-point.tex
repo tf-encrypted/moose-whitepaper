@@ -1,0 +1,118 @@
+\section{Fixed-point Arithmetic}
+\label{sec:fixed-point}
+
+
+Our cryptographic protocols natively operate on ring elements, and we must use ring arithmetic to emulate other data types and computations. For this reason we use fixed-point arithmetic instead of floating point arithmetic, which results in more efficient computations. In this section we briefly outline fixed-point arithmetic and how to emulate it with ring arithmetic in $\mathbb{Z}_{2^k}$, which in turn can be emulated with our cryptographic protocols and implemented using integer instructions. For efficiency reasons, we only consider $k = 64$ and $k = 128$, since these give us modulus reductions for free when using wrapping instructions.
+
+\subsection{Fixed-point Numbers}
+We let $\mathtt{fixed}(k, f)$ be the subset of the real numbers
+$$
+\{x \in \mathbb{R} : x = \bar{x} \cdot 2^{-f}, \bar{x} \in \Z_{2^k} \}
+$$
+that have a fixed-point representation in $\Z_{2^k}$ using $f$ bits fractional precision. Here, $\Z_{2^k}$ is considered as the $k$ bit signed integers $\{ \bar{x} : -2^{k-1} \leq \bar{x} < 2^{k-1} \}$.
+
+\subsection{Encoding and Decoding}
+To encode a number $x \in \mathbb{R}$ into its fixed-point representation $\bar{x} \in \Z_{2^k}$, we compute $\mathsf{Encode}(x, f) = \floor{x \cdot 2^f}$ where the result of flooring is cast as an integer. To decode a number $\bar{x}$, we compute $\mathsf{Decode}(\bar{x}, f) = x \cdot 2^{-f}$ where $\bar{x}$ is first cast as a floating point.
+
+\subsection{Addition}
+To add two fixed-point numbers $\bar{x}$ and $\bar{y}$ where $x,y \in \mathtt{fixed}(k, f)$, we can simply compute $\bar{z} = \bar{x} + \bar{y}$ using $\Z_{2^k}$ arithmetic. Note that $\mathsf{Decode}(\bar{z}) = x + y$ if and only if $x + y \in \mathtt{fixed}(k, f)$.
+
+\subsection{Multiplication}
+To multiply two fixed-point numbers $\bar{x}$ and $\bar{y}$ where $x, y \in
+\mathtt{fixed}(k, f)$, we can first compute $\bar{z} = \bar{x} \cdot \bar{y}$
+using $\Z_{2^k}$ arithmetic. However, in general $z \in \mathtt{fixed}(k,
+2f)$ and we see that the fractional precision of the numbers grow by $f$ bits
+with each multiplication. To circumvent this we introduce the
+$\mathsf{Trunc}(\bar{z})$ operation which computes $\bar{z} / 2^{f}$ over the
+integers, which brings us back to $z \in \mathtt{fixed}(k, f)$. In the main
+body the $\mathsf{Trunc}$ operation is replaced by a probabilistic variant
+$\mathsf{TruncPR}$ that allows for an error in the least significant bit in
+exchange for better performance.
+
+% \noindent{\textbf{Fixed point multiplication between two secrets}.} Note that
+% multiplication between two fixed point numbers $\share{x}, \share{y}$ where
+% $x,y \in \verb|fixed(k, f)|$ gets us $z = x \cdot y \cdot 2^{2f}$. One can
+% now simply output $\Decode(z, 2f)$ if this is the last multiplication.
+% To avoid $z$ overflow in $\Z_{2^k}$ and allow
+% subsequent computations on $z$ call $z \asn \mathsf{trunc}(2 \cdot k, f)(z)$.
+
+% \noindent{\textbf{Multiplication by (clear) integer scalars}}.
+% To multiply a public scalar
+% $c$ with $\share{x}$ where $x \in \verb|fixed(k, f)|$ we output
+% $c \cdot \share{x}$. In this way when we decode the product
+% this becomes (over the ring)
+% $\Decode(c \cdot x \cdot 2^f) = c \cdot x$. Again, this operation is going to
+% be successful iff. the product $c \cdot x$ fits in $\Z_{2^k}$.
+
+% \noindent{\textbf{Multiplication by (clear) floating scalars}}. To multiply a
+% public floating point scalar $c$ with $\share{x}$ we compute $\hat{c} \asn
+% \Encode(c, f)$ and then set the output $\share{c \cdot x} =
+% \mathsf{trunc}(\hat{c} \cdot \share{x}, f)$. Note that $\hat{c} \cdot \share{x}$
+% can be done with local computations.
+
+% \subsubsection{Division}
+% TBD, SecureNN has some leakage, check MP-SPDZ - there was no description in
+% ABY3 on fixed point division.
+
+
+\subsection{Inverse and Division}
+
+Given a fixed-point $\bar{x}$ we can compute its inverse $1/x$ over the reals by
+computing the integer division of $\bar{1} \cdot 2^f = 1 \cdot 2^{2f}$ and $\bar{x}$,
+so that the result $\bar{y} = \bar{1} \cdot 2^f / \bar{x} = y \cdot 2^f$ for some
+$y \in \mathtt{fixed}(k, f)$. Likewise, the division of $\bar{x}$ by $\bar{y}$ can
+be computed as the integer division of $\bar{x} \cdot 2^f$ by $\bar{y}$. Note that
+no truncation is needed.
+
+In order to compute $N/D$ using fixed-point arithmetic only relying on additions
+and multiplications there are two main lines of thought: Newton-Raphson method
+or Goldschmidt method.
+
+They both start with finding a good approximation of the reciprocal $D' = 1/D$
+where $D' = [0.5, 1]$ in order to find a function $f(X) = 1/X - D = 0$. The
+Newton-Raphson iteration is given by $X_{i+1} = X_i - \frac{f(X_i)}{f'(X_i)} =
+X_i(2 - DX_i)$. The most straightforward choice would be to use Newton-Raphson
+method for finding $a/b$ described below.
+
+The Goldschmidt method starts with the same reciprocal approximation like
+Newton-Raphson. However, instead of applying the result of each iteration on the
+denomitor, one iteration has an effect on the nominator as well.  Once an
+approximation $D_{-1} \approx 1/D$ is found then one Goldschmidt iteration is the
+following:
+\begin{eqnarray*}
+X_i &=& 2 - D_{i-1} \\
+D_i &=& X_i \cdot D_{i-1} \\
+N_i &=& X_i \cdot N_{i-1}
+\end{eqnarray*}
+where $N_0 = N$ and $D_0 = D$.
+
+\msubsubsection{$\mathsf{NewtonDivFloat}(N,D)$:}
+% We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
+\begin{enumerate}
+  \item $D' \asn D$.
+  \item $p = 1$.
+  \item While $D' > 1$:
+  \begin{enumerate}
+    \item $D' \asn D' / 2$.
+    \item $p \asn p \cdot 2$.
+  \end{enumerate}
+  \item $X \asn 48/17 - 32/17 \cdot D'$. (initial approximation)
+  \item For $i \in [1, \theta]$:
+  \begin{enumerate}
+      \item $X \asn X \cdot (2 - D'X)$.
+  \end{enumerate}
+  \item Return $N / p \cdot x$.
+\end{enumerate}
+
+
+% TODO(Dragos) uncomment this for square root
+% \subsection{Square root}
+
+% A protocol for accurately computing the square root function $f(x) = \sqrt{x}$ on a
+% secret was first described by Liedel in \cite{Liedel2012SecureDC}, and subsequently
+% generalized in \cite{ACNS:AlySma19}. In both cases, we start with an initial
+% approximation (of $\sqrt{x}$ or $\frac{1}{\sqrt{x}}$) that is then refined by
+% Newton-Raphson or Goldschmidt iterations. Since Liedel's algorithm does not
+% necessarily work for all fixedpoint configurations, we only implement the algorithm
+% from \cite{ACNS:AlySma19} for computing square root on fixedpoints. Note this
+% function is referred to as SimplifiedFxSqrt in the SCALE-MAMBA package.

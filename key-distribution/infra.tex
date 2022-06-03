@@ -1,64 +1,74 @@
-\section{Desired infrastructure}
+\subsection{Key Setup Infrastructure (Work In Progress)}
+\label{sec:infrastructure}
 
-We have three organizations into play: \verb|A|, \verb|B| and \verb|Cape|.
-Each org will own a set of workers to perform computations on encrypted data
-- think of workers as parties in an MPC protocol.
+The scope of this subsection is to detail how workers can establish secure channels between themselves without trusting \verb|Cape| and without relying on TLS CA infrastructure. Concurrent to our writing, a blogpost appeared on establishing keys between MPC parties over the internet \cite{url-zengo}.
 
-On both sides of \verb|A| and \verb|B| there are two
-different types of parties, besides the workers, an operator and a data
-scientist denoted as \verb|OpA|, \verb|DS-A|, \verb|OpB|, \verb|DS-B|.
+For our linear regression use case there are three organizations: \verb|A|,
+\verb|B| and \verb|Cape|.  Each organization owns a set of workers to perform
+computations on encrypted data.  In this context, workers are the parties
+running the MPC protocol.  On both sides of \verb|A| and \verb|B| there are
+two different types of parties (besides the workers): an operator and a data
+scientist denoted as \verb|OpA|, \verb|DS-A|, \verb|OpB|, and \verb|DS-B| respectively.  The
+operators and data scientists talk to each other across organizations through
+a communication service ran by \verb|Cape|.
 
-The operators and data scientists talk to each other across organizations through a
-communication service ran by \verb|Cape|.
-We describe the steps
+We now describe the key steps for workers to establish authenticated secret
+channels in order for the replicated computations to be done securely:
 \begin{enumerate}
-  \item \verb|OpA| generates a pair of keys $\VK_A, \SK_A$
-  using libsodium \verb|crypto_sign_keypair|.
-  \item The secret key $\SK_A$ is broadcasted internally to the workers
-  inside the org to be able to sign their ephemeral keys across sessions.
-  Finally, a hash of the public verification key $\VK_A$
-  denoted as $h_A^\OP = \HASH(\VK_A)$
-  is then sent to \verb|B-DS| by the operator through Cape.
+  \item \verb|OpA| generates a signature key pair $\VK_A, \SK_A$ using Libsodium's \verb|crypto_sign_keypair|.
+  
+  \item The secret key $\SK_A$ is made available to the workers inside organization \verb|A| and a hash of the public verification key $\VK_A$ denoted as $h_A^\OP = \HASH(\VK_A)$ is sent to \verb|B-DS| by the operator \verb|OpA| through \verb|Cape|.
+  
+  \item Optionally, \verb|B-DS| can check via an authenticated channel (say
+  \verb|mail.google.com| or some QR code using Signal app) that the hash $h_A^\OP$ received
+  from \verb|Cape| corresponds to the one sent by \verb|OpA|.
 
-  \item On the \verb|B| side the operator \verb|OpB| generates a symmetric key $K_B$.
-  Then $K_B$ is broadcasted to all parties on the \verb|B| side (workers +
-  DS). The DS-B fetches $\VK_A$ from Cape and sends $\TAG(\HASH(\VK_A)) \asn
-  \MAC(K_B, \HASH(\VK_A)))$ to all workers through Cape service. This MAC is
-  used by workers on the B side to check that the key setup messages between
-  workers across organizations are forwarded correctly by Cape.
+  \item On the \verb|B| side the operator \verb|OpB| generates a symmetric key $K_B$
+  using \verb|crypto_auth_keygen| in Libsodium.
+  Then $K_B$ is broadcasted to all parties on the \verb|B| side (workers and
+  data scientist).
+  The DS-B fetches $h_A^\OP$ from \verb|Cape| and sends $\tau_{h_A}^\DSB \asn
+  \MAC(K_B, h_A^\OP)$ along with $h_A^\DSB \asn h_A^\OP$ to all workers on the B side
+  through \verb|Cape| service. This MAC is used by workers on the B side to check
+  that the public key setup messages below between workers across organizations are
+  forwarded correctly by \verb|Cape|.
 
-  \item On the \verb|A| side all workers $W_A^i$ generate $\EK_A^i, \DK_A^i$
-  using \verb|crypto_box_keypair|.
+  \item On the \verb|A| side all workers $W_A^i$ generate an ephemeral encryption key $\EK_A^i$ and
+  its corresponding decryption key $\DK_A^i$ using \verb|crypto_box_keypair|.
 
   \item For the key-setup between workers, on the \verb|A| side each worker
-  sends $\EK_A^i, \VK_A, \sigma_i \asn \SIGN(\SK_A, \EK_A^i)$ to Cape which
-  then forwards this to every worker on the B-side. On the B-side the workers
-  receive the following: $M_\VK, \EK_A^i, \VK_A, \sigma^A_i$ They continue if
-  the following equations hold:
-
+  sends the encryption key $\EK_A^i$, the verification key $\VK_A$, a
+  timestamp \verb|datetime| and a signature $\sigma_i \asn \SIGN(\SK_A,
+  \EK_A^i || \verb|datetime|)$ to \verb|Cape|.  These are then forwarded by \verb|Cape|
+  to every worker inside organization \verb|B|.  Finally the workers on the
+  \verb|B|-side receive the following: $M_\VK, \EK_A^i, \VK_A,
+  \verb|datetime|, \sigma^A_i$.  They continue if and only if the following equations
+  hold:
+  
   \begin{enumerate}
-    \item $\VER(K_B, \TAG(\HASH(\VK_A))) = 1$. This ensures that the workers
-    received the correct $\HASH(\VK_A)$ sent by \verb|B-DS| through Cape. Set
-    $h_\mathsf{recv}$ to the message authenticated by $\TAG_(\HASH(\VK_A))$.
-
-    \item Checks if $\HASH(\VK_A) = h_\mathsf{recv}$. Abort otherwise.
-
-    \item Finally they check the signature $\VER(\VK_A, \sigma^i_A) = 1$.
-    with the $\VK_A$ received from the worker through Cape.
-
+    \item $\HASH(\VK_A) \stackrel{?}{=} h_A^\DSB$.
+    \item $\VER(K_B, \tau_{h_A^\DSB}) \stackrel{?}{=} 1$. This ensures that the workers
+    received the correct $\HASH(\VK_A)$ sent by \verb|B-DS| through \verb|Cape|.
+    \item $\VER(\VK_A, \sigma^i_A) \stackrel{?}{=} 1$
+    using the $\VK_A$ received from the worker through \verb|Cape|.
     \item If all checks pass then keep $\EK_A^i$ as the public key for worker $W_A^i$.
+    Note that \verb|datetime| is used to prevent replay attacks, this way the workers
+    register the other PKs iff \verb|datetime| is within some specific time frame.
   \end{enumerate}
 
-  \item Repeat this for parties on the $B$ side.
-
-  \item Now that after all workers established the public key infrastructure
-  using the description above they continue by calling \verb|crypto_box_easy|
-  which launches the Curve25519 key exchange and communicate further using a
-  symmetric key as described in the first section. Note that communication
-  between workers happens through an entity called \verb|Broker| who is
-  simply forwarding messages between workers.
-
-% Expiration date for signatures
+  \item Repeat this for parties on the $B$ side (see Figure~\ref{fig:b-flow}).
 \end{enumerate}
 
-\input{key-distribution/protocol-flow}
+After all workers agree on the public key setup infrastructure
+using the description above, they continue by calling \verb|crypto_box_easy|
+which launches the Curve25519 key exchange. The workers communicate further using a
+symmetric key as described in the first section. For more details on the Libsodium API
+the reader can refer to Figure~\ref{fig:worker-flow}. Note that communication
+between workers happens through an entity called \verb|Broker|, which is
+simply forwarding messages between workers. Since \verb|crypto_box_easy| authenticates 
+the ciphertexts, they are immune to replay attacks.
+
+% Expiration date for signatures
+
+\input{key-flow/workers-flow}
+

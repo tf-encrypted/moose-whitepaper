@@ -1,0 +1,132 @@
+\msubsection{Fixed-point division}
+\label{subsec:division}
+
+% When working with fixed-point arithmetic (while also keeping in mind MPC), the
+% Newton-Raphson division is the following:
+
+% \msubsubsection{$\mathsf{NewtonDivFixed}(N,D)$:}
+% % We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
+% \begin{enumerate}
+%   \item $D' \asn D$.
+%   \item $p = 1$.
+%   \item While $D' > 1$:
+%   \begin{enumerate}
+%     \item $D' \asn D' / 2$.
+%     \item $p \asn p \cdot 2$.
+%   \end{enumerate}
+
+%   \item $D' = \mathsf{ApproxRec}(D, k, f)$. ($D'$ is an $f$ bit number $\in [0.5, 1]$).
+%   \item $X \asn 48/17 - 32/17 \cdot D'$. (initial approximation)
+%   \item For $i \in [1, \theta]$:
+%   \begin{enumerate}
+%       \item $X \asn X \cdot (2 - D'X)$.
+%   \end{enumerate}
+%   \item Return $N / p \cdot x$.
+% \end{enumerate}
+
+The division algorithm was firstly introduced by Catrina and Saxena \cite{FC:CatSax10}.
+A few modifications to it were brought by MP-SPDZ to work over ring based circuits.
+We present the division algorithm in Figure~\ref{fig:division} below.
+
+\msubsubsection
+  {$\mathsf{Div}_{[P_1, P_2, P_3]}(\shareF{\va}, \shareF{\vb})$}
+  \label{fig:division}
+
+% We first give division for when $a, b \in \Qk{f}$ and $b$ is in the clear.
+\begin{enumerate}
+    \item Compute $\theta = \log_2({k/3.5})$.
+    \item Set $\valpha = \mathsf{Fill}(2^{2\cdot f},\mathsf{shape}(\share{\va}))$. Note that $\valpha = 1 \in \Q_{\langle 2\cdot k, 2\cdot f \rangle}$ representation.
+    \item $\share{\vw} = \mathsf{AppRcr}(\share{\vb}, k, f)$.
+    \item $\share{\vx} = \valpha - \share{\vb} \cdot \share{\vw}$.
+    \item $\share{\vy} = \share{\va} \cdot \share{\vw}$.
+    \item $\share{\vy} = \mathsf{Round}(\share{\vy}, 2\cdot k, f)$.
+    \item For $i \in [0, \theta - 1]$:
+  \begin{enumerate}
+    \item $\share{\vy} = \share{\vy} \cdot (\valpha + \share{\vx})$.
+    \item $\share{\vx} = \share{\vx} \cdot \share{\vx}$.
+    \item $\share{\vy} = \mathsf{Round}(\share{\vy}, 2 \cdot k, 2 \cdot f)$.
+    \item $\share{\vx} = \mathsf{Round}(\share{\vx}, 2\cdot k, 2\cdot f)$.
+  \end{enumerate}
+  \item $\share{\vy} = \share{\vy} \cdot (\valpha + \share{\vx})$.
+  \item $\share{\vy} = \mathsf{Round}(k + 2 \cdot f, 2 \cdot f)$.
+  \item Return $\shareF{\vy} = \share{\vy}$.
+\end{enumerate}
+
+\msubsubsection
+  {$\mathsf{AppRcr}_{[P_1, P_2, P_3]}(R; \share{\vb}^\mathsf{rep}_{2^k}, k, f)$}
+  Outputs a secret $\share{\vw}$ such that $\vw \approx 1/\vb$, i.e. $\vw \cdot \vb \approx 1$.
+  \begin{enumerate}
+    \item Compute $\valpha = \mathsf{Fill}(2.9142 \cdot 2^k,
+    \mathsf{shape}(\share{\vb}))$. Here $\valpha = 2.9142 \in \Q_{\langle k + f,
+    k\rangle}$.
+    \item $\share{\vc}, \share{\vv} = \mathsf{Norm}(\share{\vb}, k, f)$.
+    \item $\share{\vd} = \valpha - 2 \cdot \share{\vc}$.
+    \item $\share{\vw} = \share{\vd} \cdot \share{\vv}$.
+    \item $\share{\vw} = \mathsf{Round}(\share{\vw}, 2 \cdot k, 2 \cdot (k -
+    f))$. (get rid of the integral part since we want an output between $[0, 1]$) \item Return
+    $\share{\vw}$.
+\end{enumerate}
+
+
+\msubsubsection
+  {$\mathsf{Norm}_{[P_1, P_2, P_3]}(R; \share{\vb}^\mathsf{rep}_{2^k}, k, f)$}
+  \label{fig:div-norm}
+  Outputs a secret shared tuple $(\share{\vc}, \share{\vv})$ such that $2^{k-1} \leq \vc < 2^k$ and $\vc = \vb \cdot \vv$.
+  \begin{enumerate}
+    \item $\share{\mathsf{sgn}} = 1 - 2 \cdot \mathsf{LTZ}(\share{\vb})$.
+    \item $\share{\vx} = \share{\mathsf{sgn}} \cdot \share{\vb}$.
+    \item $\share{\vx_0}, \dots, \share{\vx_{k-1}} = \mathsf{BitDec}(\vx, k)$.
+    \item $\share{\vy_0}, \dots, \share{\vy_{k-1}} = \mathsf{Rev}(\mathsf{PreOR}(\share{\vx_{k-1}}, \dots, \share{\vx_0}))$.
+    \item For $i \in [0, k-2]$:
+    \begin{enumerate}
+        \item $\share{\vz_i} = \share{\vy_i} - \share{\vy_{i+1}}$
+    \end{enumerate}
+    \item $\share{\vz_{k-1}} = \share{\vy_{k-1}}$.
+    \item $\share{\vs} \asn \sum_{i=0}^{k-1}2^{k-i-1} \cdot \share{\vz_i}$.
+    \item $\share{\vc} = \share{\vx} \cdot \share{\vs}$.
+    \item $\share{\vv} = \share{\mathsf{sgn}} \cdot \share{\vs}$.
+    \item Return $(\share{\vc}, \share{\vv})$.
+\end{enumerate}
+
+
+
+\msubsubsection
+  {$\mathsf{BitDec}_{[P_1, P_2, P_3]}(R; \share{\vx}^\mathsf{rep}_{2^k}, k)$}
+  \begin{enumerate}
+  \item $(\share{\vb_0}_2, \dots, \share{\vb_{k-1}}_2) \asn \mathsf{BitDecRaw}(\vx^\mathsf{rep}_{2^k})$.
+  \item Denote $\overline{\share{\vb}_2} = [\share{\vb_0}_2, \dots, \share{\vb_{k-1}}_2]$ as the tensor containing $\Z_2$ shares of $\vx$'s bits.
+  \item Call $\overline{\share{\vc}} = \mathsf{B2A}(\overline{\share{\vb}_2})$ where $\share{\vc}: \share{\cdot}_{\Z_{2^k}}$.
+  \item Return $(\overline{\share{\vc}(0)}, \dots, \overline{\share{\vc}(k-1)})$.
+\end{enumerate}
+
+
+\msubsubsection
+  {$\mathsf{Round}_{[P_1, P_2, P_3]}(R; \share{\vx}^\mathsf{rep}_R, k, m)$}
+  Rounding a $k$ bit integer by $m$ bits.
+  \begin{enumerate}
+  \item If numbers are unsigned assert $k + 1 \leq \log_2{R}$. Otherwise assert $k+1 < \log_2{R}$.
+  \item Output $\mathsf{TruncPr}(\share{\vx}^\mathsf{rep}, m)$.
+\end{enumerate}
+
+\msubsubsection
+  {$\mathsf{PreOr}_{[P_1, P_2, P_3]}(R; \share{\vx}^\mathsf{rep}_R)$}
+  PrefixOR operation.
+  \begin{enumerate}
+    \item $n = \share{\vx}.\mathsf{len}$.
+    \item $\ell = \ceil{\log_2{n}}$.
+    \item $\share{\vt} = \share{\vx}$.
+    \item For $i \in [0, \ell-1]$:
+    \begin{enumerate}
+      \item For $j \in [0, 2^\ell/2^{i+1}]$:
+      \begin{enumerate}
+        \item $y = 2^i + j \cdot 2^{i+1} - 1$.
+        \item For $k \in [1, 2^i]$:
+        \begin{enumerate}
+            \item Note that $\va | \vb = \va + \vb - \va \cdot \vb$.
+            \item If $y + k < n$ then $\share{\vt_{y+k}} = \share{\vt_y} | \share{\vt_{y + k}}$.
+        \end{enumerate}
+      \end{enumerate}
+    \end{enumerate}
+    \item Return $\share{\vt}$.
+\end{enumerate}
+

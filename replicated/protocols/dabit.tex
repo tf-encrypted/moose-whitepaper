@@ -1,0 +1,38 @@
+
+\msubsubsection
+  {$\mathsf{DaBit}_{[D, P_1, P_2]}(\shape)$}
+
+  Let $\mathsf{sync\_key}_0, \mathsf{sync\_key}_1, \mathsf{sync\_key}_2$ be distinct fixed values.
+
+  \begin{enumerate}
+  \item On D:
+  \begin{enumerate}
+    \item $\prfkey \sample \mathsf{GenPrfKey}()$.
+    \item $\seed \asn \derives(\mathsf{sync\_key}_0; \prfkey)$.
+    \item $\seed_2 \asn \derives(\mathsf{sync\_key}_1, \prfkey)$.
+    \item $\seed_{2^k} \asn \derives(\mathsf{sync\_key}_2, \prfkey)$.
+    \item Send $\seed_2$ and $\seed_{2^k}$ to $P_1$.
+
+    \item $\vb \asn \mathsf{SampleUniformSeeded}(\Z_2; \seed, \shape)$.
+    \item $\vb^1_{2} \asn \mathsf{SampleUniformSeeded}(\Z_2; \seed_2, \shape)$.
+    \item $\vb^2_{2} \asn \vb - \vb^1_{2}$.
+    \item $\vb^1_{2^k} \asn \mathsf{SampleUniformSeeded}(\Z_{2^k}; \seed_{2^k}, \shape)$.
+    \item $\vb^2_{2^k} \asn \vb - \vb^1_{2^k}$.
+    \item Send $\vb^2_2$ and $\vb^2_{2^k}$ to $P_2$.
+  \end{enumerate}
+
+  \item On $P_1$:
+ \begin{enumerate}
+     \item Receive $\seed_2$ and $\seed_{2^k}$ from $D$.
+     \item $\vb^1_{2} \asn \mathsf{SampleUniformSeeded}(\Z_2; \seed_2, \shape)$.
+     \item $\vb^1_{2^k} \asn \mathsf{SampleUniformSeeded}(\Z_{2^k}; \seed_{2^k}, \shape)$.
+ \end{enumerate}
+\item On $P_2$:
+\begin{enumerate}
+    \item Receive $\vb^2_2$ and $\vb^2_{2^k}$ from $D$.
+\end{enumerate}
+\item Let $\shareB{\vb}^\mathsf{adt} = (\vb^1_2, \vb^2_2)$.
+\item Let $\shareR{\vb}^\mathsf{adt} = (\vb^1_{2^k}, \vb^2_{2^k})$
+\item Return $\shareB{\vb}^\mathsf{adt}$ and $\shareR{\vb}^\mathsf{adt}$.
+\end{enumerate}
+

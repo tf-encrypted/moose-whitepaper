@@ -2,7 +2,10 @@
 
 \renewcommand{\emptyset}{\varnothing}
 
-
+% Comments
+\newcommand{\commentD}[1]{\textcolor[rgb]{0,1,0}{{\sf Drago\c{s}:} {\sl{#1}}}}
+\newcommand{\commentM}[1]{\textcolor[rgb]{0,0.75,1}{{\sf Morten:} {\sl{#1}}}}
+\newcommand{\commentJ}[1]{\textcolor[rgb]{1,0,0}{{\sf Jason:} {\sl{#1}}}}
 % Colors
 
 \definecolor{dblue}{rgb}{0.00, 0.50, 0.90}
@@ -13,6 +16,16 @@
 \definecolor{lyellow}{rgb}{1.00, 0.95, 0.75}
 \definecolor{llgrey}{rgb}{0.95, 0.95, 0.95}
 \definecolor{salmon}{rgb}{0.99, 0.90, 0.90}
+
+% Dataflow stuff
+\newcommand{\shape}{\mathsf{shape}}
+
+% Linear regression stuff
+\newcommand{\coeff}{w}
+\newcommand{\optCoeff}{w^*}
+\newcommand{\instanceAvg}{\frac{1}{n} \sum_n}
+\newcommand{\ypred}{\hat{y}}
+
 
 % UC security things
 
@@ -42,6 +55,12 @@
 \newcommand{\VER}{\mathsf{Ver}}
 \newcommand{\TAG}{\mathsf{Tag}}
 
+% fixed point arithmetic symbols
+\newcommand{\Decode}{\mathsf{Decode}}
+
+
+\newcommand{\inc}[1]{\mathsf{inc}({#1})}
+
 % MPC things
 \newcommand{\Pa}{\mathcal{P}}
 \newcommand{\Engine}{\mathsf{Eng}}
@@ -68,6 +87,7 @@
 
 
 % Sets, fields, rings, groups, etc...
+\newcommand{\ring}{R}
 \newcommand{\C}{\mathbb{C}} % complex nr
 \newcommand{\Z}{\mathbb{Z}} % the integers
 \newcommand{\Q}{\mathbb{Q}} % the rationals
@@ -79,6 +99,16 @@
 \newcommand{\range}[1]{[1\dots {#1} ]} % a finite field
 
 \newcommand{\sample}{\stackrel{\small{\$}}{\leftarrow}}
+
+\newcommand{\oid}{\mathsf{oid}}
+\newcommand{\sid}{\mathsf{sid}}
+\newcommand{\nonce}{\mathsf{nonce}}
+\newcommand{\prfkeys}{\mathbf{k}}
+\newcommand{\prfkey}{\mathsf{key}}
+\newcommand{\RingSample}{\mathsf{SampleUniform}}
+\newcommand{\SampleKey}{\mathsf{SampleKey}}
+\newcommand{\dkey}{\textsf{dk}}
+\newcommand{\GenNonce}{\textsf{GenNonce}()}
 
 \newcommand{\M}{\mathcal{M}} % message space
 \newcommand{\T}{\mathcal{T}} % tag space
@@ -93,6 +123,9 @@
 
 % Probability and DP
 \newcommand{\Avg}{\textup{E}} % Average of random variables
+
+\newcommand{\seed}{\mathsf{seed}} % Average of random variables
+\newcommand{\derives}{\mathsf{DeriveSeed}} % Average of random variables
 
 
 \newcommand{\D}{\mathcal{D}} % a distribution
@@ -127,13 +160,13 @@
 
 % Operators
 
+\newcommand{\argmin}{\arg\!\min}
 \newcommand{\asn}{\gets} % to be read as ``computed as'' or ``taken according to the distribution...'' or ``taken uniformly from...''
-
 \newcommand{\ParamGen}{\mathsf{ParamGen}}
 \newcommand{\KeyGen}{\mathsf{KeyGen}}
 \newcommand{\Enc}{\mathsf{Enc}}
 \newcommand{\Dec}{\mathsf{Dec}}
-\newcommand{\Add}{\mathsf{Add}}
+\newcommand{\Add}{\mathsf{adt}}
 \newcommand{\ek}{ek}
 \newcommand{\dk}{dk}
 \newcommand{\plaintext}{m}
@@ -148,6 +181,11 @@
 \newcommand{\Rec}{\mathsf{Recon}}
 
 \newcommand{\share}[1]{\langle {#1} \rangle} % a finite field
+\newcommand{\shareR}[1]{{\langle {#1} \rangle}_{2^k}} % a ring
+\newcommand{\shareRR}[1]{{\langle {#1} \rangle}_{R}} % a generic ring
+\newcommand{\shareB}[1]{{\langle {#1} \rangle}_2} % a binary field
+\newcommand{\shareF}[1]{{\langle {#1} \rangle}_{k, f}} % fixedpoint sharing
+\newcommand{\shareFixed}[3]{{\langle {#1} \rangle}_{#2, #3}} % fixedpoint sharing
 \newcommand{\secret}{m}
 
 \newcommand{\MAC}{\mathsf{MAC}}
@@ -191,7 +229,7 @@
 \newcommand{\Ftriple}{\Funct{\Triple}}
 \newcommand{\Ptriple}{\Proto{\Triple}}
 \newcommand{\Striple}{\Sim_{\Triple}}
-\newcommand{\Fmult}{\Funct{2Mult}}
+\newcommand{\Fmult}{\Funct{Mult}}
 \newcommand{\Pmult}{\Proto{2Mult}}
 \newcommand{\Smult}{\Sim_\mathsf{2Mult}}
 \newcommand{\Ffmult}{\Funct{2FMult}}
@@ -213,6 +251,7 @@
 \newcommand{\vy}{\mathbf{y}}
 \newcommand{\vu}{\mathbf{u}}
 \newcommand{\vk}{\mathbf{k}}
+\newcommand{\vp}{\mathbf{p}}
 \newcommand{\vq}{\mathbf{q}}
 \newcommand{\vt}{\mathbf{t}}
 \newcommand{\vs}{\mathbf{s}}
@@ -220,6 +259,7 @@
 \newcommand{\vv}{\mathbf{v}}
 \newcommand{\va}{\mathbf{a}}
 \newcommand{\vh}{\mathbf{h}}
+\newcommand{\vH}{\mathbf{H}}
 \newcommand{\vb}{\mathbf{b}}
 \newcommand{\vc}{\mathbf{c}}
 \newcommand{\vd}{\mathbf{d}}

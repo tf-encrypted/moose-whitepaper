@@ -1,0 +1,68 @@
+\subsection{More general additive to replicated share conversion}
+
+
+Additive to replicated share conversion
+protocol.
+
+
+\msubsubsection
+{$\mathsf{AdtToRep}_\mathsf{rep}(R;\share{\vx}^{\mathsf{adt}}_{R}) \rightarrow \share{\vy}^\mathsf{rep}$}
+\label{fig:general-two-to-three}
+
+Let $\mathsf{sync\_key}_1$ and $\mathsf{sync\_key}_2$ be distinct fixed values.
+
+\begin{enumerate}
+\item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{adt}}_{R}$.
+\item Let $(A_1, A_2) \asn \mathsf{adt}.\mathsf{host\_placements()}$.
+\item Let $(R_1, R_2, R_3) \asn \mathsf{rep}.\mathsf{host\_placements()}$.
+\item Select one $R_i$ such that $R_i \neq A_j, \forall j \in [2]$ which will act as the third party provider for the other $R_k, k \neq i$.
+\item On $\mathsf{adt}[A_1, A_2]$:
+\begin{enumerate}
+    \item compute $\shape \asn \mathsf{Shape}(\share{\vx}^{\mathsf{adt}})$.
+\end{enumerate}
+\item On $A_1$:
+\begin{enumerate}
+    \item Send $\shape_1$ to $R_i$.
+\end{enumerate}
+\item On $R_i$:
+\begin{enumerate}
+    \item Receive $\shape_1$ from $A_1$.
+    \item $k \asn \mathsf{GenPrfKey}()$.
+    \item $\mathsf{seed}_1 \asn \mathsf{DeriveSeed}(\mathsf{sync\_key}_1, k)$.
+    \item $\mathsf{seed}_2 \asn \mathsf{DeriveSeed}(\mathsf{sync\_key}_2, k)$.
+    \item $\vy_j^i \asn \mathsf{SampleUniformSeeded}(R; \shape_1, \seed_j)$ for $j \in [2]$.
+\end{enumerate}
+\item On $A_1$:
+\begin{enumerate}
+    \item Receive $\mathsf{seed}_1$ from $R_i$.
+    \item Compute $\vy_1 \asn \mathsf{SampleUniformSeeded}(R; \shape_1, \seed_1)$.
+\end{enumerate}
+\item On $A_2$:
+\begin{enumerate}
+    \item Receive $\mathsf{seed}_2$ from $R_i$.
+    \item Compute $\vy_2 \asn \mathsf{SampleUniformSeeded}(R; \shape_2, \seed_2)$.
+\end{enumerate}
+\item Let $\share{\vy}^{\mathsf{adt}}_{R} = (\vy_1, \vy_2)$.
+\item $\vc \asn \mathsf{Open}_{[A_1, A_2]}\left( \share{\vx}^{\mathsf{adt}}_{R}
+- \share{\vy}^{\mathsf{adt}}_{R} \right)$
+\item Each $A_j$ sends $\vy_j$ to $R_k$ for which $R_k = A_j$ $\forall j \in [2], k \in [3]$.
+\item The $A_j$ parties that didn't have a 1-1 match to $R_k$ in the previous step now pick an unique $R_k \neq R_i$
+that hasn't received any $\vy$ share and sends it to $R_k$.
+\item The set of shares owned by the $R$ parties are: $\{ \{\vy_1, \vc\}, \{\vy_2, \vc\}, \{\vy^i_1, \vy^i_2\} \}$.
+\item Parties order their shares such that it is a valid sharing of $\vy$.
+\item Return $\share{\vy}^{\mathsf{rep}}_{R}$.
+\end{enumerate}
+
+Note that in the last steps the parties must provide a valid ordering of their
+shares such that it reconstructs to $\vy$. There are multiple cases here,
+depending on which host placement the share provider ($R_i$) was assigned and
+the way the parties on the additive placement sent their shares to the replicated ones.
+
+\begin{align*}
+(R_i = R_1, A_1 = R_2, A_2 = R_3) \mapsto \left( (\vy_2^1, \vy_1^1), (\vy_1, \vc), (\vc, \vy_2) \right) \\
+(R_i = R_1, A_2 = R_2, A_1 = R_3) \mapsto \left( (\vy_1^1, \vy_2^1), (\vy_2, \vc), (\vc, \vy_1) \right) \\
+(A_1 = R_1, R_i = R_2, A_2 = R_3) \mapsto \left( (\vc, \vy_1), (\vy^2_1, \vy^2_2), (\vy_2, \vc) \right) \\
+(A_2 = R_1, R_i = R_2, A_1 = R_3) \mapsto \left( (\vc, \vy_2), (\vy^2_2, \vy^2_1), (\vy_1, \vc) \right) \\
+(A_1 = R_1, A_2 = R_2, R_i = R_3) \mapsto \left( (\vy_1, \vc), (\vc, \vy_2), (\vy_2^3, \vy_1^3) \right) \\
+(A_2 = R_1, A_1 = R_2, R_i = R_3) \mapsto \left( (\vy_2, \vc), (\vc, \vy_1), (\vy_1^3, \vy_2^3) \right)
+\end{align*}

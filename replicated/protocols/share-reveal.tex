@@ -1,0 +1,37 @@
+Replicated opening protocol to a specific party.
+
+\msubsubsection
+{$\Open_{[P_1, P_2, P_3]} \left( \share{\vx}^{\mathsf{rep}} \right)$}
+ \label{fig:replicated-open}
+  Let $P_i$ be the player to which $\vx$ is to be revealed.
+
+  \begin{enumerate}
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \share{\vx}^{\mathsf{rep}}$.
+  \item On $P_{i+1}$:
+  \begin{enumerate}
+    \item Send $\vx_{i+2}^{i+1}$ to $P_{i}$.
+  \end{enumerate}
+  \item On $P_i$:
+  \begin{enumerate}
+   \item Receive $\vx_{i+2}^{i+1}$ from $P_{i}$.
+   \item $\vx \asn \vx_{i+2}^{i+1} + \vx_i^i + \vx_{i+1}^{i}$.
+  \end{enumerate}
+  \item Return $\vx$.
+\end{enumerate}
+
+
+Additive opening protocol.
+
+\msubsubsection
+{$\Open_{[P_1, P_2]} \left( \share{\vx}^{\mathsf{adt}} \right)$}
+\label{fig:additive-open}
+  \begin{enumerate}
+  \item Let $(\vx_1, \vx_2) = \share{\vx}^{\mathsf{adt}}$.
+  \item On $P_i$ for $i \in [2]$:
+  \begin{enumerate}
+    \item Send $\vx_i$ to $P_{i+1}$.
+    \item Receive $\vx_{i+1}$ from $P_{i+1}$.
+    \item $\vx^i \asn \vx_1 + \vx_2$.
+  \end{enumerate}
+  \item Return $\vx^1$ and $\vx^2$.
+\end{enumerate}

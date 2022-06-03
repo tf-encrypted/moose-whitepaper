@@ -1,0 +1,11 @@
+
+\msubsubsection
+  {$\mathsf{Abs}_{[P_1, P_2, P_3]} \left( \shareR{\vx} \right)$}
+  \label{fig:abs-protocol}
+  Absolute value computation from a replicated sharing.
+  \begin{enumerate}
+    \item $\shareR{\vb} \asn \mathsf{MSB}_{[P_1, P_2, P_3]}(\shareR{\vx})$.
+    \item $\shareR{\vs} \asn 1 - 2 \cdot \shareR{\vb}$.
+    \item Return $\shareR{\vs} \cdot \shareR{\vx}$.
+  \end{enumerate}
+

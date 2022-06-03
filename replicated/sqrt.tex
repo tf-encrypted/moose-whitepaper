@@ -1,0 +1,74 @@
+\subsection{Square root}
+\label{subsec:sqrt}
+
+In Figure~\ref{fig:sqrt-generic}, we describe the replicated protocol for computing
+the square root function on secret fixedpoints. The general idea is similar to
+Liedel's algorithm (\cite{Liedel2012SecureDC}), however it uses a different method
+for the initial approximation of $f$. Whereas Liedel normalizes the input $x$ to
+$[\frac{1}{2}, 1]$ and computes a linear approximation to $g(x) = 1 / \sqrt{x}$ on
+this interval (eventually multiplied by $x$ to produce $\sqrt{x}$), the approach in
+\cite{ACNS:AlySma19} simply finds the power of 2 nearest to the fixedpoint
+encoding of $f(x)$. Their key insight is that this cruder approximation is enough
+to condition the Newton-Raphson/Goldschmidt optimization.
+
+\msubsubsection
+  {$\mathsf{SimpNormSq}_{[P_1, P_2, P_3]}(\share{\vb}^\mathsf{rep}_{2^k}, k)$}
+  \label{fig:simp-norm-sq}
+  Somewhat similar to Norm in Figure~\ref{fig:div-norm}, but assumes $\vb \geq 0$.
+  Returns a secret $\share{\vw} = \share{2^{\vm/2}}$ for some $\vm$ such that
+  $2^{\vm-1} \leq \share{\vb} < 2^\vm$.
+  \begin{enumerate}
+    \item $\share{\vz} = \mathsf{MSB}_{[P_1, P_2, P_3]} ( \share{\vb})$
+    \item $\share{\vm} = \sum_{i=0}^{k-1}(i+1)\cdot\share{\vz_i}$
+    \item $\vm_{odd} = 0$
+    \item For $i \in [0, k-1]$:
+    \begin{enumerate}
+      \item If $i \bmod 2 == 0$:
+      \begin{enumerate}
+        \item $\share{\vm_{odd}} = \share{\vm_{odd}} + \share{\vz_i}$
+      \end{enumerate}
+    \end{enumerate}
+    \item For $i \in [1, \frac{k}{2}]$:
+    \begin{enumerate}
+      \item $\share{\vw_i} = \share{\vz_{2i-1}} + \share{\vz_{2i}}$
+    \end{enumerate}
+    \item $\share{\vw} = \sum_{i=1}^{\frac{k}{2} - 1}2^i\share{\vw_i}$
+    \item Return $\share{\vm_{odd}},\share{\vw}$.
+  \end{enumerate}
+
+
+\msubsubsection
+  {$\mathsf{Sqrt}_{[P_1, P_2, P_3]}(\share{\vx}^\mathsf{rep}_{2^k}, k, f)$}
+  \label{fig:sqrt-generic}
+  Generic fixed point square root protocol.
+
+  \begin{enumerate}
+    \item $\theta = \max(\log_2(k), 6)$
+    \item $\share{\vm_{odd}}, \share{\vw} = \mathsf{SimpNormSq}(\share{\vx})$
+    \item $f_{odd} = f \bmod 2$
+    % m_odd = choose(f mod2, 1 - m_odd, m_odd)
+    % if fractional precision is odd, bitswap m_odd. o.w. do nothing
+    \item $\share{\vm_{odd}} = \share{\vm_{odd}} + (1 - 2 \share{\vm_{odd}}) \cdot f_{odd}$
+    % w = choose((1 - m_odd)(f mod2), 2w, w)
+    % if parity of msb is even and fractional precision is odd, bump power of approx by 1. o.w. do nothing
+    \item $\share{\vw} = \share{\vw} + (2 \share{\vw} - \share{\vw}) \cdot (1 - \share{\vm_{odd}}) \cdot f_{odd}$
+    \item $t = (f - f_{odd}) / 2$
+    \item $\shareF{\vw} = \mathsf{Encode}(\share{\vw} \cdot 2^t, k-f, f)$
+    % w' = choose(m_odd, w' * \sqrt{2}, w')
+    % if parity of msb is odd, bump power of w' by 1/2. o.w. do nothing
+    \item $\shareF{\vw} = \shareF{\vw} + (\sqrt{2} \shareF{\vw} - \shareF{\vw}) \cdot \share{\vm_{odd}}$
+    \item $\shareF{\vy} = \shareF{\vw}^{-1}$
+    \item $\shareF{\vg} = \shareF{\vx} \cdot \shareF{\vy}$
+    \item $\shareF{\vh} = \shareF{\vy} / 2$
+    \item For $i \in [1, \theta]$:
+    \begin{enumerate}
+      \item $\shareF{\vr} = \frac{3}{2} - \shareF{\vg} \cdot \shareF{\vh}$
+      \item $\shareF{\vg} = \shareF{\vg} \cdot \shareF{\vr}$
+      \item $\shareF{\vh} = \shareF{\vh} \cdot \shareF{\vr}$
+    \end{enumerate}
+    \item $\shareF{\vr} = \frac{3}{2} - \shareF{\vg} \cdot \shareF{\vh}$
+    \item $\shareF{\vh} = \shareF{\vh} \cdot \shareF{\vr}$
+    \item $\shareF{\vH} = \shareF{\vh} \cdot (3 - 4 \cdot \shareF{\vx} \cdot \shareF{\vh}^2)$
+    \item $\shareF{\sqrt{\vx}} = \shareF{\vx} \cdot \shareF{\vH}$
+  \end{enumerate}
+

@@ -1,0 +1,67 @@
+\subsection{Comparison}
+
+%In order to compute the MAPE (mean absolute percentage error) metric which boils down to compute the absolute value of a secret $\share{|\vx|}$. Since our primitives work with ring arithmetic one of its most efficient evaluation of the absolute value is $\share{|\vx|} = \share{\vx} \cdot \share{\vx > 0}$.
+
+The problem of computing secure comparisons translates directly into computing a sharing of the most significant bit $\share{\mathsf{msb}(\vx)}$.
+In the 3PC semi-honest model there are few approaches to this:
+\begin{enumerate}
+  \item ABY3 \cite{CCS:MohRin18}. Each party locally
+   bit-decomposes their shares over $\Z_{2^k}$ and then reconstruct the secret
+   modulo $\Z_{2^k}$ using shares from $\Z^k_2$ and a binary adder. Once a
+   boolean sharing of the MSB is computed using the binary adder this is
+   converted to a ring sharing in $\Z_{2^k}$.  The share conversion was
+   originally done using a three-party OT protocol.  Later, in MP-SPDZ
+   \cite{CCS:Keller20} the boolean to ring secret share conversion was achieved
+   with a daBit.
+
+  \item SecureNN \cite{PoPETS:WagGupCha19}.
+   Similar to ABY3 with the difference that it uses arithmetic modulo
+   small fields but avoids ring-to-boolean conversion.
+
+  \item Extended daBits \cite{C:EGKRS20}. The 3PC case has roughly the same cost as ABY3.
+\end{enumerate}
+
+In $\mathsf{moose}$ we use the MSB extraction protocol from ABY3 with a Kogge-Stone binary adder and
+minor optimizations for tensor operations. We avoid the special three-party OT
+that ABY3 as well as edaBits preprocessing by introducing our custom
+protocol \textsf{B2A} for binary to ring share conversion in
+Figure~\ref{fig:b2a-protocol}.  The MSB protocol can be found in
+Figure~\ref{fig:msb-protocol} where $\overline{\cdot}$ is used to denote a
+vector with $k$ elements indexed using $\overline{\cdot}[i]$ for $i \in [k]$.
+
+
+\input{protocols/msb}
+
+\subsubsection{New boolean to ring sharing protocol}
+
+When the inputs are tensors we can perform the share conversion $\share{\cdot}_2
+\mapsto \share{\cdot}_{2^k}$ ($\mathsf{B2A}$ function)
+more efficient by making use of the fact that all parties
+follow the protocol specifications. The starting point is using a similar idea
+from daBit/edaBit \cite{INDOCRYPT:RotWoo19,C:EGKRS20}
+line of work with the twist that $P_3$ generates the preprocessing
+material.
+
+The protocol works as follows: $P_3$ acts as a trusted third party and generates
+a random daBit $(\share{\vb}_2,
+\share{\vb}_{2^k})$ locally and shares it to $P_1$ and $P_2$. Note that $P_3$
+uses the seed derivation to to minimize the communication between $P_3$ and the
+rest of the parties when sharing the random daBit.
+
+Next, $P_1$ and $P_2$ run a two-party protocol to convert $\share{\vx}_2$ to
+$\share{\vx}_{2^k}$ by computing the boolean XOR $\share{\vc}_2 \asn
+\share{\vx}_2 \oplus \share{\vb}_2$.
+Then the two parties $P_1$ and $P_2$ reveal $\share{\vc}_2$
+to the random daBit with an XOR in the arithmetic domain
+$\vx_{2^k} = \vc + \vb_{2^k} - 2 \cdot \vc \cdot \vb_{2^k}$.
+This leaks no information $\vb$ mask uniformly random the input $\vx$.
+Finally they securely convert back the additive sharing of $\vx_{2^k}$
+denoted as $\share{\vx}^\mathsf{adt}_{2^k}$ to a replicated sharing
+$\share{\vx}^\mathsf{rep}_{2^k}$ using $\mathsf{AdtToRep}$ protocol. We fully
+describe this share conversion protocol in Figure~\ref{fig:b2a-protocol}.
+
+
+\input{protocols/b2a}
+\input{protocols/dabit}
+% \input{protocols/2-out-of-2.tex}
+\input{protocols/abs}

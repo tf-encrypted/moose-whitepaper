@@ -1,0 +1,22 @@
+
+\msubsubsection
+{$\mathsf{B2A}_{[P_1, P_2, P_3]} \left( \shareB{\vx}^\mathsf{rep} \right)$}
+  \label{fig:b2a-protocol}
+
+  Binary to arithmetic share conversion.
+
+  \begin{enumerate}
+  \item Let $\left( (\vx_1^1, \vx_2^1), (\vx_2^2, \vx_3^2), (\vx_3^3, \vx_1^3) \right) = \shareB{\vx}^\mathsf{rep}$.
+  \item On $P_1$:
+  \begin{enumerate}
+  \item $\vx^1_{12} \asn \vx_1^1 \oplus \vx_2^1$.
+  \item $\shape \asn \mathsf{Shape}(\vx^1_1)$.
+  \end{enumerate}
+  \item Let $\shareB{\vx}^\mathsf{adt} = (\vx^1_{12}, \vx_3^2)$.
+  \item $\shareB{\vb}^\mathsf{adt}, \shareR{\vb}^\mathsf{adt} \asn \textsf{DaBit}_{[D=P_3, P_1, P_2]}(\shape)$.
+  \item $\shareB{\vc}^{\mathsf{adt}} \asn \shareB{\vb}^\mathsf{adt} \oplus \shareB{\vx}^{\mathsf{adt}}$.
+  \item $\vc \asn \Open_{[P_1, P_2]}(\shareB{\vc}^{\mathsf{adt}})$.
+  \item $\shareR{\vx}^\mathsf{adt} \asn \vc + \shareR{\vb}^{\mathsf{adt}} - 2 \cdot \vc \cdot \shareR{\vb}^{\mathsf{adt}}$.
+  \item Return $\textsf{AdtToRep}_{[P_1,P_2,P_3]}(\shareR{\vx}^\mathsf{adt})$.
+\end{enumerate}
+
